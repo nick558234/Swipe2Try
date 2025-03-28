@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Swipe2Try.props" />
+</Project>
