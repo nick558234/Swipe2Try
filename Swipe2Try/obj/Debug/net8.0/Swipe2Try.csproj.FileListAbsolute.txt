@@ -32,3 +32,4 @@ C:\Users\nickv\source\repos\Swipe2Try\Swipe2Try\obj\Debug\net8.0\refint\Swipe2Tr
 C:\Users\nickv\source\repos\Swipe2Try\Swipe2Try\obj\Debug\net8.0\Swipe2Try.pdb
 C:\Users\nickv\source\repos\Swipe2Try\Swipe2Try\obj\Debug\net8.0\Swipe2Try.genruntimeconfig.cache
 C:\Users\nickv\source\repos\Swipe2Try\Swipe2Try\obj\Debug\net8.0\ref\Swipe2Try.dll
+C:\Users\nickv\source\repos\Swipe2Try\Swipe2Try\obj\Debug\net8.0\Swipe2Try.sourcelink.json

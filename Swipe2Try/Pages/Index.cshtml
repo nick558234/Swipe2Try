@@ -4,7 +4,87 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<main class="flex-1">
+    <!-- Hero Section -->
+    <section class="py-16 md:py-24">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6">
+                        Discover Your Next Favorite Dish
+                    </h1>
+                    <p class="text-gray-600 text-lg mb-8 max-w-md">
+                        Swipe, match, and explore amazing restaurants near you. Find the perfect meal with just a few taps.
+                    </p>
+                    <a asp-area="" asp-page="/SignUp" class="bg-black text-white px-6 py-3 rounded-full text-base font-medium inline-block hover:bg-gray-800">
+                        Get Started Free
+                    </a>
+                </div>
+                <div class="flex justify-center">
+                    <div class="bg-gray-200 rounded-lg w-full max-w-md aspect-[3/5] flex items-center justify-center">
+                        <p class="text-gray-600">App Screenshot</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-16">How It Works</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="flex flex-col items-center text-center">
+                    <div class="bg-gray-300 p-4 rounded-full mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-black">
+                            <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                            <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path>
+                            <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
+                            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.4-5.5-1.5"></path>
+                            <path d="M2 14h.01"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Swipe to Explore</h3>
+                    <p class="text-gray-600">
+                        Browse through curated dishes with simple swipe gestures
+                    </p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                    <div class="bg-gray-300 p-4 rounded-full mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-black">
+                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Save Favorites</h3>
+                    <p class="text-gray-600">
+                        Like and save dishes you want to try later
+                    </p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                    <div class="bg-gray-300 p-4 rounded-full mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-black">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Get Recommendations</h3>
+                    <p class="text-gray-600">
+                        Receive personalized suggestions based on your preferences
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 md:py-24">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-6">Ready to Discover New Flavors?</h2>
+            <p class="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
+                Join thousands of food lovers who are exploring new dishes every day
+            </p>
+            <a asp-area="" asp-page="/SignUp" class="bg-black text-white px-6 py-3 rounded-full text-base font-medium inline-block hover:bg-gray-800">
+                Sign Up Now
+            </a>
+        </div>
+    </section>
+</main>
