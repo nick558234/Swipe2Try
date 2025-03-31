@@ -1,161 +1,154 @@
 ﻿@page
-@model Swipe2Try.Pages.RestaurantOwner.IndexModel
-
+@model Swipe2Try.Pages.Admin.Users.IndexModel
 @{
     Layout = "_AdminLayout";
+    ViewData["ActivePage"] = "Users";
 }
 
-<!-- Main Content -->
-<main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-    <div class="container mx-auto px-6 py-8">
-        <div class="flex justify-between items-center">
-            <h3 class="text-gray-700 text-3xl font-medium">Users</h3>
-            <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-                Add New User
-            </button>
-        </div>
+<div class="flex justify-between items-center">
+    <h3 class="text-gray-700 text-3xl font-medium">Users</h3>
+    <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+        Add New User
+    </button>
+</div>
 
-        <!-- Search and Filter -->
-        <div class="mt-8 flex flex-col md:flex-row md:items-center md:justify-between">
-            <div class="relative flex items-center mt-4 md:mt-0">
-                <span class="absolute">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </span>
-                <input type="text" class="block w-full py-1.5 pl-10 pr-4 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-40 focus:outline-none focus:ring" placeholder="Search users...">
-            </div>
+<!-- Search and Filter -->
+<div class="mt-8 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div class="relative flex items-center mt-4 md:mt-0">
+        <span class="absolute">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </span>
+        <input type="text" class="block w-full py-1.5 pl-10 pr-4 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-40 focus:outline-none focus:ring" placeholder="Search users...">
+    </div>
 
-            <div class="flex items-center mt-4 md:mt-0">
-                <div class="relative">
-                    <select class="block w-full py-1.5 pl-3 pr-10 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-40 focus:outline-none focus:ring">
-                        <option>All Users</option>
-                        <option>Admins</option>
-                        <option>Restaurant Owners</option>
-                        <option>Regular Users</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Users Table -->
-        <div class="flex flex-col mt-8">
-            <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-                <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
-                    <table class="min-w-full">
-                        <thead>
-                            <tr>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm leading-5 font-medium text-gray-900">John Doe</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <div class="text-sm leading-5 text-gray-900">john@example.com</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Admin</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                                    <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm leading-5 font-medium text-gray-900">Jane Smith</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <div class="text-sm leading-5 text-gray-900">jane@example.com</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Restaurant Owner</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                                    <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm leading-5 font-medium text-gray-900">Michael Johnson</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <div class="text-sm leading-5 text-gray-900">michael@example.com</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">User</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                                    <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pagination -->
-        <div class="mt-8 flex justify-center">
-            <nav class="relative z-0 inline-flex shadow-sm">
-                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">
-                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                </a>
-                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-purple-700 hover:text-gray-700 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
-                    1
-                </a>
-                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-700 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
-                    2
-                </a>
-                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-700 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
-                    3
-                </a>
-                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">
-                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                    </svg>
-                </a>
-            </nav>
+    <div class="flex items-center mt-4 md:mt-0">
+        <div class="relative">
+            <select class="block w-full py-1.5 pl-3 pr-10 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-40 focus:outline-none focus:ring">
+                <option>All Users</option>
+                <option>Admins</option>
+                <option>Restaurant Owners</option>
+                <option>Regular Users</option>
+            </select>
         </div>
     </div>
-</main>
+</div>
 
-<!-- Users page content goes here -->
+<!-- Users Table -->
+<div class="flex flex-col mt-8">
+    <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+            <table class="min-w-full">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm leading-5 font-medium text-gray-900">John Doe</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div class="text-sm leading-5 text-gray-900">john@example.com</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Admin</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm leading-5 font-medium text-gray-900">Jane Smith</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div class="text-sm leading-5 text-gray-900">jane@example.com</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Restaurant Owner</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm leading-5 font-medium text-gray-900">Michael Johnson</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div class="text-sm leading-5 text-gray-900">michael@example.com</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">User</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="mt-8 flex justify-center">
+    <nav class="relative z-0 inline-flex shadow-sm">
+        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+        </a>
+        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-purple-700 hover:text-gray-700 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+            1
+        </a>
+        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-700 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+            2
+        </a>
+        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-700 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+            3
+        </a>
+        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </nav>
+</div>

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Swipe2Try")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95af1ffed84a696a7e9219335c8825f7be55ae9b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+08bfaf3a595d0b766c876af68d2722e74cad4a35")]
 [assembly: System.Reflection.AssemblyProductAttribute("Swipe2Try")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Swipe2Try")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
