@@ -1,0 +1,130 @@
+﻿@page
+@model Swipe2Try.Pages.Admin.Dishes.IndexModel
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="flex justify-between items-center">
+    <h3 class="text-gray-700 text-3xl font-medium">Dishes</h3>
+    <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+        Add New Dish
+    </button>
+</div>
+
+<!-- Search and Filter -->
+<div class="mt-8 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div class="relative flex items-center mt-4 md:mt-0">
+        <span class="absolute">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </span>
+        <input type="text" class="block w-full py-1.5 pl-10 pr-4 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-40 focus:outline-none focus:ring" placeholder="Search dishes...">
+    </div>
+
+    <div class="flex items-center mt-4 md:mt-0">
+        <div class="relative">
+            <select class="block w-full py-1.5 pl-3 pr-10 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-40 focus:outline-none focus:ring">
+                <option>All Restaurants</option>
+                <option>Italian Delight</option>
+                <option>Sea Breeze</option>
+                <option>Green Bites</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Dishes Grid -->
+<div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Dish Card 1 -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="relative h-48">
+            <img class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1612874742237-6526221588bd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1771&q=80" alt="Spaghetti Carbonara">
+            <div class="absolute top-0 right-0 p-2">
+                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+            </div>
+        </div>
+        <div class="p-4">
+            <h4 class="text-lg font-semibold">Spaghetti Carbonara</h4>
+            <p class="text-gray-600 text-sm mt-1">Creamy pasta with bacon and eggs</p>
+            <div class="flex justify-between items-center mt-3">
+                <span class="text-sm text-gray-500">Italian Delight</span>
+                <span class="text-sm font-medium">Health: 6/10</span>
+            </div>
+            <div class="flex justify-between mt-4">
+                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</button>
+                <button class="text-red-600 hover:text-red-800 text-sm font-medium">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dish Card 2 -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="relative h-48">
+            <img class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Grilled Salmon">
+            <div class="absolute top-0 right-0 p-2">
+                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+            </div>
+        </div>
+        <div class="p-4">
+            <h4 class="text-lg font-semibold">Grilled Salmon</h4>
+            <p class="text-gray-600 text-sm mt-1">Fresh salmon with lemon and herbs</p>
+            <div class="flex justify-between items-center mt-3">
+                <span class="text-sm text-gray-500">Sea Breeze</span>
+                <span class="text-sm font-medium">Health: 9/10</span>
+            </div>
+            <div class="flex justify-between mt-4">
+                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</button>
+                <button class="text-red-600 hover:text-red-800 text-sm font-medium">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dish Card 3 -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="relative h-48">
+            <img class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1520072959219-c595dc870360?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1773&q=80" alt="Veggie Burger">
+            <div class="absolute top-0 right-0 p-2">
+                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+            </div>
+        </div>
+        <div class="p-4">
+            <h4 class="text-lg font-semibold">Veggie Burger</h4>
+            <p class="text-gray-600 text-sm mt-1">Plant-based patty with all the fixings</p>
+            <div class="flex justify-between items-center mt-3">
+                <span class="text-sm text-gray-500">Green Bites</span>
+                <span class="text-sm font-medium">Health: 8/10</span>
+            </div>
+            <div class="flex justify-between mt-4">
+                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</button>
+                <button class="text-red-600 hover:text-red-800 text-sm font-medium">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="mt-8 flex justify-center">
+    <nav class="relative z-0 inline-flex shadow-sm">
+        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+        </a>
+        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-purple-700 hover:text-gray-700 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+            1
+        </a>
+        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-700 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+            2
+        </a>
+        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-700 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+            3
+        </a>
+        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </nav>
+</div>
+

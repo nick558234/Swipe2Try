@@ -20,6 +20,30 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
+[C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/Admin/Dishes/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5cRGlzaGVzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/Admin/Dishes/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5cRGlzaGVzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/Admin/Dishes/Update.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5cRGlzaGVzXFVwZGF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/Admin/Users/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5cVXNlcnNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/Admin/Users/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5cVXNlcnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/Admin/Users/Update.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5cVXNlcnNcVXBkYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -34,6 +58,22 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJpdmFjeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/RestaurantOwner/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVzdGF1cmFudE93bmVyXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/RestaurantOwner/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVzdGF1cmFudE93bmVyXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/RestaurantOwner/Update.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVzdGF1cmFudE93bmVyXFVwZGF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/Shared/_AdminLayout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9BZG1pbkxheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/nickv/source/repos/Swipe2Try/Swipe2Try/Pages/Shared/_ValidationScriptsPartial.cshtml]
