@@ -1,13 +1,12 @@
-﻿   @page
+﻿@page
    @model Swipe2Try.Pages.swipeModel
    @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-   @using Swipe2Try.Components
 @{
 }
 
 <div class="container mx-auto px-4 py-8">
     <header class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-purple-600">Swipe 'n Try</h1>
+        <h1 class="text-4xl font-bold text-purple-600">Swipe 2 Try</h1>
         <p class="text-xl text-gray-600 mt-2">Your next meal is just a swipe away.</p>
     </header>
 
@@ -15,13 +14,40 @@
         <div id="dish-stack" class="relative h-[500px] w-full">
             @foreach (var dish in Model.Dishes)
             {
-                <Card ImageUrl="@dish.ImageUrl"
-                      Title="@dish.Title"
-                      Description="@dish.Description"
-                      Restaurant="@dish.Restaurant"
-                      HealthFactor="@dish.HealthFactor"
-                      Price="@dish.Price"
-                      Tags="@dish.Tags" />
+                <div class="absolute top-0 left-0 w-full h-full bg-white rounded-lg shadow-xl overflow-hidden transform transition-transform duration-300 ease-in-out">
+                    <img src="@dish.ImageUrl" alt="@dish.Title" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h2 class="text-2xl font-bold text-gray-800">@dish.Title</h2>
+                        <p class="text-gray-600 text-sm mb-2">@dish.Restaurant</p>
+                        <p class="text-gray-700 mb-3">@dish.Description</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="text-green-500 font-semibold">$@dish.Price</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Health: @dish.HealthFactor/5</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex flex-wrap gap-1">
+                            @foreach (var tag in dish.Tags)
+                            {
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-0.5 rounded-full">@tag</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="absolute inset-x-0 bottom-0 flex justify-between p-4 bg-gray-50">
+                        <button class="swipe-btn swipe-left bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <button class="swipe-btn swipe-right bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             }
         </div>
     </div>
