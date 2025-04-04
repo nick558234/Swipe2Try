@@ -5,7 +5,14 @@
 
 # dotenv files
 .env
-
+.vs
+Swipe2Try/.vs
+Swipe2Try/*.vs
+Swipe2Try/.vs/
+Swipe2Try/bin
+Swipe2Try/bin/
+Swipe2Try/obj
+/bin
 # User-specific files
 *.rsuser
 *.suo
