@@ -1,20 +1,21 @@
 ﻿@page
-   @model Swipe2Try.Pages.swipeModel
-   @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model Swipe2Try.Pages.swipeModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
 }
 
 <div class="container mx-auto px-4 py-8">
     <header class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-purple-600">Swipe 2 Try</h1>
+        <h1 class="text-4xl font-bold text-purple-600">Swipe 'n Try</h1>
         <p class="text-xl text-gray-600 mt-2">Your next meal is just a swipe away.</p>
     </header>
 
-    <div class="relative max-w-md mx-auto">
-        <div id="dish-stack" class="relative h-[500px] w-full">
-            @foreach (var dish in Model.Dishes)
+    <div class="max-w-md mx-auto">
+        <div id="dish-container" class="relative">
+            @if (Model.Dishes.Any())
             {
-                <div class="absolute top-0 left-0 w-full h-full bg-white rounded-lg shadow-xl overflow-hidden transform transition-transform duration-300 ease-in-out">
+                var dish = Model.Dishes.First();
+                <div class="dish-card bg-white rounded-lg shadow-xl overflow-hidden">
                     <img src="@dish.ImageUrl" alt="@dish.Title" class="w-full h-64 object-cover">
                     <div class="p-4">
                         <h2 class="text-2xl font-bold text-gray-800">@dish.Title</h2>
@@ -35,18 +36,25 @@
                             }
                         </div>
                     </div>
-                    <div class="absolute inset-x-0 bottom-0 flex justify-between p-4 bg-gray-50">
-                        <button class="swipe-btn swipe-left bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="flex justify-around p-4 bg-gray-50">
+                        <button class="dislike-btn bg-white hover:bg-red-100 text-red-500 border border-red-500 font-bold p-3 rounded-full shadow-md transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
-                        <button class="swipe-btn swipe-right bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        <button class="like-btn bg-white hover:bg-green-100 text-green-500 border border-green-500 font-bold p-3 rounded-full shadow-md transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
                         </button>
                     </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center p-8 bg-white rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-purple-600">No dishes available</h2>
+                    <p class="text-gray-600 mt-2">Check back later for recommendations.</p>
                 </div>
             }
         </div>
