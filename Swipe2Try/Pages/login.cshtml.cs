@@ -43,7 +43,7 @@ namespace Swipe2Try.Pages
                 HttpContext.Session.SetString("UserRole", result.User.RoleID);
                 
                 // Redirect to home page
-                return RedirectToPage("/Index");
+                return RedirectToPage("/admin");
             }
             else
             {
