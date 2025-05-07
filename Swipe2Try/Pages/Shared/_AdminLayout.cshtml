@@ -11,10 +11,16 @@
         <!-- Sidebar -->
         <div class="flex flex-col md:flex-row flex-1">
             <aside class="bg-purple-700 w-full md:w-64 md:min-h-screen">
-                <div class="flex items-center justify-center h-16 bg-purple-800">
-                    <span class="text-white font-bold text-lg">Swipe 2 Try Admin</span>
-                </div>
-                <nav class="py-4">
+	            <div class="flex items-center justify-center h-16 bg-purple-800">
+		            <span class="text-white font-bold text-lg">Swipe 2 Try Admin</span>
+	            </div>
+				
+	            <!-- User Info Section -->
+	            <div class="px-6 py-4 border-b border-purple-600">
+		            <partial name="_UserInfoPartial" />
+	            </div>
+
+	            <nav class="py-4">
                     <ul>
                         <li class="px-6 py-3 @(ViewData["ActivePage"] as string == "Users" ? "bg-purple-800" : "hover:bg-purple-600") text-white">
                             <a asp-area="" asp-page="/Admin/Users/Index" class="flex items-center">
