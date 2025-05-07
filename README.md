@@ -63,6 +63,8 @@ The Presentation layer depends on the Core layer directly, and uses implementati
 5. Authentication result is returned to the Presentation layer
 6. User session is created upon successful authentication
 
+For a detailed explanation of the authentication system, see the [Authentication Documentation](docs/Authentication.md).
+
 ## Current Dependency Flow
 
 ```
