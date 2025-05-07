@@ -1,48 +1,42 @@
 # Swipe2Try Architecture
 
-This project follows a clean, layered architecture to maintain separation of concerns and improve maintainability. The application is currently divided into three main layers with potential for further refinement.
+This project follows a clean, layered architecture to maintain separation of concerns and improve maintainability. The application is divided into three main layers.
 
 ## 1. Core Layer (Swipe2Try.Core)
 
 The Core layer is the innermost layer and has no dependencies on other project layers.
 
 **Contents:**
-- **Models**: Domain entities that represent the business objects (e.g., `Dish`)
-- **Interfaces**: Contracts that define operations (e.g., `IDishRepository`)
+- **Models**: Domain entities (`Dish`, `User`, `Role`)
+- **Interfaces**: Contracts for repositories (`IDishRepository`, `IUserRepository`, `IRoleRepository`)
+- **Validation**: Business rules and validation logic (`IUserValidator`)
+- **Managers**: Core business logic interfaces and implementations (`IUserManager`, `IRoleManager`)
 
 **Purpose:**
 - Defines the domain model and business rules
-- Contains interfaces that will be implemented by outer layers
+- Contains interfaces that are implemented by outer layers
 - Independent of implementation details (database, UI, etc.)
-
-**When to use:**
-- When defining new business entities
-- When creating contracts for data access or services
 
 ## 2. Data Access Layer (Swipe2Try.DAL)
 
 The DAL layer depends on the Core layer but has no knowledge of the Presentation layer.
 
 **Contents:**
-- **Repositories**: Implementation of Core interfaces (e.g., `DishRepository`)
-- **Database-specific code**: Connection logic, queries, etc.
+- **Repositories**: Implementation of Core interfaces (`DishRepository`, `UserRepository`, `RoleRepository`)
+- **Database-specific code**: Connection logic, SQL queries, etc.
+- **Data mapping**: Conversion between database records and domain models
 
 **Purpose:**
 - Implements data access interfaces defined in Core
 - Handles database operations and data mapping
 - Isolates the application from database changes
 
-**When to use:**
-- When implementing data access logic
-- When querying or updating the database
-- When mapping database results to domain models
-
 ## 3. Presentation Layer (Swipe2Try)
 
 The Presentation layer depends on the Core layer directly, and uses implementations from the DAL layer via dependency injection.
 
 **Contents:**
-- **Pages**: Razor Pages UI (e.g., `Admin/Dishes/Index.cshtml`)
+- **Pages**: Razor Pages UI (Admin, RestaurantOwner, etc.)
 - **Components**: Reusable UI components
 - **Program.cs**: Application startup and dependency injection
 
@@ -50,43 +44,58 @@ The Presentation layer depends on the Core layer directly, and uses implementati
 - Implements the user interface
 - Handles user interactions
 - Coordinates between views and repositories
-
-**When to use:**
-- When building user interfaces
-- When handling user requests and displaying data
-- When setting up application services and dependencies
+- Manages authentication and authorization
 
 ## How the Layers Interact
 
-1. The Presentation layer page model (e.g., `IndexModel`) requests data from a repository interface
-2. The interface is defined in the Core layer (`IDishRepository`)
-3. The actual implementation is in the DAL layer (`DishRepository`)
+1. The Presentation layer page model (e.g., `UpdateModel`) requests data from a repository interface
+2. The interface is defined in the Core layer (e.g., `IUserRepository`)
+3. The actual implementation is in the DAL layer (e.g., `UserRepository`)
 4. The implementation interacts with the database and returns domain models from the Core layer
 5. The Presentation layer displays the data to the user
+
+### Authentication Flow Example
+
+1. User submits login credentials through the Presentation layer
+2. Credentials are validated using `UserValidator` from the Core layer
+3. `UserManager` (Core) authenticates the user using `IUserRepository`
+4. `UserRepository` (DAL) retrieves user data from the database
+5. Authentication result is returned to the Presentation layer
+6. User session is created upon successful authentication
 
 ## Current Dependency Flow
 
 ```
-Presentation Layer (Swipe2Try)
-        │
-        ├─────► Core Layer (Swipe2Try.Core)
-        │          ▲
-        │          │
-        │          │
-        └─────► DAL Layer (Swipe2Try.DAL)
+                                   ┌──────────────────────────┐
+                                   │                          │
+                                   │  Presentation Layer      │
+                                   │  (Swipe2Try)             │
+                                   │                          │
+                                   │  - Razor Pages           │
+                                   │  - Page Models           │
+                                   │  - partial views         │
+                                   │                          │
+                                   └───────────┬──────────────┘
+                                               │
+                                 ┌─────────────┼─────────────┐
+                                 │             │             │
+                        ┌────────▼─────────┐   │    ┌────────▼─────────┐
+                        │                  │   │    │                  │
+                        │  Core Layer      │◄──┘    │  DAL Layer       │
+                        │  (Swipe2Try.Core)│        │  (Swipe2Try.DAL) │
+                        │                  │◄───────┤                  │
+                        │  - Models        │        │  - Repositories  │
+                        │  - Interfaces    │        │  - SQL Logic     │
+                        │  - Validation    │        │  - Data Mapping  │
+                        │  - Managers      │        │                  │
+                        │                  │        │                  │
+                        └──────────────────┘        └──────────────────┘
 ```
 
-## Future Architecture Improvements
+This diagram illustrates the clean architecture implementation where:
 
-For a more complete clean architecture, consider these potential enhancements:
+1. The Presentation Layer depends on both Core and DAL layers
+2. The Core Layer has no dependencies on other layers
+3. The DAL Layer depends only on the Core Layer
 
-1. **Add a Service/Application Layer**: Insert a layer between Presentation and DAL to handle business logic:
-   ```
-   Presentation → Application/Services → Core ← DAL
-   ```
-
-2. **Configuration Management**: Create an abstraction for configuration in the Core layer, with implementations in the infrastructure layer.
-
-3. **Unit Tests**: Add test projects for each layer to ensure proper separation of concerns.
-
-This architecture ensures the Core layer remains independent of implementation details, making the application more maintainable and testable. The current implementation provides a solid foundation that can be extended as the application grows in complexity. 
+This dependency direction ensures that the business logic (Core) remains isolated from implementation details, while the data access components properly implement the interfaces defined in the Core layer.

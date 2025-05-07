@@ -1,129 +1,110 @@
-# Swipe2Try User Authentication System
+# Swipe2Try User Authentication & Data Layer System
 
-This document explains how the user authentication system works in the Swipe2Try application.
+This document explains how the user authentication system and data layers work in the Swipe2Try application.
 
-## Architecture
+## Architecture Overview
 
-The authentication system follows a clean architecture approach with three main layers:
+The application follows a clean architecture approach with three main layers:
 
 1. **Core Layer** (`Swipe2Try.Core`)
    - Contains domain models, interfaces, business logic, and validation
    - Independent of external frameworks and databases
 
 2. **Data Access Layer** (`Swipe2Try.DAL`)
-   - Implements data access using SQL Server
+   - Implements data access using repositories
    - Depends on the Core layer interfaces
+   - Isolates database implementation details
 
 3. **Presentation Layer** (`Swipe2Try`)
    - Contains the Razor Pages UI
    - Depends on Core layer for business logic
+   - Uses the DAL through dependency injection
 
-## Components
+## Core Layer Components
 
-### Core Layer
-
-#### Models
-- `User.cs` - User entity with properties matching the database schema:
+### Domain Models
+- `User.cs` - User entity with properties:
   - UserID (PK, nvarchar(10))
   - Name (nvarchar(100))
   - Email (nvarchar(255))
   - Password (nvarchar(255))
   - RoleID (FK, nvarchar(10))
 
-- `Role.cs` - Role entity with properties matching the database schema:
+- `Role.cs` - Role entity with properties:
   - RoleID (PK, nvarchar(10))
   - RoleName (nvarchar(50))
 
-#### Interfaces
-- `IUserRepository.cs` - Interface for user data access operations:
-  - GetUserByEmailAsync - Retrieves a user by email
-  - CreateUserAsync - Creates a new user
-  - EmailExistsAsync - Checks if an email already exists
+- `Dish.cs` - Dish entity with properties:
+  - DishID (PK, nvarchar(10))
+  - Name (nvarchar(100))
+  - Description (nvarchar(255))
+  - Price (decimal)
+  - ImageUrl (nvarchar(255))
+  - RestaurantID (FK, nvarchar(10))
+  - Category (nvarchar(50))
+  - HealthFactor (int)
+  - IsActive (bit)
 
-- `IRoleRepository.cs` - Interface for role data access operations:
-  - GetAllRolesAsync - Retrieves all available roles
-  - GetRoleByIdAsync - Retrieves a role by ID
-  - RoleExistsAsync - Checks if a role exists
+### Interfaces
+- `IUserRepository.cs` - Interface for user data access operations
+- `IRoleRepository.cs` - Interface for role data access operations
+- `IDishRepository.cs` - Interface for dish data access operations
+- `IUserValidator.cs` - Interface for user input validation
+- `IUserManager.cs` - Interface for user business logic
+- `IRoleManager.cs` - Interface for role management
 
-- `IUserValidator.cs` - Interface for user input validation:
-  - ValidateForRegistrationAsync - Validates user data for registration
-  - ValidateForLogin - Validates login credentials
+### Validation & Business Logic
+- `UserValidator.cs` - Implements validation logic for user operations
+- `UserManager.cs` - Implements business logic for user operations
+- `RoleManager.cs` - Implements business logic for role operations
 
-- `IUserManager.cs` - Interface for user business logic:
-  - RegisterUserAsync - Registers a new user
-  - AuthenticateUserAsync - Authenticates a user login
+## Data Access Layer Components
 
-- `IRoleManager.cs` - Interface for role management:
-  - GetAllRolesAsync - Gets all available roles
-  - AssignRoleAsync - Assigns a role to a user
-  - UpdateRoleAsync - Updates a user's role
-  - DeleteRoleAsync - Deletes a role
-  - GetUsersByRoleAsync - Gets all users with a specific role
+The DAL implements the Core layer interfaces and provides the actual data access logic.
 
-#### Validation
-- `UserValidator.cs` - Implements validation logic for user operations:
-  - Validates required fields
-  - Validates email format
-  - Checks password length
-  - Ensures email uniqueness
-  - Validates role exists in the database
+### Key Repositories
+- `UserRepository.cs` - Implements `IUserRepository`
+  - Handles CRUD operations for users
+  - Maps database results to User domain models
+  - Manages user authentication data
 
-#### Managers
-- `UserManager.cs` - Implements business logic for user operations:
-  - Handles user registration process
-  - Handles user authentication
-  - Generates unique user IDs
+- `RoleRepository.cs` - Implements `IRoleRepository`
+  - Manages role data and user-role relationships
+  - Supports role-based access control
 
-- `RoleManager.cs` - Implements business logic for role operations:
-  - Retrieves roles from the database
-  - Handles role assignments for users
-  - Manages role updates
+- `DishRepository.cs` - Implements `IDishRepository`
+  - Handles dish operations (creation, retrieval, updates)
+  - Supports filtering, sorting, and search operations
+  - Maps between database entities and domain models
 
-### Data Access Layer
+### Data Access Implementation
+- Repositories use SQL commands to interact with the database
+- Each repository handles transactions for its specific domain entity
+- Repositories are designed to be testable with dependency injection
 
-#### Repositories
-- `UserRepository.cs` - Implements user data access operations:
-  - Uses ADO.NET with SqlConnection and SqlCommand
-  - Maps database results to domain models
-  - Executes SQL queries against the USERS table
+## Authentication & Data Flow
 
-- `RoleRepository.cs` - Implements role data access operations:
-  - Retrieves roles from the ROLES table
-  - Checks for role existence
-  - Maps database results to Role models
+### Registration Process
+1. User submits registration form with personal details and role selection
+2. `UserValidator` validates the input data
+3. `UserManager` generates a unique ID and prepares the user object
+4. `UserRepository` saves the new user to the database
+5. User is redirected to login
 
-### Presentation Layer
+### Login Process
+1. User enters credentials (email/password)
+2. `UserValidator` validates the format
+3. `UserManager` requests authentication from `UserRepository`
+4. `UserRepository` verifies credentials against the database
+5. Upon success, user session is created with role information
+6. User is redirected based on their role
 
-#### Pages
-- `login.cshtml` / `login.cshtml.cs` - Login page:
-  - Displays login form
-  - Handles form submission
-  - Shows validation errors
-  - Authenticates users using UserManager
-  - Stores user info in session
-
-- `SignUp.cshtml` / `SignUp.cshtml.cs` - Registration page:
-  - Displays registration form with dropdown for roles
-  - Fetches available roles from the database
-  - Handles form submission
-  - Shows validation errors
-  - Registers users using UserManager
-
-## Flow
-
-### Registration Flow
-1. User fills out the registration form with name, email, password, and selects a role from the dropdown
-2. Form is submitted to the server
-3. Input is validated by UserValidator, including validation that the selected role exists
-4. If validation passes, UserManager generates a unique ID and creates the user
-5. The user is redirected to the login page
-
-### Login Flow
-1. User provides email and password
-2. Input is validated by UserValidator
-3. UserManager retrieves the user from the database and verifies credentials
-4. If authentication is successful, user info is stored in session
-5. User is redirected to the home page
+### Dish Management Flow
+1. Restaurant owner creates a new dish through the UI
+2. Input is validated
+3. `DishRepository` saves the dish to the database
+4. When users browse dishes, `DishRepository` retrieves filtered data
+5. Presentation layer displays dishes with "swipe" interaction
 
 ## Database Schema
 
@@ -138,23 +119,65 @@ The authentication system follows a clean architecture approach with three main 
 - RoleID (PK, nvarchar(10), not null)
 - RoleName (nvarchar(50), not null)
 
-## Configuration
+### DISHES Table
+- DishID (PK, nvarchar(10), not null)
+- Name (nvarchar(100), not null)
+- Description (nvarchar(255), null)
+- Price (decimal(10,2), not null)
+- ImageUrl (nvarchar(255), null)
+- RestaurantID (FK, nvarchar(10), not null)
+- Category (nvarchar(50), null)
+- HealthFactor (int, null)
+- IsActive (bit, not null, default 1)
+- CreatedDate (datetime, not null)
+- ModifiedDate (datetime, null)
 
-The system is configured in `Program.cs` with dependency injection:
-- Session support is enabled
-- Repositories, validators, and managers are registered with the DI container
+### RESTAURANTS Table
+- RestaurantID (PK, nvarchar(10), not null)
+- Name (nvarchar(100), not null)
+- OwnerID (FK, nvarchar(10), not null) - Foreign key to USERS table
+- Address (nvarchar(255), null)
+- Phone (nvarchar(20), null)
+- IsActive (bit, not null, default 1)
 
-## Security Notes
+### USER_DISH_INTERACTIONS Table
+- InteractionID (PK, nvarchar(10), not null)
+- UserID (FK, nvarchar(10), not null)
+- DishID (FK, nvarchar(10), not null)
+- InteractionType (nvarchar(20), not null) - 'LIKE', 'DISLIKE', 'SAVED'
+- InteractionDate (datetime, not null)
 
-This is a simple implementation for demonstration purposes:
+## Data Layer Best Practices
+
+1. **Repository Pattern**: Each entity type has its own repository with specific methods
+2. **Dependency Injection**: Repositories are injected into page models
+3. **Asynchronous Operations**: Database operations use async/await pattern
+4. **Error Handling**: Repository methods use try/catch and proper error propagation
+5. **Transaction Management**: Multiple related operations use transactions
+6. **Parameterized Queries**: All SQL uses parameters to prevent SQL injection
+
+## Security Considerations
+
+Current implementation is for demonstration purposes with some limitations:
 - Passwords are stored in plain text (not recommended for production)
-- Authentication is session-based with no token management
+- Authentication is session-based without token management
 - No CSRF protection is implemented
 - No account lockout mechanism is implemented
 
 For a production system, implement:
-- Password hashing using a secure algorithm
+- Password hashing (Argon2, BCrypt, or PBKDF2)
 - HTTPS enforcement
 - Anti-forgery tokens
 - Rate limiting
-- Account lockout after failed attempts 
+- Account lockout after failed attempts
+- Input sanitization
+- Proper error handling that doesn't expose sensitive information
+
+## Future Data Layer Enhancements
+
+1. **Entity Framework Core**: Consider migrating to EF Core for more robust ORM capabilities
+2. **Caching Layer**: Add caching for frequently accessed data
+3. **Audit Trails**: Implement logging of data changes
+4. **Soft Delete**: Add soft delete functionality instead of permanent deletion
+5. **Unit of Work Pattern**: Add transaction coordination across repositories
+6. **Pagination**: Implement efficient pagination for large datasets
