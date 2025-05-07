@@ -18,7 +18,7 @@ namespace Swipe2Try.Pages
         }
 
         [BindProperty]
-        public LoginInputModel Input { get; set; }
+        public LoginInputModel Input { get; set; } = new LoginInputModel();
 
         public List<string> ErrorMessages { get; set; } = new List<string>();
 
@@ -42,8 +42,8 @@ namespace Swipe2Try.Pages
                 HttpContext.Session.SetString("UserName", result.User.Name);
                 HttpContext.Session.SetString("UserRole", result.User.RoleID);
                 
-                // Redirect to home page
-                return RedirectToPage("/admin");
+                // Redirect to an existing page (e.g., the swipe page)
+                return RedirectToPage("/swipe");
             }
             else
             {
@@ -57,10 +57,10 @@ namespace Swipe2Try.Pages
     {
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email format")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
     }
 }
