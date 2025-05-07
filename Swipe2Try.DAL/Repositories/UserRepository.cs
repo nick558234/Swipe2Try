@@ -82,5 +82,41 @@ namespace Swipe2Try.DAL.Repositories
                 return result > 0;
             }
         }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            var users = new List<User>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var command = new SqlCommand(
+                    @"SELECT u.UserID, u.Name, u.Email, u.Password, u.RoleID, r.RoleName 
+                      FROM Users u
+                      JOIN Roles r ON u.RoleID = r.RoleID
+                      ORDER BY u.Name",
+                    connection);
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var user = new User
+                        {
+                            UserID = reader["UserID"].ToString(),
+                            Name = reader["Name"].ToString(),
+                            Email = reader["Email"].ToString(),
+                            Password = reader["Password"].ToString(), // In a real app, you wouldn't return passwords
+                            RoleID = reader["RoleID"].ToString(),
+                            // Add additional property for display - assuming User has a RoleName property or you add it
+                            // If not in the User model, you can create a UserViewModel with this property
+                        };
+                        users.Add(user);
+                    }
+                }
+            }
+
+            return users;
+        }
     }
-} 
+}

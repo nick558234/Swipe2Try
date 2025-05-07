@@ -59,5 +59,10 @@ namespace Swipe2Try.Core.Managers
             // Simple implementation for demo purposes - in production use a more secure method
             return Guid.NewGuid().ToString("N").Substring(0, 10);
         }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _userRepository.GetAllUsersAsync();
+        }
     }
 } 

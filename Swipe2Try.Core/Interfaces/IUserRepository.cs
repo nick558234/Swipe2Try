@@ -8,5 +8,6 @@ namespace Swipe2Try.Core.Interfaces
         Task<User> GetUserByEmailAsync(string email);
         Task<bool> CreateUserAsync(User user);
         Task<bool> EmailExistsAsync(string email);
+        Task<List<User>> GetAllUsersAsync();
     }
 } 
