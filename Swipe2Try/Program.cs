@@ -1,4 +1,5 @@
 using System;
+using Swipe2Try.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,9 @@ app.UseAuthorization();
 
 // Enable session
 app.UseSession();
+
+// Add custom authorization middleware
+app.UseMiddleware<AuthorizationMiddleware>();
 
 app.MapRazorPages();
 

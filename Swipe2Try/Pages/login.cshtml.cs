@@ -11,10 +11,12 @@ namespace Swipe2Try.Pages
     public class loginModel : PageModel
     {
         private readonly IUserManager _userManager;
+        private readonly IRoleManager _roleManager; // Add this
 
-        public loginModel(IUserManager userManager)
+        public loginModel(IUserManager userManager, IRoleManager roleManager) // Modify constructor
         {
             _userManager = userManager;
+            _roleManager = roleManager; // Add this
         }
 
         [BindProperty]
@@ -35,19 +37,28 @@ namespace Swipe2Try.Pages
 
             var result = await _userManager.AuthenticateUserAsync(Input.Email, Input.Password);
             
-            if (result.Success)
+            if (result.Success && result.User != null)
             {
-                // Store user info in session or cookie
+                // Fetch the role name
+                var role = await _roleManager.GetRoleByIdAsync(result.User.RoleID);
+                var roleNameToStore = role?.RoleName ?? "Unknown";
+
+                // Store user info in session
                 HttpContext.Session.SetString("UserID", result.User.UserID);
                 HttpContext.Session.SetString("UserName", result.User.Name);
-                HttpContext.Session.SetString("UserRole", result.User.RoleID);
+                HttpContext.Session.SetString("UserRole", roleNameToStore); // Store RoleName
                 
-                // Redirect to an existing page (e.g., the swipe page)
-                return RedirectToPage("/swipe");
+                // Redirect based on role name
+                if (roleNameToStore == "ADMIN")
+                    return RedirectToPage("/Admin/Index");
+                else if (roleNameToStore == "OWNER")
+                    return RedirectToPage("/RestaurantOwner/Index");
+                else
+                    return RedirectToPage("/swipe"); // Default page for regular users
             }
             else
             {
-                ErrorMessages = result.Errors;
+                ErrorMessages = result.Errors ?? new List<string> { "Invalid login attempt." };
                 return Page();
             }
         }

@@ -2,20 +2,19 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
-	var userName = HttpContextAccessor.HttpContext?.Session.GetString("UserName") ?? "Guest";
-	var userRole = HttpContextAccessor.HttpContext?.Session.GetString("UserRole") ?? "Unknown";
+    var userName = HttpContextAccessor.HttpContext?.Session.GetString("UserName") ?? "Guest";
+    var userRole = HttpContextAccessor.HttpContext?.Session.GetString("UserRole") ?? "Unknown";
+    var initial = userName.Length > 0 ? userName[0] : 'G';
 }
 
-<div class="flex items-center">
-	<div class="relative">
-		<div class="flex items-center space-x-3">
-			<div class="bg-purple-200 rounded-full h-8 w-8 flex items-center justify-center">
-				<span class="text-purple-800 font-semibold">@(userName.Length > 0 ? userName[0] : 'G')</span>
-			</div>
-			<div>
-				<p class="text-white text-sm font-medium">@userName</p>
-				<p class="text-purple-200 text-xs">@userRole</p>
-			</div>
-		</div>
-	</div>
+<div class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-150">
+    <div class="relative mr-3">
+        <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 text-white font-semibold text-lg ring-2 ring-offset-2 ring-offset-gray-800 ring-indigo-400">
+            @initial
+        </div>
+    </div>
+    <div>
+        <p class="text-sm font-semibold text-gray-100 group-hover:text-white">@userName</p>
+        <p class="text-xs text-indigo-300 group-hover:text-indigo-200">@userRole</p>
+    </div>
 </div>
