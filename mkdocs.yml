@@ -1,0 +1,10 @@
+site_name: Swipe2Try Documentation
+site_description: Documentation for the Swipe2Try application.
+
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - Authentication: Authentication.md
+  - Authorization: Authorization.md

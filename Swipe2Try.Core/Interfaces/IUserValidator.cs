@@ -9,4 +9,4 @@ namespace Swipe2Try.Core.Interfaces
         Task<(bool IsValid, List<string> Errors)> ValidateForRegistrationAsync(User user);
         (bool IsValid, List<string> Errors) ValidateForLogin(string email, string password);
     }
-} 
+}
