@@ -1,256 +1,225 @@
-# Swipe2Try Authentication System
+# 🔑 Swipe2Try Authentication System
 
 This document provides a detailed explanation of the authentication system implemented in the Swipe2Try application.
 
-## Authentication Architecture
+## 🏗️ Authentication Architecture
 
 The authentication system follows the same layered architecture as the rest of the application:
 
-1. **Core Layer** - Contains interfaces, models, and business logic
-2. **Data Access Layer** - Implements repositories for data retrieval
-3. **Presentation Layer** - Handles user interface and session management
-
-## Components
+1.  **Core Layer** - Contains interfaces, models, and business logic
+2.  **Data Access Layer** - Implements repositories for data retrieval
+3.  **Presentation Layer** - Handles user interface and session management
 
 ### Core Layer Components
 
 #### Models
-- `User.cs` - Represents a user in the system with the following properties:
-  - UserID: Unique identifier
-  - Name: Full name
-  - Email: Email address (used for login)
-  - Password: User password
-  - RoleID: Reference to the user's role
 
-- `Role.cs` - Represents a role in the system:
-  - RoleID: Unique identifier
-  - RoleName: Name of the role (e.g., "Admin", "RestaurantOwner", "User")
+-   **`User.cs`** - Represents a user in the system.
+    ```csharp
+    // Swipe2Try.Core/Models/User.cs
+    public class User
+    {
+        public string UserID { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; } // Used for login
+        public string Password { get; set; }
+        public string RoleID { get; set; } // Reference to the user's role
+    }
+    ```
+
+-   **`Role.cs`** - Represents a role in the system.
+    ```csharp
+    // Swipe2Try.Core/Models/Role.cs
+    public class Role
+    {
+        public string RoleID { get; set; }
+        public string RoleName { get; set; } // e.g., "Admin", "RestaurantOwner", "User"
+    }
+    ```
 
 #### Interfaces
-- `IUserRepository.cs` - Interface for user data access with methods:
-  - `GetUserByEmailAsync(string email)`: Retrieves a user by email
-  - `CreateUserAsync(User user)`: Creates a new user
-  - `EmailExistsAsync(string email)`: Checks if an email exists
 
-- `IRoleRepository.cs` - Interface for role data access with methods:
-  - `GetAllRolesAsync()`: Retrieves all roles
-  - `GetRoleByIdAsync(string roleId)`: Gets a role by ID
+-   **`IUserRepository.cs`** - Interface for user data access.
+    ```csharp
+    // Swipe2Try.Core/Interfaces/IUserRepository.cs
+    public interface IUserRepository
+    {
+        Task<User> GetUserByEmailAsync(string email); // Retrieves a user by email
+        Task<bool> CreateUserAsync(User user);        // Creates a new user
+        Task<bool> EmailExistsAsync(string email);    // Checks if an email exists
+    }
+    ```
 
-- `IUserValidator.cs` - Validates user input with methods:
-  - `ValidateForRegistrationAsync(User user)`: Validates registration data
-  - `ValidateForLogin(string email, string password)`: Validates login credentials
+-   **`IRoleRepository.cs`** - Interface for role data access.
+    ```csharp
+    // Swipe2Try.Core/Interfaces/IRoleRepository.cs
+    public interface IRoleRepository
+    {
+        Task<List<Role>> GetAllRolesAsync();
+        Task<Role> GetRoleByIdAsync(string roleId);
+    }
+    ```
 
-- `IUserManager.cs` - Manages user operations with methods:
-  - `RegisterUserAsync(User user)`: Registers a new user
-  - `AuthenticateUserAsync(string email, string password)`: Authenticates a user
+-   **`IUserValidator.cs`** - Validates user input.
+    ```csharp
+    // Swipe2Try.Core/Interfaces/IUserValidator.cs
+    public interface IUserValidator
+    {
+        Task<(bool IsValid, string ErrorMessage)> ValidateForRegistrationAsync(User user);
+        (bool IsValid, string ErrorMessage) ValidateForLogin(string email, string password);
+    }
+    ```
+
+-   **`IUserManager.cs`** - Manages user operations.
+    ```csharp
+    // Swipe2Try.Core/Interfaces/IUserManager.cs
+    public interface IUserManager
+    {
+        Task<(bool Success, string ErrorMessage)> RegisterUserAsync(User user);
+        Task<(bool Success, User User, string ErrorMessage)> AuthenticateUserAsync(string email, string password);
+    }
+    ```
 
 ### Implementation Classes
 
 #### Validation
-- `UserValidator.cs` - Implements `IUserValidator` with validation logic:
-  ```csharp
-  public async Task<(bool IsValid, string ErrorMessage)> ValidateForRegistrationAsync(User user)
-  {
-      // Validates required fields, email format, password length
-      // Ensures email uniqueness and role exists
-  }
-  
-  public (bool IsValid, string ErrorMessage) ValidateForLogin(string email, string password)
-  {
-      // Validates email and password format
-  }
-  ```
+
+-   **`UserValidator.cs`** - Implements `IUserValidator`.
+    ```csharp
+    // Swipe2Try.Core/Validation/UserValidator.cs
+    public async Task<(bool IsValid, string ErrorMessage)> ValidateForRegistrationAsync(User user)
+    {
+        // Validates required fields, email format, password length
+        // Ensures email uniqueness and role exists
+        // ...implementation details...
+    }
+    
+    public (bool IsValid, string ErrorMessage) ValidateForLogin(string email, string password)
+    {
+        // Validates email and password format
+        // ...implementation details...
+    }
+    ```
 
 #### Managers
-- `UserManager.cs` - Implements `IUserManager` with business logic:
-  ```csharp
-  public async Task<(bool Success, string ErrorMessage)> RegisterUserAsync(User user)
-  {
-      // Validates user data
-      // Generates unique ID
-      // Creates user in repository
-  }
-  
-  public async Task<(bool Success, User User, string ErrorMessage)> AuthenticateUserAsync(string email, string password)
-  {
-      // Validates credentials
-      // Retrieves and verifies user
-  }
-  ```
+
+-   **`UserManager.cs`** - Implements `IUserManager`.
+    ```csharp
+    // Swipe2Try.Core/Managers/UserManager.cs
+    public async Task<(bool Success, string ErrorMessage)> RegisterUserAsync(User user)
+    {
+        // Validates user data
+        // Generates unique ID
+        // Creates user in repository
+        // ...implementation details...
+    }
+    
+    public async Task<(bool Success, User User, string ErrorMessage)> AuthenticateUserAsync(string email, string password)
+    {
+        // Validates credentials
+        // Retrieves and verifies user
+        // ...implementation details...
+    }
+    ```
 
 #### Data Access
-- `UserRepository.cs` - Implements `IUserRepository`:
-  ```csharp
-  public async Task<User> GetUserByEmailAsync(string email)
-  {
-      // Executes SQL query to get user by email
-      // Maps database results to User model
-  }
-  
-  public async Task<bool> CreateUserAsync(User user)
-  {
-      // Executes SQL command to insert new user
-  }
-  ```
 
-## Authentication Flow
+-   **`UserRepository.cs`** - Implements `IUserRepository`.
+    ```csharp
+    // Swipe2Try.DAL/Repositories/UserRepository.cs
+    public async Task<User> GetUserByEmailAsync(string email)
+    {
+        // Executes SQL query to get user by email
+        // Maps database results to User model
+        // ...implementation details...
+    }
+    
+    public async Task<bool> CreateUserAsync(User user)
+    {
+        // Executes SQL command to insert new user
+        // ...implementation details...
+    }
+    ```
+
+## 🔄 Authentication Flow
 
 ### Registration Flow
 
-1. **UI Layer**:
-   - User fills out registration form (Name, Email, Password, Role)
-   - Form is submitted to the server (`SignUp.cshtml.cs`)
-
-2. **Model Binding**:
-   - Data is bound to a User object
-
-3. **Validation**:
-   - `UserValidator.ValidateForRegistrationAsync()` checks:
-     - Required fields are provided
-     - Email format is valid
-     - Password meets requirements
-     - Email is not already in use
-     - Selected role exists
-
-4. **User Creation**:
-   - `UserManager.RegisterUserAsync()` calls:
-     - Generates unique UserID
-     - `UserRepository.CreateUserAsync()` to save user
-
-5. **Response**:
-   - Redirect to login page on success
-   - Display validation errors if failed
+1.  **UI Layer** (`SignUp.cshtml.cs`):
+    -   User fills out registration form (Name, Email, Password, Role).
+    -   Form is submitted to the server.
+2.  **Model Binding**: Data is bound to a `User` object.
+3.  **Validation** (`UserValidator.ValidateForRegistrationAsync()`):
+    -   Checks required fields, email format, password requirements.
+    -   Ensures email uniqueness and selected role existence.
+4.  **User Creation** (`UserManager.RegisterUserAsync()`):
+    -   Generates unique `UserID`.
+    -   Calls `UserRepository.CreateUserAsync()` to save the user.
+5.  **Response**:
+    -   ✅ Redirect to login page on success.
+    -   ❌ Display validation errors if failed.
 
 ### Login Flow
 
-1. **UI Layer**:
-   - User enters email and password (`login.cshtml`)
-   - Form is submitted to the server (`login.cshtml.cs`)
+1.  **UI Layer** (`login.cshtml.cs`):
+    -   User enters email and password.
+    -   Form is submitted to the server.
+2.  **Validation** (`UserValidator.ValidateForLogin()`):
+    -   Checks email format and password presence.
+3.  **Authentication** (`UserManager.AuthenticateUserAsync()`):
+    -   Calls `UserRepository.GetUserByEmailAsync()`.
+    -   Verifies password.
+    -   Returns user details including `RoleID`.
+4.  **Session Management** (`login.cshtml.cs`):
+    -   On successful authentication:
+        -   `UserID`, `UserName`, and `RoleName` (fetched via `IRoleManager`) are stored in `HttpContext.Session`.
+5.  **Redirection & Authorization**:
+    -   User is redirected based on `RoleName`.
+    -   Subsequent requests are handled by `AuthorizationMiddleware` (see [Authorization](Authorization.md) document).
 
-2. **Validation**:
-   - `UserValidator.ValidateForLogin()` checks:
-     - Email format
-     - Password is provided
+## 💻 Code Examples
 
-3. **Authentication**:
-   - `UserManager.AuthenticateUserAsync()` calls:
-     - `UserRepository.GetUserByEmailAsync()` to retrieve user
-     - Verifies password matches
-     - Returns user with role info
-
-4. **Session Management**:
-   - On successful authentication:
-     - User info is stored in session (`HttpContext.Session`)
-     - UserID, Name, and Role are saved
-
-5. **Authorization**:
-   - Custom middleware checks session for protected routes
-   - Redirects based on role:
-     - Admins to Admin dashboard
-     - Restaurant owners to Restaurant management
-     - Regular users to the main application
-
-## Code Examples
-
-### Session Management (Login Page Model)
+### Session Management (in `login.cshtml.cs` `OnPostAsync`)
 
 ```csharp
-public async Task<IActionResult> OnPostAsync()
+// ... (validation and authentication logic) ...
+
+if (result.Success && result.User != null)
 {
-    // Validate input
-    var validationResult = _userValidator.ValidateForLogin(Email, Password);
-    if (!validationResult.IsValid)
-    {
-        ModelState.AddModelError(string.Empty, validationResult.ErrorMessage);
-        return Page();
-    }
+    // Fetch the role name
+    var role = await _roleManager.GetRoleByIdAsync(result.User.RoleID);
+    var roleNameToStore = role?.RoleName ?? "Unknown";
 
-    // Authenticate user
-    var authResult = await _userManager.AuthenticateUserAsync(Email, Password);
-    if (!authResult.Success)
-    {
-        ModelState.AddModelError(string.Empty, authResult.ErrorMessage);
-        return Page();
-    }
-
-    // Set session variables
-    HttpContext.Session.SetString("UserID", authResult.User.UserID);
-    HttpContext.Session.SetString("UserName", authResult.User.Name);
-    HttpContext.Session.SetString("UserRole", authResult.User.RoleID);
-
-    // Redirect based on role
-    if (authResult.User.RoleID == "ADMIN")
+    // Store user info in session
+    HttpContext.Session.SetString("UserID", result.User.UserID);
+    HttpContext.Session.SetString("UserName", result.User.Name);
+    HttpContext.Session.SetString("UserRole", roleNameToStore); // Store RoleName
+    
+    // Redirect based on role name
+    if (roleNameToStore == "ADMIN")
         return RedirectToPage("/Admin/Index");
-    else if (authResult.User.RoleID == "OWNER")
+    else if (roleNameToStore == "OWNER")
         return RedirectToPage("/RestaurantOwner/Index");
     else
-        return RedirectToPage("/Index");
+        return RedirectToPage("/swipe");
 }
+// ...
 ```
 
-### Authorization Middleware
+## ⚠️ Security Considerations
 
-The application uses custom middleware to protect routes based on roles:
+!!! warning "Current Implementation Limitations"
+    The current implementation is for demonstration purposes and has security limitations:
+    -   **Password Storage**: Passwords are currently stored in plain text. **This is not secure for production.**
+    -   **Session Management**: Uses basic session-based authentication.
+    -   **CSRF Protection**: Anti-forgery tokens are not explicitly detailed for all forms in this document.
+    -   **Account Security**: No account lockout mechanisms after multiple failed login attempts.
 
-```csharp
-public class AuthorizationMiddleware
-{
-    private readonly RequestDelegate _next;
-
-    public AuthorizationMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-
-    public async Task InvokeAsync(HttpContext context)
-    {
-        var path = context.Request.Path.Value.ToLower();
-        
-        // Check if path requires authentication
-        if (path.Contains("/admin/") || path.Contains("/restaurantowner/"))
-        {
-            var userRole = context.Session.GetString("UserRole");
-            
-            // If not logged in, redirect to login
-            if (string.IsNullOrEmpty(userRole))
-            {
-                context.Response.Redirect("/login");
-                return;
-            }
-            
-            // Check role-specific access
-            if (path.Contains("/admin/") && userRole != "ADMIN")
-            {
-                context.Response.Redirect("/Error?code=403");
-                return;
-            }
-            
-            if (path.Contains("/restaurantowner/") && userRole != "OWNER")
-            {
-                context.Response.Redirect("/Error?code=403");
-                return;
-            }
-        }
-        
-        await _next(context);
-    }
-}
-```
-
-## Security Considerations
-
-The current implementation is for demonstration purposes with some limitations:
-
-- **Password Storage**: Passwords are stored in plain text, which is not secure
-- **Session Management**: Simple session-based authentication with no token management
-- **CSRF Protection**: No anti-forgery tokens implemented
-- **Account Security**: No account lockout after failed attempts
-
-For a production environment, the following improvements should be implemented:
-
-1. **Password Hashing**: Use a secure algorithm like Argon2, BCrypt, or PBKDF2
-2. **HTTPS**: Enforce HTTPS for all authentication traffic
-3. **Anti-Forgery Tokens**: Implement for all forms
-4. **Rate Limiting**: Limit login attempts to prevent brute force attacks
-5. **Cookie Security**: Set secure and HTTP-only flags on cookies
-6. **Session Timeout**: Implement appropriate session expiration
+!!! danger "Production Environment Requirements"
+    For a production environment, the following improvements are **essential**:
+    1.  **Password Hashing**: Implement a strong, salted hashing algorithm (e.g., Argon2, BCrypt, or PBKDF2).
+    2.  **HTTPS**: Enforce HTTPS for all traffic, especially authentication.
+    3.  **Anti-Forgery Tokens**: Ensure CSRF protection is implemented for all state-changing requests.
+    4.  **Rate Limiting**: Implement rate limiting on login attempts to prevent brute-force attacks.
+    5.  **Cookie Security**: Set `Secure` and `HttpOnly` flags on session cookies.
+    6.  **Session Timeout**: Implement and configure appropriate session expiration policies.

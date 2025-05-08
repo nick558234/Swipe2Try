@@ -1,17 +1,26 @@
-# Welcome to MkDocs
+# Welcome to Swipe2Try Documentation
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Welcome to the official documentation for the Swipe2Try application. This site provides detailed information about the application's features, architecture, and development guidelines.
 
-## Commands
+## Overview
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+Swipe2Try is an innovative application designed to [**TODO: Add a brief 1-2 sentence description of Swipe2Try's main purpose and value**].
 
-## Project layout
+This documentation is intended for developers, contributors, and anyone interested in understanding the technical aspects of Swipe2Try.
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+## Navigation
+
+Use the navigation panel to explore different sections of the documentation:
+
+- **[Authentication](Authentication.md)**: Learn about how user authentication is handled in Swipe2Try.
+- **[Authorization](Authorization.md)**: Understand the authorization mechanisms and role-based access control.
+
+## Getting Started
+
+If you're new to the project, we recommend starting with:
+1. Reading the project's main `README.md` for a general overview.
+2. Exploring the **Authentication** and **Authorization** sections to understand core security aspects.
+
+---
+
+*This documentation is built using MkDocs with the Material for MkDocs theme.*

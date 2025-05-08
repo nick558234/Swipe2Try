@@ -61,4 +61,27 @@ graph TD
 - This partial view is displayed in the layout when a user is logged in.
 - It retrieves `UserName` and `UserRole` from the session to display the user's name and their role.
 
+```html
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var userName = HttpContextAccessor.HttpContext?.Session.GetString("UserName") ?? "Guest";
+    var userRole = HttpContextAccessor.HttpContext?.Session.GetString("UserRole") ?? "Unknown";
+    var initial = userName.Length > 0 ? userName[0] : 'G';
+}
+
+<div class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-150">
+    <div class="relative mr-3">
+        <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 text-white font-semibold text-lg ring-2 ring-offset-2 ring-offset-gray-800 ring-indigo-400">
+            @initial
+        </div>
+    </div>
+    <div>
+        <p class="text-sm font-semibold text-gray-100 group-hover:text-white">@userName</p>
+        <p class="text-xs text-indigo-300 group-hover:text-indigo-200">@userRole</p>
+    </div>
+</div>
+```
+
 This setup ensures that sensitive areas of the application are protected and access is granted based on defined user roles stored by name in the session.
