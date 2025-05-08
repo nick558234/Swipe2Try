@@ -21,6 +21,11 @@ namespace Swipe2Try.Core.Managers
             return await _roleRepository.GetAllRolesAsync();
         }
 
+        public async Task<Role> GetRoleByIdAsync(string roleId)
+        {
+            return await _roleRepository.GetRoleByIdAsync(roleId);
+        }
+
         public async Task<bool> AssignRoleAsync(User user, Role role)
         {
             // Check if role exists
@@ -57,4 +62,4 @@ namespace Swipe2Try.Core.Managers
             return new List<User>();
         }
     }
-} 
+}
