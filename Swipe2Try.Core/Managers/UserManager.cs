@@ -35,17 +35,22 @@ namespace Swipe2Try.Core.Managers
         public async Task<(bool Success, User User, List<string> Errors)> AuthenticateUserAsync(string email, string password)
         {
             var errors = new List<string>();
-            
+
             // Validate login input
             var (isValid, validationErrors) = _userValidator.ValidateForLogin(email, password);
             if (!isValid)
                 return (false, null, validationErrors);
 
-            // Get user from database
+            // Get user from database (case-insensitive email)
             var user = await _userRepository.GetUserByEmailAsync(email);
-            
-            // Check if user exists and password matches
-            if (user == null || user.Password != password)
+            if (user == null)
+            {
+                errors.Add("Invalid email or password");
+                return (false, null, errors);
+            }
+
+            // Compare emails case-insensitively and passwords as plain text
+            if (!string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase) || user.Password != password)
             {
                 errors.Add("Invalid email or password");
                 return (false, null, errors);
