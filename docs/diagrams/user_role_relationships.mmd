@@ -1,0 +1,69 @@
+classDiagram
+    User "1" -- "0..*" Role : has
+    User <|-- Customer : inherits
+    User <|-- Admin : inherits
+    User <|-- RestaurantOwner : inherits
+    User "1" -- "1" CustomerProfile : has
+    User "1" -- "1" AdminSettings : has
+    User "1" -- "1" Restaurant : owns
+    Customer "1" -- "0..*" Swipe : creates
+    RestaurantOwner "1" -- "0..*" Dish : manages
+    
+    class User {
+        +string Id
+        +string Email
+        +string UserName
+        +bool EmailConfirmed
+        +User()
+        +User(string email, string userName)
+        +List~Role~ GetRoles()
+        +bool HasRole(string roleName)
+        +bool AddRole(Role role)
+        +bool RemoveRole(string roleId)
+    }
+    
+    class Role {
+        +string Id
+        +string Name
+        +string Description
+        +Role()
+        +Role(string name)
+        +Role(string name, string description)
+        +string ToString()
+    }
+    
+    class Customer {
+        +CustomerProfile Profile
+        +List~Swipe~ Swipes
+        +Customer()
+        +Customer(string email, string userName)
+        +List~Swipe~ ViewSwipes(int count)
+        +Swipe CreateSwipe(Dish dish, bool liked)
+        +bool UpdateProfile(CustomerProfile profile)
+    }
+    
+    class Admin {
+        +AdminSettings Settings
+        +Admin()
+        +Admin(string email, string userName)
+        +bool ManageUsers(string userId, string action)
+        +bool ManageRoles(string roleId, string action)
+        +List~Report~ GenerateReports(DateTime startDate, DateTime endDate)
+        +bool ConfigureSystem(AdminSettings settings)
+    }
+    
+    class RestaurantOwner {
+        +Restaurant Restaurant
+        +List~Dish~ Dishes
+        +RestaurantOwner()
+        +RestaurantOwner(string email, string userName, Restaurant restaurant)
+        +bool ManageDishes(Dish dish, string action)
+        +Dashboard ViewStatistics(DateTime startDate, DateTime endDate)
+        +bool UpdateRestaurantInfo(Restaurant updatedInfo)
+    }
+    
+    <<Entity>> User
+    <<Entity>> Role
+    <<Entity>> Customer
+    <<Entity>> Admin
+    <<Entity>> RestaurantOwner

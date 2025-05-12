@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> SignUpForm
+    SignUpForm --> Validation: Submit
+    Validation --> Failed: Invalid Data
+    Failed --> SignUpForm: Try Again
+    Validation --> UserCreation: Valid Data
+    UserCreation --> UserValidator: Validate User
+    UserValidator --> EmailVerification: User Valid
+    UserValidator --> Failed: User Invalid
+    EmailVerification --> AssignDefaultRole: Email Verified
+    EmailVerification --> RegistrationCancelled: Verification Timeout
+    AssignDefaultRole --> AccountActive
+    AccountActive --> [*]
+    RegistrationCancelled --> [*]
