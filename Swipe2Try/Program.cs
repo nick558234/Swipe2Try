@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,10 +35,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/login";
         options.LogoutPath = "/logout";
-        options.AccessDeniedPath = "/error";
+        options.AccessDeniedPath = "/Error?code=403";
     });
 
-// Add authorization
+// Add authorization without custom policies
 builder.Services.AddAuthorization();
 
 var app = builder.Build();

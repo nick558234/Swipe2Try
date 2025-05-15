@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace Swipe2Try.Pages.Admin.Dishes
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "ADMIN, Restaurant Owner")]	
     public class IndexModel : PageModel
     {
         private readonly IDishRepository _dishRepository;

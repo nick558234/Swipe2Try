@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace Swipe2Try.Pages.Admin.Users
 {
-    [Authorize(Roles = "Admin")] // Require Admin role for this page
+    [Authorize(Roles = "ADMIN")] // Require Admin role for this page
     public class IndexModel : PageModel
     {
         private readonly IUserRepository _userRepository;

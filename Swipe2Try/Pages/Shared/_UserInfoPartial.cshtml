@@ -1,10 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using Swipe2Try.Helpers
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
-    var userName = HttpContextAccessor.HttpContext?.Session.GetString("UserName") ?? "Guest";
-    var userRole = HttpContextAccessor.HttpContext?.Session.GetString("UserRole") ?? "Unknown";
-    var initial = userName.Length > 0 ? userName[0] : 'G';
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    var userName = isAuthenticated ? User.GetName() : "Guest";
+    var userRole = isAuthenticated ? User.GetRole() : "Unknown";
+    var initial = userName?.Length > 0 ? userName[0] : 'G';
 }
 
 <div class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-150">
