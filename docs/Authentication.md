@@ -8,7 +8,7 @@ The authentication system follows the same layered architecture as the rest of t
 
 1.  **Core Layer** - Contains interfaces, models, and business logic
 2.  **Data Access Layer** - Implements repositories for data retrieval
-3.  **Presentation Layer** - Handles user interface and session management
+3.  **Presentation Layer** - Handles user interface and cookie-based authentication
 
 ### Core Layer Components
 
@@ -170,35 +170,52 @@ The authentication system follows the same layered architecture as the rest of t
     -   Calls `UserRepository.GetUserByEmailAsync()`.
     -   Verifies password.
     -   Returns user details including `RoleID`.
-4.  **Session Management** (`login.cshtml.cs`):
+4.  **Identity Management** (`login.cshtml.cs`):
     -   On successful authentication:
-        -   `UserID`, `UserName`, and `RoleName` (fetched via `IRoleManager`) are stored in `HttpContext.Session`.
+        -   User identity information is stored in claims (Name, Email, Role).
+        -   Claims are used to create a ClaimsIdentity.
+        -   Authentication cookie is created with the ClaimsIdentity.
 5.  **Redirection & Authorization**:
-    -   User is redirected based on `RoleName`.
-    -   Subsequent requests are handled by `AuthorizationMiddleware` (see [Authorization](Authorization.md) document).
+    -   User is redirected based on their role.
+    -   Subsequent requests are authenticated via the cookie.
 
 ## 💻 Code Examples
 
-### Session Management (in `login.cshtml.cs` `OnPostAsync`)
+### Cookie-Based Authentication (in `login.cshtml.cs` `OnPostAsync`)
 
 ```csharp
 // ... (validation and authentication logic) ...
 
 if (result.Success && result.User != null)
 {
-    // Fetch the role name
+    // Get role from database
     var role = await _roleManager.GetRoleByIdAsync(result.User.RoleID);
     var roleNameToStore = role?.RoleName ?? "Unknown";
 
-    // Store user info in session
-    HttpContext.Session.SetString("UserID", result.User.UserID);
-    HttpContext.Session.SetString("UserName", result.User.Name);
-    HttpContext.Session.SetString("UserRole", roleNameToStore); // Store RoleName
-    
-    // Redirect based on role name
-    if (roleNameToStore == "Admin")
+    var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, result.User.Name),
+        new Claim(ClaimTypes.Email, result.User.Email),
+        new Claim(ClaimTypes.Role, roleNameToStore)
+    };
+    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+    var authProperties = new AuthenticationProperties
+    {
+        // Set cookie to expire after 5 minutes
+        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5),
+        // Make cookie persistent across browser sessions
+        IsPersistent = true,
+    };
+
+    await HttpContext.SignInAsync(
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        new ClaimsPrincipal(claimsIdentity),
+        authProperties);
+
+    // Redirect based on role
+    if (roleNameToStore.ToString() == "Admin")
         return RedirectToPage("/Admin/Index");
-    else if (roleNameToStore == "OWNER")
+    else if (roleNameToStore.ToString() == "Restaurant Owner")
         return RedirectToPage("/RestaurantOwner/Index");
     else
         return RedirectToPage("/swipe");
@@ -206,12 +223,53 @@ if (result.Success && result.User != null)
 // ...
 ```
 
+### Logout Functionality (in `logout.cshtml.cs`)
+
+```csharp
+public async Task<IActionResult> OnGetAsync()
+{
+    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    return RedirectToPage("/Index");
+}
+```
+
+### Cookie Authentication Configuration (in `Program.cs`)
+
+```csharp
+// Add built-in cookie authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/login";
+        options.LogoutPath = "/logout";
+        options.AccessDeniedPath = "/Error";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(5); // Set cookie expiration to 5 minutes
+        options.SlidingExpiration = true; // Reset expiration time with each request
+    });
+```
+
 ## ⚠️ Security Considerations
 
+### Current Implementation
+
+The application uses ASP.NET Core's built-in cookie authentication with the following configuration:
+
+- **Cookie Lifetime**: 5 minutes with sliding expiration (resets with activity)
+- **Persistent Cookies**: Cookies persist across browser sessions
+- **Login Path**: Redirects to `/login` for unauthenticated requests
+- **Logout Path**: `/logout` for signing out
+- **Access Denied Path**: Redirects to `/Error` for unauthorized access
+
+### Security Features
+
+- **Claims-Based Identity**: User information is stored in secure claims
+- **Cookie Authentication**: Standard ASP.NET Core cookie authentication mechanism
+- **Role-Based Authorization**: Uses `[Authorize]` attribute with role specifications
+- **Sliding Expiration**: Extends session for active users while maintaining security
+
 !!! warning "Current Implementation Limitations"
-    The current implementation is for demonstration purposes and has security limitations:
+    The current implementation has some security limitations:
     -   **Password Storage**: Passwords are currently stored in plain text. **This is not secure for production.**
-    -   **Session Management**: Uses basic session-based authentication.
     -   **CSRF Protection**: Anti-forgery tokens are not explicitly detailed for all forms in this document.
     -   **Account Security**: No account lockout mechanisms after multiple failed login attempts.
 
@@ -221,5 +279,10 @@ if (result.Success && result.User != null)
     2.  **HTTPS**: Enforce HTTPS for all traffic, especially authentication.
     3.  **Anti-Forgery Tokens**: Ensure CSRF protection is implemented for all state-changing requests.
     4.  **Rate Limiting**: Implement rate limiting on login attempts to prevent brute-force attacks.
-    5.  **Cookie Security**: Set `Secure` and `HttpOnly` flags on session cookies.
-    6.  **Session Timeout**: Implement and configure appropriate session expiration policies.
+    5.  **Cookie Security**: Add additional security options to authentication cookies:
+        ```csharp
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        ```
+    6.  **Session Management**: Consider implementing refresh tokens for longer-lived sessions.
