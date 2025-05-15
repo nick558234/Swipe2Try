@@ -53,10 +53,12 @@ namespace Swipe2Try.Pages
                     new Claim(ClaimTypes.Email, result.User.Email),
                     new Claim(ClaimTypes.Role, roleNameToStore)
                 };
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);                var authProperties = new AuthenticationProperties
                 {
-                    // Optional: set properties like IsPersistent, ExpiresUtc, etc.
+                    // Set cookie to expire after 30 minutes
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5),
+                    // Make cookie persistent across browser sessions
+                    IsPersistent = true,
                 };
 
                 await HttpContext.SignInAsync(
@@ -65,7 +67,7 @@ namespace Swipe2Try.Pages
                     authProperties);
 
                 // Redirect based on role
-                if (roleNameToStore.ToUpper() == "ADMIN")
+                if (roleNameToStore.ToString() == "Admin")
                     return RedirectToPage("/Admin/Index");
                 else if (roleNameToStore.ToString() == "Restaurant Owner")
                     return RedirectToPage("/RestaurantOwner/Index");

@@ -36,6 +36,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/login";
         options.LogoutPath = "/logout";
         options.AccessDeniedPath = "/Error";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(5); // Set cookie expiration to 30 minutes
+        options.SlidingExpiration = true; // Reset expiration time with each request
     });
 
 // Add authorization without custom policies

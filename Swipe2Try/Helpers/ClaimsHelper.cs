@@ -21,7 +21,7 @@ namespace Swipe2Try.Helpers
 
         public static bool IsAdmin(this ClaimsPrincipal user)
         {
-            return user.IsInRole("ADMIN");
+            return user.IsInRole("Admin");
         }
 
         public static bool IsOwner(this ClaimsPrincipal user)

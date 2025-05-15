@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Swipe2Try.Pages.Account
 {
-    [Authorize(Roles = "ADMIN, Restaurant Owner")] // Multiple roles can access this page
+    [Authorize(Roles = "Admin, Restaurant Owner")] // Multiple roles can access this page
     public class SettingsModel : PageModel
     {
         public void OnGet()

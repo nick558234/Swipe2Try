@@ -196,7 +196,7 @@ if (result.Success && result.User != null)
     HttpContext.Session.SetString("UserRole", roleNameToStore); // Store RoleName
     
     // Redirect based on role name
-    if (roleNameToStore == "ADMIN")
+    if (roleNameToStore == "Admin")
         return RedirectToPage("/Admin/Index");
     else if (roleNameToStore == "OWNER")
         return RedirectToPage("/RestaurantOwner/Index");

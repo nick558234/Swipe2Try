@@ -15,8 +15,8 @@ Protected paths and required roles:
 
 | Path Prefix         | Required Role(s)        | Notes                                     |
 |---------------------|-------------------------|-------------------------------------------|
-| `/admin/`           | "ADMIN"                 | Case-insensitive                          |
-| `/restaurantowner/` | "OWNER" or "ADMIN"      | Case-insensitive                          |
+| `/admin/`           | "Admin"                 | Case-insensitive                          |
+| `/restaurantowner/` | "OWNER" or "Admin"      | Case-insensitive                          |
 | `/profile/`         | Any logged-in user      | Session `UserRole` must exist             |
 | `/account/`         | Any logged-in user      | Session `UserRole` must exist             |
 | `/swipe` & `/swipe/*` | Any logged-in user      | Session `UserRole` must exist             |
@@ -29,14 +29,14 @@ Protected paths and required roles:
 The following session variables are used for authorization and user information:
 - `UserID`: Stores the unique identifier of the logged-in user.
 - `UserName`: Stores the name of the logged-in user.
-- `UserRole`: Stores the **name** of the role assigned to the logged-in user (e.g., "ADMIN", "OWNER", "User"). This is crucial for the middleware checks.
+- `UserRole`: Stores the **name** of the role assigned to the logged-in user (e.g., "Admin", "OWNER", "User"). This is crucial for the middleware checks.
 
 ### 3. 🔑 Login Logic (`Pages/login.cshtml.cs`)
 - Upon successful authentication, the `loginModel` fetches the user's `RoleID`.
 - It then uses `IRoleManager` to look up the `RoleName` corresponding to the `RoleID`.
-- The `RoleName` (e.g., "ADMIN") is then stored in `HttpContext.Session.SetString("UserRole", roleName);`.
+- The `RoleName` (e.g., "Admin") is then stored in `HttpContext.Session.SetString("UserRole", roleName);`.
 - After setting the session variables, users are redirected based on their `UserRole`:
-    - "ADMIN" ➡️ `/Admin/Index`
+    - "Admin" ➡️ `/Admin/Index`
     - "OWNER" ➡️ `/RestaurantOwner/Index`
     - Others ➡️ `/swipe`
 

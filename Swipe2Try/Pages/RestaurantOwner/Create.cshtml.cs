@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Swipe2Try.Pages.RestaurantOwner
 {
-    [Authorize(Roles = "ADMIN, Restaurant Owner")]
+    [Authorize(Roles = "Admin, Restaurant Owner")]
     public class CreateModel : PageModel
     {
         public void OnGet()

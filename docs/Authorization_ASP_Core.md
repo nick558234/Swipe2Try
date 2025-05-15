@@ -28,10 +28,10 @@ The application uses role-based authorization by applying the `[Authorize]` attr
 
 | Page/Area                 | Required Role(s)        | Authorization Attribute                 |
 |---------------------------|-------------------------|-----------------------------------------|
-| `/Admin/`                 | "ADMIN"                 | `[Authorize(Roles = "ADMIN")]`          |
+| `/Admin/`                 | "Admin"                 | `[Authorize(Roles = "Admin")]`          |
 | `/RestaurantOwner/`       | "OWNER"                 | `[Authorize(Roles = "OWNER")]`          |
-| `/Admin/Dishes/`          | "ADMIN" or "OWNER"      | `[Authorize(Roles = "ADMIN,OWNER")]`    |
-| `/Account/Settings/`      | "ADMIN" or "OWNER"      | `[Authorize(Roles = "ADMIN,OWNER")]`    |
+| `/Admin/Dishes/`          | "Admin" or "OWNER"      | `[Authorize(Roles = "Admin,OWNER")]`    |
+| `/Account/Settings/`      | "Admin" or "OWNER"      | `[Authorize(Roles = "Admin,OWNER")]`    |
 | `/Profile/`               | Any logged-in user      | `[Authorize]` (no roles specified)      |
 | `/Account/`               | Any logged-in user      | `[Authorize]` (no roles specified)      |
 | `/swipe`                  | Any logged-in user      | `[Authorize]` (no roles specified)      |
@@ -50,7 +50,7 @@ var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.Aut
 ```
 
 - After setting the claims, users are redirected based on their role:
-    - "ADMIN" ➡️ `/Admin/Index`
+    - "Admin" ➡️ `/Admin/Index`
     - "OWNER" ➡️ `/RestaurantOwner/Index`
     - Others ➡️ `/swipe`
 
@@ -92,7 +92,7 @@ With the ASP.NET Core Identity system, user information is now available through
         <p>Welcome, @User.Identity?.Name!</p>
         <p>Your role: @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</p>
         
-        @if (User.IsInRole("ADMIN"))
+        @if (User.IsInRole("Admin"))
         {
             <p>You have administrator access.</p>
         }
@@ -105,7 +105,7 @@ With the ASP.NET Core Identity system, user information is now available through
 ```
 
 ## 🔄 Role Considerations
-- Role names are case-sensitive (e.g., "ADMIN" is different from "Admin")
+- Role names are case-sensitive (e.g., "Admin" is different from "Admin")
 - All role checks in the application use uppercase role names for consistency
 
 This setup leverages ASP.NET Core's built-in authentication and authorization features, providing a secure and maintainable approach to protecting sensitive areas of the application.
