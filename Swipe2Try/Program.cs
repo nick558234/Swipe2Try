@@ -35,7 +35,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/login";
         options.LogoutPath = "/logout";
-        options.AccessDeniedPath = "/Error?code=403";
+        options.AccessDeniedPath = "/Error";
     });
 
 // Add authorization without custom policies

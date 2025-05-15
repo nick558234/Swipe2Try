@@ -67,7 +67,7 @@ namespace Swipe2Try.Pages
                 // Redirect based on role
                 if (roleNameToStore.ToUpper() == "ADMIN")
                     return RedirectToPage("/Admin/Index");
-                else if (roleNameToStore.ToUpper() == "Restaurant Owner")
+                else if (roleNameToStore.ToString() == "Restaurant Owner")
                     return RedirectToPage("/RestaurantOwner/Index");
                 else
                     return RedirectToPage("/swipe");
