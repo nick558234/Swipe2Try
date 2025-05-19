@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Swipe2Try.Core.Interfaces;
+using Swipe2Try.Core.Managers;
 using Swipe2Try.Core.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -13,9 +14,19 @@ using System.Security.Claims;
 using System; // For Guid
 
 namespace Swipe2Try.Pages
-{
-    public class SignUpModel : PageModel
+{    public class SignUpModel : PageModel
     {
+        private readonly IUserValidator _userValidator;
+        private readonly IRoleManager _roleManager;
+        private readonly IUserManager _userManager;
+        
+        public SignUpModel(IUserValidator userValidator, IRoleManager roleManager, IUserManager userManager)
+        {
+            _userValidator = userValidator;
+            _roleManager = roleManager;
+            _userManager = userManager;
+        }
+        
         [BindProperty]
         public RegisterInputModel Input { get; set; } = new RegisterInputModel();
 
@@ -26,26 +37,18 @@ namespace Swipe2Try.Pages
         // Populate AvailableRoles on GET
         public async Task OnGetAsync()
         {
-            var roleManager = HttpContext.RequestServices.GetService(typeof(IRoleManager)) as IRoleManager;
-            if (roleManager != null)
-            {
-                var roles = await roleManager.GetAllRolesAsync();
-                AvailableRoles = roles
-                    .Select(r => new SelectListItem { Value = r.RoleID, Text = r.RoleName })
-                    .ToList();
-            }
-        }
-
-        public async Task<IActionResult> OnPostAsync()
+            var roles = await _roleManager.GetAllRolesAsync();
+            AvailableRoles = roles
+                .Select(r => new SelectListItem { Value = r.RoleID, Text = r.RoleName })
+                .ToList();
+        }        public async Task<IActionResult> OnPostAsync()
         {
             // Repopulate AvailableRoles if returning to the page
             await OnGetAsync();
-
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
+            
+            // Skip automatic model validation as we'll use our custom validator
+            ModelState.Clear();
+            
             // Create user object from input and generate a unique UserID
             var user = new User
             {
@@ -55,27 +58,23 @@ namespace Swipe2Try.Pages
                 Password = Input.Password,
                 RoleID = Input.Role
             };
-
-            // Register user using IUserManager
-            var userManager = HttpContext.RequestServices.GetService(typeof(IUserManager)) as IUserManager;
-            if (userManager != null)
+            
+            // Validate the user using the UserValidator
+            var validationResult = await _userValidator.ValidateForRegistrationAsync(user);
+            if (!validationResult.IsValid)
             {
-                var result = await userManager.RegisterUserAsync(user);
-                if (!result.Success)
-                {
-                    ErrorMessages.AddRange(result.Errors);
-                    return Page();
-                }
-            }
-            else
+                ErrorMessages.AddRange(validationResult.Errors);
+                return Page();
+            }            // Register user using the injected _userManager
+            var result = await _userManager.RegisterUserAsync(user);
+            if (!result.Success)
             {
-                ErrorMessages.Add("User manager service is not available.");
+                ErrorMessages.AddRange(result.Errors);
                 return Page();
             }
 
             // Fetch the role name for claims
-            var roleManager = HttpContext.RequestServices.GetService(typeof(IRoleManager)) as IRoleManager;
-            var role = roleManager != null ? await roleManager.GetRoleByIdAsync(user.RoleID) : null;
+            var role = await _roleManager.GetRoleByIdAsync(user.RoleID);
             var roleName = role?.RoleName ?? "Unknown";
 
             // If sign up is successful and you want to log in the user immediately:
@@ -94,23 +93,18 @@ namespace Swipe2Try.Pages
             // Redirect as appropriate
             return RedirectToPage("/Index");
         }
-    }
-
-    public class RegisterInputModel
+    }    public class RegisterInputModel
     {
-        [Required(ErrorMessage = "Name is required")]
+        // Remove validation attributes as we'll use the UserValidator instead
+        [DataType(DataType.Text)]
         public string Name { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
-        [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
         public string Password { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Role is required")]
         public string Role { get; set; } = string.Empty;
     }
 }

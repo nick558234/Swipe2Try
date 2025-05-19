@@ -12,14 +12,15 @@ using Microsoft.AspNetCore.Authorization;
 namespace Swipe2Try.Pages
 {
     public class loginModel : PageModel
-    {
-        private readonly IUserManager _userManager;
+    {        private readonly IUserManager _userManager;
         private readonly IRoleManager _roleManager;
+        private readonly IUserValidator _userValidator;
 
-        public loginModel(IUserManager userManager, IRoleManager roleManager)
+        public loginModel(IUserManager userManager, IRoleManager roleManager, IUserValidator userValidator)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _userValidator = userValidator;
         }
 
         [BindProperty]
@@ -29,12 +30,16 @@ namespace Swipe2Try.Pages
 
         public void OnGet()
         {
-        }
-
-        public async Task<IActionResult> OnPostAsync()
+        }        public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            // Skip automatic model validation as we'll use our custom validator
+            ModelState.Clear();
+            
+            // Validate inputs using the UserValidator
+            var validationResult = _userValidator.ValidateForLogin(Input.Email, Input.Password);
+            if (!validationResult.IsValid)
             {
+                ErrorMessages.AddRange(validationResult.Errors);
                 return Page();
             }
 
@@ -64,12 +69,10 @@ namespace Swipe2Try.Pages
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
-                    authProperties);
-
-                // Redirect based on role
-                if (roleNameToStore.ToString() == "Admin")
+                    authProperties);                // Redirect based on role
+                if (roleNameToStore == "Admin")
                     return RedirectToPage("/Admin/Index");
-                else if (roleNameToStore.ToString() == "Restaurant Owner")
+                else if (roleNameToStore == "OWNER") // Updated to use consistent role name
                     return RedirectToPage("/RestaurantOwner/Index");
                 else
                     return RedirectToPage("/swipe");
@@ -81,15 +84,12 @@ namespace Swipe2Try.Pages
                 return Page();
             }
         }
-    }
-
-    public class LoginInputModel
+    }    public class LoginInputModel
     {
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
+        // Removed validation attributes as we'll use the UserValidator instead
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
     }
