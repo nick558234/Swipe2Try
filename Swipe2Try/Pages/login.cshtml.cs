@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Swipe2Try.Core.Interfaces;
+using Swipe2Try.Core.Managers;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -12,11 +13,12 @@ using Microsoft.AspNetCore.Authorization;
 namespace Swipe2Try.Pages
 {
     public class loginModel : PageModel
-    {        private readonly IUserManager _userManager;
-        private readonly IRoleManager _roleManager;
+    {
+        private readonly UserManager _userManager;
+        private readonly RoleManager _roleManager;
         private readonly IUserValidator _userValidator;
 
-        public loginModel(IUserManager userManager, IRoleManager roleManager, IUserValidator userValidator)
+        public loginModel(UserManager userManager, RoleManager roleManager, IUserValidator userValidator)
         {
             _userManager = userManager;
             _roleManager = roleManager;

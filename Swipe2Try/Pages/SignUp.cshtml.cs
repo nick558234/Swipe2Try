@@ -17,10 +17,10 @@ namespace Swipe2Try.Pages
 {    public class SignUpModel : PageModel
     {
         private readonly IUserValidator _userValidator;
-        private readonly IRoleManager _roleManager;
-        private readonly IUserManager _userManager;
+        private readonly RoleManager _roleManager;
+        private readonly UserManager _userManager;
         
-        public SignUpModel(IUserValidator userValidator, IRoleManager roleManager, IUserManager userManager)
+        public SignUpModel(IUserValidator userValidator, RoleManager roleManager, UserManager userManager)
         {
             _userValidator = userValidator;
             _roleManager = roleManager;
