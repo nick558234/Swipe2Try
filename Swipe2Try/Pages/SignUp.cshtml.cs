@@ -14,21 +14,21 @@ using System.Security.Claims;
 using System; // For Guid
 
 namespace Swipe2Try.Pages
-{    public class SignUpModel : PageModel
+{
+    public class SignUpModel : PageModel
     {
         private readonly IUserValidator _userValidator;
         private readonly RoleManager _roleManager;
         private readonly UserManager _userManager;
-        
+
         public SignUpModel(IUserValidator userValidator, RoleManager roleManager, UserManager userManager)
         {
             _userValidator = userValidator;
             _roleManager = roleManager;
             _userManager = userManager;
         }
-        
-        [BindProperty]
-        public RegisterInputModel Input { get; set; } = new RegisterInputModel();
+
+        [BindProperty] public RegisterInputModel Input { get; set; } = new RegisterInputModel();
 
         public List<string> ErrorMessages { get; set; } = new();
 
@@ -41,14 +41,16 @@ namespace Swipe2Try.Pages
             AvailableRoles = roles
                 .Select(r => new SelectListItem { Value = r.RoleID, Text = r.RoleName })
                 .ToList();
-        }        public async Task<IActionResult> OnPostAsync()
+        }
+
+        public async Task<IActionResult> OnPostAsync()
         {
             // Repopulate AvailableRoles if returning to the page
             await OnGetAsync();
-            
+
             // Skip automatic model validation as we'll use our custom validator
             ModelState.Clear();
-            
+
             // Create user object from input and generate a unique UserID
             var user = new User
             {
@@ -58,14 +60,15 @@ namespace Swipe2Try.Pages
                 Password = Input.Password,
                 RoleID = Input.Role
             };
-            
+
             // Validate the user using the UserValidator
             var validationResult = await _userValidator.ValidateForRegistrationAsync(user);
             if (!validationResult.IsValid)
             {
                 ErrorMessages.AddRange(validationResult.Errors);
                 return Page();
-            }            // Register user using the injected _userManager
+            } // Register user using the injected _userManager
+
             var result = await _userManager.RegisterUserAsync(user);
             if (!result.Success)
             {
@@ -93,17 +96,16 @@ namespace Swipe2Try.Pages
             // Redirect as appropriate
             return RedirectToPage("/Index");
         }
-    }    public class RegisterInputModel
+    }
+
+    public class RegisterInputModel
     {
         // Remove validation attributes as we'll use the UserValidator instead
-        [DataType(DataType.Text)]
-        public string Name { get; set; } = string.Empty;
+        [DataType(DataType.Text)] public string Name { get; set; } = string.Empty;
 
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; } = string.Empty;
+        [DataType(DataType.EmailAddress)] public string Email { get; set; } = string.Empty;
 
-        [DataType(DataType.Password)]
-        public string Password { get; set; } = string.Empty;
+        [DataType(DataType.Password)] public string Password { get; set; } = string.Empty;
 
         public string Role { get; set; } = string.Empty;
     }

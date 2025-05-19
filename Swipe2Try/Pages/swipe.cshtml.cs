@@ -1,4 +1,4 @@
- using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -75,8 +75,3 @@ namespace Swipe2Try.Pages
         public List<string> Tags { get; set; } = new List<string>();
     }
 }
-
-
-
-
-

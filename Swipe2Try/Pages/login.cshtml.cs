@@ -32,11 +32,12 @@ namespace Swipe2Try.Pages
 
         public void OnGet()
         {
-        }        public async Task<IActionResult> OnPostAsync()
+        }
+        public async Task<IActionResult> OnPostAsync()
         {
             // Skip automatic model validation as we'll use our custom validator
             ModelState.Clear();
-            
+
             // Validate inputs using the UserValidator
             var validationResult = _userValidator.ValidateForLogin(Input.Email, Input.Password);
             if (!validationResult.IsValid)
@@ -60,7 +61,7 @@ namespace Swipe2Try.Pages
                     new Claim(ClaimTypes.Email, result.User.Email),
                     new Claim(ClaimTypes.Role, roleNameToStore)
                 };
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);                var authProperties = new AuthenticationProperties
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme); var authProperties = new AuthenticationProperties
                 {
                     // Set cookie to expire after 30 minutes
                     ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5),
@@ -86,7 +87,8 @@ namespace Swipe2Try.Pages
                 return Page();
             }
         }
-    }    public class LoginInputModel
+    }
+    public class LoginInputModel
     {
         // Removed validation attributes as we'll use the UserValidator instead
         [DataType(DataType.EmailAddress)]

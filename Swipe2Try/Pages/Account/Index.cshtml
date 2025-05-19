@@ -1,23 +1,28 @@
 @page
 @model Swipe2Try.Pages.Account.IndexModel
 @{
-    ViewData["Title"] = "My Account";
+	ViewData["Title"] = "My Account";
 }
 
 <div class="container">
-    <h1>My Account</h1>
-    <p>Welcome to your account page, @User.GetName()!</p>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5>Account Information</h5>
-                </div>                <div class="card-body">
-                    <p><strong>Email:</strong> @User.GetEmail()</p>
-                    <p><strong>Role:</strong> @User.GetRole()</p>
-                </div>
-            </div>
-        </div>
-    </div>
+	<h1>My Account</h1>
+	<p>Welcome to your account page, @User.GetName()!</p>
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="card mb-4">
+				<div class="card-header">
+					<h5>Account Information</h5>
+				</div>
+				<div class="card-body">
+					<p>
+						<strong>Email:</strong> @User.GetEmail()
+					</p>
+					<p>
+						<strong>Role:</strong> @User.GetRole()
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

@@ -3,50 +3,53 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
-    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
-    var userName = isAuthenticated ? User.GetName() : "Guest";
-    var userRole = isAuthenticated ? User.GetRole() : "Unknown";
-    var initial = userName?.Length > 0 ? userName[0] : 'G';
-    
-    // Determine colors based on layout
-    var isAdmin = Context.Request.Path.StartsWithSegments("/Admin");
-    var isRestaurantOwner = Context.Request.Path.StartsWithSegments("/RestaurantOwner");
-    
-    string avatarBgColor = "bg-indigo-500";
-    string avatarRingColor = "ring-indigo-400";
-    string textHoverColor = "group-hover:text-white";
-    string subTextColor = "text-indigo-300";
-    string subTextHoverColor = "group-hover:text-indigo-200";
-    
-    if (isAdmin) {
-        avatarBgColor = "bg-purple-500";
-        avatarRingColor = "ring-purple-400";
-        subTextColor = "text-purple-300";
-        subTextHoverColor = "group-hover:text-purple-200";
-    } else if (isRestaurantOwner) {
-        avatarBgColor = "bg-orange-500";
-        avatarRingColor = "ring-orange-400";
-        subTextColor = "text-orange-300";
-        subTextHoverColor = "group-hover:text-orange-200";
-    }
+	var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+	var userName = isAuthenticated ? User.GetName() : "Guest";
+	var userRole = isAuthenticated ? User.GetRole() : "Unknown";
+	var initial = userName?.Length > 0 ? userName[0] : 'G';
+
+	// Determine colors based on layout
+	var isAdmin = Context.Request.Path.StartsWithSegments("/Admin");
+	var isRestaurantOwner = Context.Request.Path.StartsWithSegments("/RestaurantOwner");
+
+	string avatarBgColor = "bg-indigo-500";
+	string avatarRingColor = "ring-indigo-400";
+	string textHoverColor = "group-hover:text-white";
+	string subTextColor = "text-indigo-300";
+	string subTextHoverColor = "group-hover:text-indigo-200";
+
+	if (isAdmin)
+	{
+		avatarBgColor = "bg-purple-500";
+		avatarRingColor = "ring-purple-400";
+		subTextColor = "text-purple-300";
+		subTextHoverColor = "group-hover:text-purple-200";
+	}
+	else if (isRestaurantOwner)
+	{
+		avatarBgColor = "bg-orange-500";
+		avatarRingColor = "ring-orange-400";
+		subTextColor = "text-orange-300";
+		subTextHoverColor = "group-hover:text-orange-200";
+	}
 }
 
 <div class="flex items-center">
-    <div class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-150">
-        <div class="relative mr-3">
-            <div class="flex items-center justify-center h-10 w-10 rounded-full @avatarBgColor text-white font-semibold text-lg ring-2 ring-offset-2 ring-offset-gray-800 @avatarRingColor">
-                @initial
-            </div>
-        </div>
-        <div>
-            <p class="text-sm font-semibold text-gray-100 @textHoverColor">@userName</p>
-            <p class="text-xs @subTextColor @subTextHoverColor">@userRole</p>
-        </div>
-    </div>
-    <a asp-page="/logout" class="ml-3 bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-        </svg>
-        Logout
-    </a>
+	<div class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-150">
+		<div class="relative mr-3">
+			<div class="flex items-center justify-center h-10 w-10 rounded-full @avatarBgColor text-white font-semibold text-lg ring-2 ring-offset-2 ring-offset-gray-800 @avatarRingColor">
+				@initial
+			</div>
+		</div>
+		<div>
+			<p class="text-sm font-semibold text-gray-100 @textHoverColor">@userName</p>
+			<p class="text-xs @subTextColor @subTextHoverColor">@userRole</p>
+		</div>
+	</div>
+	<a asp-page="/logout" class="ml-3 bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150 flex items-center">
+		<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+		</svg>
+		Logout
+	</a>
 </div>

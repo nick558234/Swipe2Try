@@ -1,120 +1,120 @@
 ﻿@page
 @model Swipe2Try.Pages.Admin.Users.IndexModel
 @{
-    Layout = "_AdminLayout";
-    ViewData["ActivePage"] = "Users";
+	Layout = "_AdminLayout";
+	ViewData["ActivePage"] = "Users";
 }
 
 <div class="flex justify-between items-center">
-    <h3 class="text-gray-700 text-3xl font-medium">Users</h3>
-    <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-        Add New User
-    </button>
+	<h3 class="text-gray-700 text-3xl font-medium">Users</h3>
+	<button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+		Add New User
+	</button>
 </div>
 
 <!-- Search and Filter -->
 <div class="mt-8 flex flex-col md:flex-row md:items-center md:justify-between">
-    <div class="relative flex items-center mt-4 md:mt-0">
-        <span class="absolute">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-        </span>
-        <input type="text" class="block w-full py-1.5 pl-10 pr-4 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-40 focus:outline-none focus:ring" placeholder="Search users...">
-    </div>
+	<div class="relative flex items-center mt-4 md:mt-0">
+		<span class="absolute">
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+			</svg>
+		</span>
+		<input type="text" class="block w-full py-1.5 pl-10 pr-4 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-40 focus:outline-none focus:ring" placeholder="Search users...">
+	</div>
 
-    <div class="flex items-center mt-4 md:mt-0">
-        <div class="relative">
-            <select class="block w-full py-1.5 pl-3 pr-10 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-40 focus:outline-none focus:ring">
-                <option>All Users</option>
-                @foreach (var role in Model.RoleNames)
-                {
-                    <option value="@role.Key">@role.Value</option>
-                }
-            </select>
-        </div>
-    </div>
+	<div class="flex items-center mt-4 md:mt-0">
+		<div class="relative">
+			<select class="block w-full py-1.5 pl-3 pr-10 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-40 focus:outline-none focus:ring">
+				<option>All Users</option>
+				@foreach (var role in Model.RoleNames)
+				{
+					<option value="@role.Key">@role.Value</option>
+				}
+			</select>
+		</div>
+	</div>
 </div>
 
 <!-- Users Table -->
 <div class="flex flex-col mt-8">
-    <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
-            <table class="min-w-full">
-                <thead>
-                    <tr>
-                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white">
-                    @foreach (var user in Model.Users)
-                    {
-                        <tr>
-                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        <div class="h-10 w-10 rounded-full bg-purple-200 flex items-center justify-center">
-                                            <span class="text-purple-800 font-semibold">@(user.Name.Length > 0 ? user.Name[0] : 'U')</span>
-                                        </div>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm leading-5 font-medium text-gray-900">@user.Name</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                <div class="text-sm leading-5 text-gray-900">@user.Email</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                @{
-                                    var roleColor = "bg-gray-100 text-gray-800";
-                                    if (Model.RoleNames.TryGetValue(user.RoleID, out var roleName))
-                                    {
-                                        if (roleName == "Admin")
-                                            roleColor = "bg-green-100 text-green-800";
-                                        else if (roleName == "Restaurant Owner")
-                                            roleColor = "bg-blue-100 text-blue-800";
-                                    }
-                                    else
-                                    {
-                                        roleName = "Unknown";
-                                    }
-                                }
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @roleColor">
-                                    @roleName
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+	<div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+		<div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+			<table class="min-w-full">
+				<thead>
+				<tr>
+					<th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Name</th>
+					<th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Email</th>
+					<th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Role</th>
+					<th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Status</th>
+					<th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
+				</tr>
+				</thead>
+				<tbody class="bg-white">
+				@foreach (var user in Model.Users)
+				{
+					<tr>
+						<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+							<div class="flex items-center">
+								<div class="flex-shrink-0 h-10 w-10">
+									<div class="h-10 w-10 rounded-full bg-purple-200 flex items-center justify-center">
+										<span class="text-purple-800 font-semibold">@(user.Name.Length > 0 ? user.Name[0] : 'U')</span>
+									</div>
+								</div>
+								<div class="ml-4">
+									<div class="text-sm leading-5 font-medium text-gray-900">@user.Name</div>
+								</div>
+							</div>
+						</td>
+						<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+							<div class="text-sm leading-5 text-gray-900">@user.Email</div>
+						</td>
+						<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+							@{
+								var roleColor = "bg-gray-100 text-gray-800";
+								if (Model.RoleNames.TryGetValue(user.RoleID, out var roleName))
+								{
+									if (roleName == "Admin")
+										roleColor = "bg-green-100 text-green-800";
+									else if (roleName == "Restaurant Owner")
+										roleColor = "bg-blue-100 text-blue-800";
+								}
+								else
+								{
+									roleName = "Unknown";
+								}
+							}
+							<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @roleColor">
+								@roleName
+							</span>
+						</td>
+						<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+							<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+						</td>
+						<td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+							<a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+						</td>
+					</tr>
+				}
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>
 
 <!-- Pagination (if needed for large user lists) -->
 <div class="mt-8 flex justify-center">
-    <nav class="relative z-0 inline-flex shadow-sm">
-        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-        </a>
-        <!-- Pagination numbers would go here -->
-        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-            </svg>
-        </a>
-    </nav>
+	<nav class="relative z-0 inline-flex shadow-sm">
+		<a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">
+			<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+				<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+			</svg>
+		</a>
+		<!-- Pagination numbers would go here -->
+		<a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">
+			<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+				<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+			</svg>
+		</a>
+	</nav>
 </div>

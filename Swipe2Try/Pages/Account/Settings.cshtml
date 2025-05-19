@@ -1,23 +1,24 @@
 @page
 @model Swipe2Try.Pages.Account.SettingsModel
 @{
-    ViewData["Title"] = "Account Settings";
+	ViewData["Title"] = "Account Settings";
 }
 
 <div class="container">
-    <h1>Account Settings</h1>
-    <p>This page is accessible to both restaurant owners and administrators.</p>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5>Account Management</h5>
-                </div>                <div class="card-body">
-                    <p>You can update your account settings here.</p>
-                    <p>Your current role is: @User.GetRole()</p>
-                </div>
-            </div>
-        </div>
-    </div>
+	<h1>Account Settings</h1>
+	<p>This page is accessible to both restaurant owners and administrators.</p>
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="card mb-4">
+				<div class="card-header">
+					<h5>Account Management</h5>
+				</div>
+				<div class="card-body">
+					<p>You can update your account settings here.</p>
+					<p>Your current role is: @User.GetRole()</p>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
