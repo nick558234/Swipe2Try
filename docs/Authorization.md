@@ -2,86 +2,111 @@
 
 This document outlines the authorization mechanism implemented in the Swipe2Try application.
 
+## 📊 Diagrams
+
+For a visual representation of the authorization system, refer to:
+
+- [Authentication & Authorization Flow Diagram](diagrams/authentication_authorization_flow.mmd): Shows the decision flow for authenticating and authorizing requests
+- [Authentication Class Diagram](diagrams/auth_class_diagram.mmd): Displays the relationships between classes involved in authentication and authorization
+- [Login Sequence Diagram](diagrams/user_authentication_flow.mmd): Shows the step-by-step flow of the login process
+
 ## 🧩 Core Components
 
-### 1. `AuthorizationMiddleware.cs`
-📍 Located in `Swipe2Try/Middleware/AuthorizationMiddleware.cs`.
+### 1. ASP.NET Core Built-in Authorization
+Swipe2Try utilizes ASP.NET Core's built-in authorization attributes and middleware:
 
-This middleware is responsible for intercepting requests and performing authorization checks.
-- ⚙️ Runs for every request after authentication.
-- 🔍 Checks if the requested path requires authorization.
+- **`[Authorize]` Attribute**: Applied to controller actions or Razor Pages to restrict access.
+- **Role-Based Authorization**: Implemented using `[Authorize(Roles = "RoleName")]` attribute.
+- **Authentication Cookie**: Contains user identity and role claims.
 
-Protected paths and required roles:
+Example of role-based authorization on a page:
+```csharp
+[Authorize(Roles = "Admin, Restaurant Owner")]
+public class IndexModel : PageModel
+{
+    // Page model implementation
+}
+```
 
-| Path Prefix         | Required Role(s)        | Notes                                     |
-|---------------------|-------------------------|-------------------------------------------|
-| `/admin/`           | "ADMIN"                 | Case-insensitive                          |
-| `/restaurantowner/` | "OWNER" or "ADMIN"      | Case-insensitive                          |
-| `/profile/`         | Any logged-in user      | Session `UserRole` must exist             |
-| `/account/`         | Any logged-in user      | Session `UserRole` must exist             |
-| `/swipe` & `/swipe/*` | Any logged-in user      | Session `UserRole` must exist             |
+### 2. 🔑 Claims-Based Identity
+User information and roles are stored as claims in the authentication cookie:
 
-- **🔑 Session Check**: It first checks if the user is logged in by looking for a `UserRole` in the session.
-    - If `UserRole` is not found (user is not logged in), the user is redirected to `/login`.
-- **🚫 Unauthorized Access**: If a user is logged in but does not have the required role for a specific path, they are redirected to `/Error?code=403` (Forbidden).
+- **`ClaimTypes.Name`**: Stores the user's name.
+- **`ClaimTypes.Email`**: Stores the user's email address.
+- **`ClaimTypes.Role`**: Stores the role name (e.g., "Admin", "Restaurant Owner", "User").
 
-### 2. 📦 Session Variables
-The following session variables are used for authorization and user information:
-- `UserID`: Stores the unique identifier of the logged-in user.
-- `UserName`: Stores the name of the logged-in user.
-- `UserRole`: Stores the **name** of the role assigned to the logged-in user (e.g., "ADMIN", "OWNER", "User"). This is crucial for the middleware checks.
+These claims are created during login and stored in the authentication cookie:
 
-### 3. 🔑 Login Logic (`Pages/login.cshtml.cs`)
-- Upon successful authentication, the `loginModel` fetches the user's `RoleID`.
-- It then uses `IRoleManager` to look up the `RoleName` corresponding to the `RoleID`.
-- The `RoleName` (e.g., "ADMIN") is then stored in `HttpContext.Session.SetString("UserRole", roleName);`.
-- After setting the session variables, users are redirected based on their `UserRole`:
-    - "ADMIN" ➡️ `/Admin/Index`
-    - "OWNER" ➡️ `/RestaurantOwner/Index`
-    - Others ➡️ `/swipe`
+```csharp
+var claims = new List<Claim>
+{
+    new Claim(ClaimTypes.Name, user.Name),
+    new Claim(ClaimTypes.Email, user.Email),
+    new Claim(ClaimTypes.Role, roleName)
+};
+```
 
-### 4. ⚠️ Error Handling (`Pages/Error.cshtml` and `Pages/Error.cshtml.cs`)
-- The error page displays a specific message ("You are not authorized to access this page.") when the `code=403` query parameter is present.
-- Detailed development-mode error information is suppressed for 403 errors.
+### 3. 🚀 Role Management
+Roles are stored in the database and retrieved through the `IRoleManager` service:
+
+- Each user has a `RoleID` property that references a role.
+- During authentication, the role name is fetched from the database.
+- The role name is then stored as a claim in the authentication cookie.
+
+### 4. ⚠️ Error Handling for Authorization
+When a user attempts to access a resource they're not authorized for:
+
+- The user is redirected to the path specified in `options.AccessDeniedPath` ("/Error").
+- The error page can display a specific message for unauthorized access.
 
 ## 🌊 Authorization Flow Diagram
 
 ```mermaid
 graph TD
-    A[User Request] --> B{Is Path Protected?};
-    B -- Yes --> C{User Logged In? (Session UserRole Exists?)};
+    A[User Request] --> B{Is Page/Action Protected?};
+    B -- Yes --> C{User Authenticated?};
     B -- No --> G[Allow Access];
-    C -- No --> D[Redirect to /login];
+    C -- No --> D[Redirect to LoginPath];
     C -- Yes --> E{User Has Required Role?};
     E -- Yes --> G;
-    E -- No --> F[Redirect to /Error?code=403];
+    E -- No --> F[Redirect to AccessDeniedPath];
 ```
 
-## 👤 User Information Display (`Pages/Shared/_UserInfoPartial.cshtml`)
-- This partial view is displayed in the layout when a user is logged in.
-- It retrieves `UserName` and `UserRole` from the session to display the user's name and their role.
+## 👥 Access Control by Role
 
-```html
-@using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
+The application implements role-based access control with these primary roles:
 
-@{
-    var userName = HttpContextAccessor.HttpContext?.Session.GetString("UserName") ?? "Guest";
-    var userRole = HttpContextAccessor.HttpContext?.Session.GetString("UserRole") ?? "Unknown";
-    var initial = userName.Length > 0 ? userName[0] : 'G';
+| Role                | Access Areas                                   | Capabilities                                 |
+|---------------------|------------------------------------------------|----------------------------------------------|
+| **Admin**           | `/Admin/*`, All areas                          | Full system administration                   |
+| **Restaurant Owner**| `/RestaurantOwner/*`, Limited admin functions  | Manage restaurant dishes and settings        |
+| **User**            | `/swipe/*`, `/profile/*`, `/account/*`         | Basic user functionality                     |
+
+## 👤 User Information Display
+
+The user information is displayed in the UI using claims from the authenticated user:
+
+```csharp
+// Get user information from claims
+UserName = User.Identity?.Name ?? "Guest";
+UserRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+```
+
+The UI adapts based on the user's role, providing different colors and navigation options.
+
+## 🔓 Logout Functionality
+
+The application provides a logout mechanism through:
+
+1. A logout button in the UI that links to the `/logout` endpoint.
+2. The logout endpoint that calls `SignOutAsync` to clear the authentication cookie:
+
+```csharp
+public async Task<IActionResult> OnGetAsync()
+{
+    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    return RedirectToPage("/Index");
 }
-
-<div class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-150">
-    <div class="relative mr-3">
-        <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 text-white font-semibold text-lg ring-2 ring-offset-2 ring-offset-gray-800 ring-indigo-400">
-            @initial
-        </div>
-    </div>
-    <div>
-        <p class="text-sm font-semibold text-gray-100 group-hover:text-white">@userName</p>
-        <p class="text-xs text-indigo-300 group-hover:text-indigo-200">@userRole</p>
-    </div>
-</div>
 ```
 
-This setup ensures that sensitive areas of the application are protected and access is granted based on defined user roles stored by name in the session.
+This comprehensive authorization system ensures that users can only access areas and features appropriate for their assigned role, maintaining security throughout the application.

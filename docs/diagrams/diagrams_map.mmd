@@ -1,49 +1,16 @@
-classDiagram
-    %% Main Navigation Diagram for UML Models
+
+flowchart TD
+    A[Swipe2Try Diagrams] --> B[Authentication & Authorization]
+    A --> E[Data Models]
     
-    class AuthenticationDiagram["Authentication Flow"]
-    class RolesDiagram["User Role Model"]
-    class AuthorizationDiagram["Authorization Process"]
-    class RegistrationDiagram["User Registration"]
+    B --> B2[Auth Flow Diagram]
+    B --> B3[Auth Class Diagram]
     
-    MainDocumentation --> AuthenticationDiagram
-    MainDocumentation --> RolesDiagram
-    MainDocumentation --> AuthorizationDiagram
-    MainDocumentation --> RegistrationDiagram
+    %% Links to actual diagram files
+    B2["Authentication & Authorization Flow
+    (authentication_authorization_flow.mmd)"]
+    B3["Authentication Class Diagram
+    (auth_class_diagram.mmd)"]
     
-    class MainDocumentation {
-        +Swipe2Try System Architecture
-    }
-    
-    class AuthenticationDiagram {
-        +Login Sequence
-        +Validation Process
-        +Token Generation
-    }
-    
-    class RolesDiagram {
-        +User Class Hierarchy
-        +Role Management
-        +Permissions
-    }
-    
-    class AuthorizationDiagram {
-        +Access Control Flow
-        +Policy Enforcement
-        +Middleware Implementation
-    }
-    
-    class RegistrationDiagram {
-        +Registration State Machine
-        +Email Verification
-        +Account Activation
-    }
-    
-    %% Link each class to its corresponding diagram
-    link AuthenticationDiagram "user_authentication_flow.mmd" "View Authentication Flow"
-    link RolesDiagram "user_role_relationships.mmd" "View Role Relationships"
-    link AuthorizationDiagram "authorization_flow.mmd" "View Authorization Flow"
-    link RegistrationDiagram "user_registration_process.mmd" "View Registration Process"
-        Signup
-        Validation
-        Email Verification
+    click B2 "authentication_authorization_flow.mmd"
+    click B3 "auth_class_diagram.mmd"

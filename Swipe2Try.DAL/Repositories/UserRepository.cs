@@ -22,7 +22,7 @@ namespace Swipe2Try.DAL.Repositories
             {
                 await connection.OpenAsync();
                 var command = new SqlCommand(
-                    "SELECT UserID, Name, Email, Password, RoleID FROM dbo.USERS WHERE Email = @Email",
+                    "SELECT UserID, Name, Email, Password, RoleID FROM dbo.USERS WHERE LOWER(Email) = LOWER(@Email)",
                     connection);
                 
                 command.Parameters.AddWithValue("@Email", email);

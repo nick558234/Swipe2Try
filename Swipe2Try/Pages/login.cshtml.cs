@@ -4,25 +4,28 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Swipe2Try.Core.Interfaces;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Swipe2Try.Pages
 {
     public class loginModel : PageModel
     {
         private readonly IUserManager _userManager;
-        private readonly IRoleManager _roleManager; // Add this
+        private readonly IRoleManager _roleManager;
 
-        public loginModel(IUserManager userManager, IRoleManager roleManager) // Modify constructor
+        public loginModel(IUserManager userManager, IRoleManager roleManager)
         {
             _userManager = userManager;
-            _roleManager = roleManager; // Add this
+            _roleManager = roleManager;
         }
 
         [BindProperty]
         public LoginInputModel Input { get; set; } = new LoginInputModel();
 
-        public List<string> ErrorMessages { get; set; } = new List<string>();
+        public List<string> ErrorMessages { get; set; } = new();
 
         public void OnGet()
         {
@@ -35,29 +38,45 @@ namespace Swipe2Try.Pages
                 return Page();
             }
 
+            // Authenticate user using IUserManager (database-backed)
             var result = await _userManager.AuthenticateUserAsync(Input.Email, Input.Password);
-            
+
             if (result.Success && result.User != null)
             {
-                // Fetch the role name
+                // Get role from database
                 var role = await _roleManager.GetRoleByIdAsync(result.User.RoleID);
                 var roleNameToStore = role?.RoleName ?? "Unknown";
 
-                // Store user info in session
-                HttpContext.Session.SetString("UserID", result.User.UserID);
-                HttpContext.Session.SetString("UserName", result.User.Name);
-                HttpContext.Session.SetString("UserRole", roleNameToStore); // Store RoleName
-                
-                // Redirect based on role name
-                if (roleNameToStore == "ADMIN")
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, result.User.Name),
+                    new Claim(ClaimTypes.Email, result.User.Email),
+                    new Claim(ClaimTypes.Role, roleNameToStore)
+                };
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);                var authProperties = new AuthenticationProperties
+                {
+                    // Set cookie to expire after 30 minutes
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5),
+                    // Make cookie persistent across browser sessions
+                    IsPersistent = true,
+                };
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
+                // Redirect based on role
+                if (roleNameToStore.ToString() == "Admin")
                     return RedirectToPage("/Admin/Index");
-                else if (roleNameToStore == "OWNER")
+                else if (roleNameToStore.ToString() == "Restaurant Owner")
                     return RedirectToPage("/RestaurantOwner/Index");
                 else
-                    return RedirectToPage("/swipe"); // Default page for regular users
+                    return RedirectToPage("/swipe");
             }
             else
             {
+                // Show error messages if authentication fails
                 ErrorMessages = result.Errors ?? new List<string> { "Invalid login attempt." };
                 return Page();
             }

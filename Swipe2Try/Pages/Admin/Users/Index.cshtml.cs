@@ -4,10 +4,12 @@ using Swipe2Try.Core.Models;
 using Swipe2Try.Core.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Swipe2Try.Pages.Admin.Users
 {
+    [Authorize(Roles = "Admin")] // Require Admin role for this page
     public class IndexModel : PageModel
     {
         private readonly IUserRepository _userRepository;
@@ -19,16 +21,16 @@ namespace Swipe2Try.Pages.Admin.Users
             _roleRepository = roleRepository;
         }
 
-        public List<User> Users { get; set; }
-        public Dictionary<string, string> RoleNames { get; set; } = new Dictionary<string, string>();
-        public string CurrentUserName { get; set; }
-        public string CurrentUserRole { get; set; }
+        public List<User> Users { get; set; } = new();
+        public Dictionary<string, string> RoleNames { get; set; } = new();
+        public string CurrentUserName { get; set; } = string.Empty;
+        public string CurrentUserRole { get; set; } = string.Empty;
 
         public async Task OnGetAsync()
         {
-            // Get logged in user information from session
-            CurrentUserName = HttpContext.Session.GetString("UserName") ?? "Guest";
-            CurrentUserRole = HttpContext.Session.GetString("UserRole") ?? "Unknown";
+            // Use built-in User claims instead of session
+            CurrentUserName = User.Identity?.Name ?? "Guest";
+            CurrentUserRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
 
             // Get all users
             Users = await _userRepository.GetAllUsersAsync();

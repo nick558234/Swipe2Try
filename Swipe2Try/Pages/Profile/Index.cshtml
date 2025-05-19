@@ -1,0 +1,24 @@
+@page
+@model Swipe2Try.Pages.Profile.IndexModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container">
+    <h1>User Profile</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> @User.Identity?.Name</p>
+                    <p><strong>Email:</strong> @User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value</p>
+                    <p><strong>Role:</strong> @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
