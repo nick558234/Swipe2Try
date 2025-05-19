@@ -1,0 +1,33 @@
+
+flowchart TD
+    A[Client Request] --> B{Is Route Protected?}
+    B -->|Yes| C{Has Valid Auth Cookie?}
+    B -->|No| J[Process Request]
+    
+    C -->|No| D[Redirect to Login]
+    C -->|Yes| E{Authorization Check}
+    
+    D --> F[Login Form]
+    F --> G{Valid Credentials?}
+    G -->|No| F
+    G -->|Yes| H[Create Claims & Cookie]
+    H --> I[Redirect to Original Request]
+    I --> E
+    
+    E -->|Has Required Role| J
+    E -->|Missing Required Role| K[Access Denied]
+    
+    subgraph "Authentication"
+        C
+        D
+        F
+        G
+        H
+        I
+    end
+    
+    subgraph "Authorization"
+        B
+        E
+        K
+    end
