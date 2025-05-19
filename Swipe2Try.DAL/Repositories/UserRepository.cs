@@ -106,10 +106,9 @@ namespace Swipe2Try.DAL.Repositories
                             UserID = reader["UserID"].ToString(),
                             Name = reader["Name"].ToString(),
                             Email = reader["Email"].ToString(),
-                            Password = reader["Password"].ToString(), // In a real app, you wouldn't return passwords
+                            Password = reader["Password"].ToString(), 
                             RoleID = reader["RoleID"].ToString(),
-                            // Add additional property for display - assuming User has a RoleName property or you add it
-                            // If not in the User model, you can create a UserViewModel with this property
+                          
                         };
                         users.Add(user);
                     }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Swipe2Try.Core.Models;
 using Swipe2Try.Core.Interfaces;
+using Swipe2Try.Core.Managers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,34 +10,31 @@ using System.Security.Claims;
 
 namespace Swipe2Try.Pages.Admin.Users
 {
-    [Authorize(Roles = "Admin")] // Require Admin role for this page
+    [Authorize(Roles = "Admin")]
     public class IndexModel : PageModel
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
+        private readonly UserManager _userManager;
+        private readonly RoleManager _roleManager;
 
-        public IndexModel(IUserRepository userRepository, IRoleRepository roleRepository)
+        public IndexModel(UserManager userManager, RoleManager roleManager)
         {
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public List<User> Users { get; set; } = new();
         public Dictionary<string, string> RoleNames { get; set; } = new();
         public string CurrentUserName { get; set; } = string.Empty;
         public string CurrentUserRole { get; set; } = string.Empty;
-
         public async Task OnGetAsync()
         {
-            // Use built-in User claims instead of session
             CurrentUserName = User.Identity?.Name ?? "Guest";
             CurrentUserRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
 
-            // Get all users
-            Users = await _userRepository.GetAllUsersAsync();
+            Users = await _userManager.GetAllUsersAsync();
 
-            // Get all roles for displaying role names
-            var roles = await _roleRepository.GetAllRolesAsync();
+            // Get all roles for displaying role names using the RoleManager
+            var roles = await _roleManager.GetAllRolesAsync();
             foreach (var role in roles)
             {
                 RoleNames[role.RoleID] = role.RoleName;
