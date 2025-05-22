@@ -11,5 +11,9 @@ public class Dish
     public string Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
+
+    public string? HealthFactor { get; set; }
+    public string? Photo { get; set; }
+
     public string? Restaurant { get; set; }
 }

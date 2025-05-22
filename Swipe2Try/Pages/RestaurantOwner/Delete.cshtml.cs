@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace Swipe2Try.Pages.RestaurantOwner
 {
     [Authorize(Roles = "Restaurant Owner")]
-    public class UpdateModel : PageModel
+    public class DeleteModel : PageModel
     {
         private readonly DishManager _dishManager;
 
-        public UpdateModel(DishManager dishManager)
+        public DeleteModel(DishManager dishManager)
         {
             _dishManager = dishManager;
         }
@@ -37,14 +37,14 @@ namespace Swipe2Try.Pages.RestaurantOwner
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string id)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            await _dishManager.UpdateDishAsync(Dish);
+            await _dishManager.DeleteDishAsync(id);
             return RedirectToPage("./Index");
         }
     }
