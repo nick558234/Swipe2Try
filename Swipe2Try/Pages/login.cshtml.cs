@@ -89,10 +89,8 @@ namespace Swipe2Try.Pages
     public class LoginInputModel
     {
         // Removed validation attributes as we'll use the UserValidator instead
-        [DataType(DataType.EmailAddress)]
         public string Email { get; set; } = string.Empty;
 
-        [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
     }
 }

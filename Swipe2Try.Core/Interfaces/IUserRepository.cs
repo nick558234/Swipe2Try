@@ -5,9 +5,9 @@ namespace Swipe2Try.Core.Interfaces
 {
     public interface IUserRepository
     {
-        Task<User> GetUserByEmailAsync(string email);
+        Task<User?> GetUserByEmailAsync(string email);
         Task<bool> CreateUserAsync(User user);
         Task<bool> EmailExistsAsync(string email);
         Task<List<User>> GetAllUsersAsync();
     }
-} 
+}

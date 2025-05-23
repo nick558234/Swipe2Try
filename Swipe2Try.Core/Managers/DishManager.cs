@@ -26,6 +26,8 @@ namespace Swipe2Try.Core.Managers
 
         public async Task AddDishAsync(Dish dish)
         {
+            // Generate a short random string for DishID (length 10)
+            dish.Id = Guid.NewGuid().ToString("N").Substring(0, 10);
             // Add any business logic validation here if needed
             await _dishRepository.AddDishAsync(dish);
         }

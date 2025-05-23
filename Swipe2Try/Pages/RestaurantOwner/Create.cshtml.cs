@@ -28,7 +28,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
         public async Task<IActionResult> OnPostAsync()
         {
             // Generate a short random string for DishID (length 10)
-            Dish.Id = Guid.NewGuid().ToString("N").Substring(0, 10);
+            // Dish.Id = Guid.NewGuid().ToString("N").Substring(0, 10); // Logic moved to DishManager
 
             await _dishManager.AddDishAsync(Dish);
             return RedirectToPage("./Index");
