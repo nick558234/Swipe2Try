@@ -20,7 +20,8 @@ namespace Swipe2Try.Core.Managers
             _userRepository = userRepository;
             _userValidator = userValidator;
             _roleManager = roleManager;
-        }        public async Task<(bool Success, List<string> Errors)> RegisterUserAsync(User user)
+        }
+        public async Task<(bool Success, List<string> Errors)> RegisterUserAsync(User user)
         {
             // Validate user input
             var (isValid, errors) = await _userValidator.ValidateForRegistrationAsync(user);

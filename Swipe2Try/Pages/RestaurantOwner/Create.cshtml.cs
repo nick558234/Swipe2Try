@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Swipe2Try.Core.Interfaces;
 using Swipe2Try.Core.Managers;
 using Swipe2Try.Core.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Swipe2Try.Pages.RestaurantOwner
@@ -19,7 +19,9 @@ namespace Swipe2Try.Pages.RestaurantOwner
         }
 
         [BindProperty]
-        public Dish Dish { get; set; } = new Dish { Name = "", Description = "" };
+        public Dish Input { get; set; } = new Dish { Name = "", Description = "" };
+
+        public List<string> ValidationErrors { get; set; } = new List<string>();
 
         public void OnGet()
         {
@@ -27,11 +29,19 @@ namespace Swipe2Try.Pages.RestaurantOwner
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Generate a short random string for DishID (length 10)
-            // Dish.Id = Guid.NewGuid().ToString("N").Substring(0, 10); // Logic moved to DishManager
-
-            await _dishManager.AddDishAsync(Dish);
-            return RedirectToPage("./Index");
+            // Use DishManager to handle creation logic
+            var result = await _dishManager.AddDishAsync(Input);
+            
+            if (result.Success)
+            {
+                TempData["SuccessMessage"] = "Dish created successfully!";
+                return RedirectToPage("/RestaurantOwner/Index");
+            }
+            else
+            {
+                ValidationErrors = result.Errors;
+                return Page();
+            }
         }
     }
 }

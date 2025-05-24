@@ -1,17 +1,21 @@
 using Swipe2Try.Core.Interfaces;
 using Swipe2Try.Core.Models;
+using Swipe2Try.Core.Validation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace Swipe2Try.Core.Managers
 {
     public class DishManager
     {
         private readonly IDishRepository _dishRepository;
+        private readonly DishValidator _dishValidator;
 
         public DishManager(IDishRepository dishRepository)
         {
             _dishRepository = dishRepository;
+            _dishValidator = new DishValidator();
         }
 
         public async Task<List<Dish>> GetAllDishesAsync()
@@ -21,27 +25,62 @@ namespace Swipe2Try.Core.Managers
 
         public async Task<Dish?> GetDishByIdAsync(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                throw new ArgumentException("Dish ID cannot be null or empty", nameof(id));
+
             return await _dishRepository.GetDishByIdAsync(id);
+        }        public async Task<(bool Success, List<string> Errors)> AddDishAsync(Dish dish)
+        {
+            try
+            {
+                // Validate dish
+                var validationResult = _dishValidator.ValidateForCreation(dish);
+                if (!validationResult.IsValid)
+                    return (false, validationResult.Errors);
+
+                // Generate a short random string for DishID (length 10)
+                dish.Id = Guid.NewGuid().ToString("N").Substring(0, 10);
+                
+                await _dishRepository.AddDishAsync(dish);
+                return (true, new List<string>());
+            }
+            catch (Exception ex)
+            {
+                return (false, new List<string> { $"Failed to add dish: {ex.Message}" });
+            }
         }
 
-        public async Task AddDishAsync(Dish dish)
+        public async Task<(bool Success, List<string> Errors)> UpdateDishAsync(Dish dish)
         {
-            // Generate a short random string for DishID (length 10)
-            dish.Id = Guid.NewGuid().ToString("N").Substring(0, 10);
-            // Add any business logic validation here if needed
-            await _dishRepository.AddDishAsync(dish);
+            try
+            {
+                // Validate dish
+                var validationResult = _dishValidator.ValidateForUpdate(dish);
+                if (!validationResult.IsValid)
+                    return (false, validationResult.Errors);
+
+                await _dishRepository.UpdateDishAsync(dish);
+                return (true, new List<string>());
+            }
+            catch (Exception ex)
+            {
+                return (false, new List<string> { $"Failed to update dish: {ex.Message}" });
+            }
         }
 
-        public async Task UpdateDishAsync(Dish dish)
+        public async Task<(bool Success, List<string> Errors)> DeleteDishAsync(string id)
         {
-            // Add any business logic validation here if needed
-            await _dishRepository.UpdateDishAsync(dish);
-        }
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                    return (false, new List<string> { "Dish ID cannot be null or empty" });
 
-        public async Task DeleteDishAsync(string id)
-        {
-            // Add any business logic validation here if needed
-            await _dishRepository.DeleteDishAsync(id);
-        }
+                await _dishRepository.DeleteDishAsync(id);
+                return (true, new List<string>());
+            }
+            catch (Exception ex)
+            {
+                return (false, new List<string> { $"Failed to delete dish: {ex.Message}" });
+            }        }
     }
 }

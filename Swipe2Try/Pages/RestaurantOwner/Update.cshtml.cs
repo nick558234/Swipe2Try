@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Swipe2Try.Core.Managers;
 using Swipe2Try.Core.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Swipe2Try.Pages.RestaurantOwner
@@ -15,37 +16,43 @@ namespace Swipe2Try.Pages.RestaurantOwner
         public UpdateModel(DishManager dishManager)
         {
             _dishManager = dishManager;
-        }
+        }        [BindProperty]
+        public Dish Input { get; set; } = new Dish { Name = "", Description = "" };
 
-        [BindProperty]
-        public Dish Dish { get; set; } = new Dish { Name = "", Description = "" };
+        public List<string> ValidationErrors { get; set; } = new List<string>();
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            Dish = await _dishManager.GetDishByIdAsync(id);
-
-            if (Dish == null)
+            var dish = await _dishManager.GetDishByIdAsync(id);
+            if (dish == null)
             {
                 return NotFound();
             }
 
+            Input = dish;
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            // Use DishManager to handle update logic
+            var result = await _dishManager.UpdateDishAsync(Input);
+            
+            if (result.Success)
             {
+                TempData["SuccessMessage"] = "Dish updated successfully!";
+                return RedirectToPage("/RestaurantOwner/Index");
+            }
+            else
+            {
+                ValidationErrors = result.Errors;
                 return Page();
             }
-
-            await _dishManager.UpdateDishAsync(Dish);
-            return RedirectToPage("./Index");
         }
     }
 }
