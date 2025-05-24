@@ -70,11 +70,11 @@ namespace Swipe2Try.Pages
     public class RegisterInputModel
     {
         // Remove validation attributes as we'll use the UserValidator instead
-        [DataType(DataType.Text)] public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
-        [DataType(DataType.EmailAddress)] public string Email { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
 
-        [DataType(DataType.Password)] public string Password { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
 
         public string Role { get; set; } = string.Empty;
     }

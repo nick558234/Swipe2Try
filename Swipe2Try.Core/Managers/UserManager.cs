@@ -18,16 +18,14 @@ namespace Swipe2Try.Core.Managers
             _userRepository = userRepository;
             _userValidator = userValidator;
             _roleManager = roleManager;
-        }
-
-        public async Task<(bool Success, List<string> Errors)> RegisterUserAsync(User user)
+        }        public async Task<(bool Success, List<string> Errors)> RegisterUserAsync(User user)
         {
             // Validate user input
             var (isValid, errors) = await _userValidator.ValidateForRegistrationAsync(user);
             if (!isValid)
                 return (false, errors);
 
-            // Generate a random UserID (10 characters)
+            // Generate a unique UserID using full GUID
             user.UserID = GenerateUserID();
 
             // Create user in database
@@ -60,12 +58,10 @@ namespace Swipe2Try.Core.Managers
             }
 
             return (true, user, errors);
-        }
-
-        private string GenerateUserID()
+        }        private string GenerateUserID()
         {
-            // Simple implementation for demo purposes - in production use a more secure method
-            return Guid.NewGuid().ToString("N").Substring(0, 10);
+            // Generate full GUID for 40-character UserID column
+            return Guid.NewGuid().ToString();
         }
 
         public async Task<List<User>> GetAllUsersAsync()
@@ -104,14 +100,12 @@ namespace Swipe2Try.Core.Managers
             var principal = new ClaimsPrincipal(claimsIdentity);
 
             return (true, new List<string>(), principal);
-        }
-
-        public async Task<(bool Success, List<string> Errors, ClaimsPrincipal? Principal)> RegisterAndLoginUserAsync(string name, string email, string password, string roleId)
+        }        public async Task<(bool Success, List<string> Errors, ClaimsPrincipal? Principal)> RegisterAndLoginUserAsync(string name, string email, string password, string roleId)
         {
             // Create user object and generate unique UserID
             var user = new User
             {
-                UserID = System.Guid.NewGuid().ToString(),
+                UserID = GenerateUserID(),
                 Name = name,
                 Email = email,
                 Password = password,
