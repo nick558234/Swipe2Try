@@ -28,7 +28,6 @@ builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IUserValidator, Swipe2Try.C
 // Register managers (both concrete classes and interfaces)
 builder.Services.AddScoped<Swipe2Try.Core.Managers.UserManager>();
 builder.Services.AddScoped<Swipe2Try.Core.Managers.RoleManager>();
-builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IUserManager, Swipe2Try.Core.Managers.UserManager>();
 builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IRoleManager, Swipe2Try.Core.Managers.RoleManager>();
 builder.Services.AddScoped<Swipe2Try.Core.Managers.DishManager>();
 
