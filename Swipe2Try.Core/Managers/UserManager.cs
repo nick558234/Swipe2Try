@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Swipe2Try.Core.Managers
 {
@@ -28,6 +30,9 @@ namespace Swipe2Try.Core.Managers
             // Generate a unique UserID using full GUID
             user.UserID = GenerateUserID();
 
+            // Hash the password before storing
+            user.Password = HashPassword(user.Password);
+
             // Create user in database
             var success = await _userRepository.CreateUserAsync(user);
             return (success, success ? new List<string>() : new List<string> { "Failed to create user" });
@@ -48,10 +53,8 @@ namespace Swipe2Try.Core.Managers
             {
                 errors.Add("Invalid email or password");
                 return (false, null, errors);
-            }
-
-            // Compare emails case-insensitively and passwords as plain text
-            if (!string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase) || user.Password != password)
+            }            // Compare emails case-insensitively and verify hashed password
+            if (!string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase) || !VerifyPassword(password, user.Password))
             {
                 errors.Add("Invalid email or password");
                 return (false, null, errors);
@@ -62,6 +65,21 @@ namespace Swipe2Try.Core.Managers
         {
             // Generate full GUID for 40-character UserID column
             return Guid.NewGuid().ToString();
+        }
+
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(hashedBytes);
+            }
+        }
+
+        private bool VerifyPassword(string password, string hashedPassword)
+        {
+            var hashedInput = HashPassword(password);
+            return hashedInput == hashedPassword;
         }
 
         public async Task<List<User>> GetAllUsersAsync()
