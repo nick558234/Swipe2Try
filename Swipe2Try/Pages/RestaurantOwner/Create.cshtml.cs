@@ -25,21 +25,21 @@ namespace Swipe2Try.Pages.RestaurantOwner
 
         public void OnGet()
         {
-        }
-
-        public async Task<IActionResult> OnPostAsync()
+        }        public async Task<IActionResult> OnPostAsync()
         {
             // Use DishManager to handle creation logic
-            var result = await _dishManager.AddDishAsync(Input);
+            var result = await _dishManager.AddDishWithMessageAsync(Input);
             
             if (result.Success)
             {
-                TempData["SuccessMessage"] = "Dish created successfully!";
+                TempData["SuccessMessage"] = result.Message;
                 return RedirectToPage("/RestaurantOwner/Index");
             }
             else
             {
-                ValidationErrors = result.Errors;
+                // For detailed validation errors, still use the detailed method
+                var detailedResult = await _dishManager.AddDishAsync(Input);
+                ValidationErrors = detailedResult.Errors;
                 return Page();
             }
         }

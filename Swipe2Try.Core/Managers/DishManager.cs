@@ -50,7 +50,18 @@ namespace Swipe2Try.Core.Managers
             }
         }
 
-        public async Task<(bool Success, List<string> Errors)> UpdateDishAsync(Dish dish)
+        public async Task<(bool Success, string Message)> AddDishWithMessageAsync(Dish dish)
+        {
+            var result = await AddDishAsync(dish);
+            if (result.Success)
+            {
+                return (true, "Dish created successfully!");
+            }
+            else
+            {
+                return (false, string.Join(", ", result.Errors));
+            }
+        }        public async Task<(bool Success, List<string> Errors)> UpdateDishAsync(Dish dish)
         {
             try
             {
@@ -68,12 +79,25 @@ namespace Swipe2Try.Core.Managers
             }
         }
 
+        public async Task<(bool Success, string Message)> UpdateDishWithMessageAsync(Dish dish)
+        {
+            var result = await UpdateDishAsync(dish);
+            if (result.Success)
+            {
+                return (true, "Dish updated successfully!");
+            }
+            else
+            {
+                return (false, string.Join(", ", result.Errors));
+            }
+        }
+
         public async Task<(bool Success, List<string> Errors)> DeleteDishAsync(string id)
         {
             try
             {
                 if (string.IsNullOrEmpty(id))
-                    return (false, new List<string> { "Dish ID cannot be null or empty" });
+                    return (false, new List<string> { "Invalid dish ID" });
 
                 await _dishRepository.DeleteDishAsync(id);
                 return (true, new List<string>());
@@ -81,6 +105,19 @@ namespace Swipe2Try.Core.Managers
             catch (Exception ex)
             {
                 return (false, new List<string> { $"Failed to delete dish: {ex.Message}" });
-            }        }
+            }
+        }
+
+        public async Task<(bool Success, string Message)> DeleteDishWithMessageAsync(string id)
+        {
+            var result = await DeleteDishAsync(id);
+            if (result.Success)
+            {            return (true, "Dish deleted successfully!");
+            }
+            else
+            {
+                return (false, string.Join(", ", result.Errors));
+            }
+        }
     }
 }

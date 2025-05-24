@@ -25,20 +25,15 @@ namespace Swipe2Try.Pages.RestaurantOwner
             Dishes = await _dishManager.GetAllDishesAsync();
         }        public async Task<IActionResult> OnPostDeleteAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            var result = await _dishManager.DeleteDishWithMessageAsync(id);
+            
+            if (result.Success)
             {
-                TempData["ErrorMessage"] = "Invalid dish ID.";
-                return RedirectToPage();
-            }
-
-            var result = await _dishManager.DeleteDishAsync(id);
-              if (result.Success)
-            {
-                TempData["SuccessMessage"] = "Dish deleted successfully!";
+                TempData["SuccessMessage"] = result.Message;
             }
             else
             {
-                TempData["ErrorMessage"] = string.Join(", ", result.Errors);
+                TempData["ErrorMessage"] = result.Message;
             }
             
             return RedirectToPage();
