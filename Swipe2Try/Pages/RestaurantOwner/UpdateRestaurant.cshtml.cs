@@ -10,41 +10,47 @@ using System.Threading.Tasks;
 namespace Swipe2Try.Pages.RestaurantOwner
 {
     [Authorize(Roles = "Restaurant Owner")]
-    public class UpdateModel : PageModel
+    public class UpdateRestaurantModel : PageModel
     {
-        private readonly DishManager _dishManager;
+        private readonly RestaurantManager _restaurantManager;
 
-        public UpdateModel(DishManager dishManager)
+        public UpdateRestaurantModel(RestaurantManager restaurantManager)
         {
-            _dishManager = dishManager;
-        }        [BindProperty]
-        public Dish Input { get; set; } = new Dish { Name = "", Description = "" };
+            _restaurantManager = restaurantManager;
+        }
 
-        public List<string> ValidationErrors { get; set; } = new List<string>();        public async Task<IActionResult> OnGetAsync(string id)
+        [BindProperty]
+        public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "" };
+
+        public List<string> ValidationErrors { get; set; } = new List<string>();
+
+        public async Task<IActionResult> OnGetAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var dish = await _dishManager.GetDishByIdAsync(id);
-            if (dish == null)
+            var restaurant = await _restaurantManager.GetRestaurantByIdAsync(id);
+            if (restaurant == null)
             {
                 return NotFound();
             }
 
-            // Security check: ensure user can only edit their own dishes
+            // Security check: ensure user can only edit their own restaurants
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId) || dish.UserId != userId)
+            if (string.IsNullOrEmpty(userId) || restaurant.UserId != userId)
             {
                 return Forbid();
             }
 
-            Input = dish;
+            Input = restaurant;
             return Page();
-        }        public async Task<IActionResult> OnPostAsync()
+        }
+
+        public async Task<IActionResult> OnPostAsync()
         {
-            // Security check: ensure user can only update their own dishes
+            // Security check: ensure user can only update their own restaurants
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
@@ -54,27 +60,23 @@ namespace Swipe2Try.Pages.RestaurantOwner
 
             if (Input.UserId != userId)
             {
-                TempData["ErrorMessage"] = "Unauthorized to update this dish";
+                TempData["ErrorMessage"] = "Unauthorized to update this restaurant";
                 return Page();
             }
 
-            // Debug logging
-            Console.WriteLine($"Update dish - ID: {Input.Id}, Name: {Input.Name}, UserId: {Input.UserId}");
-
-            // Use DishManager to handle update logic
-            var result = await _dishManager.UpdateDishWithMessageAsync(Input);
+            // Use RestaurantManager to handle update logic
+            var result = await _restaurantManager.UpdateRestaurantWithMessageAsync(Input);
             
             if (result.Success)
             {
                 TempData["SuccessMessage"] = result.Message;
-                return RedirectToPage("/RestaurantOwner/Index");
+                return RedirectToPage("/RestaurantOwner/Restaurants");
             }
             else
             {
                 // For detailed validation errors, still use the detailed method
-                var detailedResult = await _dishManager.UpdateDishAsync(Input);
+                var detailedResult = await _restaurantManager.UpdateRestaurantAsync(Input);
                 ValidationErrors = detailedResult.Errors;
-                TempData["ErrorMessage"] = string.Join(", ", detailedResult.Errors);
                 return Page();
             }
         }

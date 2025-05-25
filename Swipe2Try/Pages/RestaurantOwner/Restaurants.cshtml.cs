@@ -10,25 +10,29 @@ using System.Threading.Tasks;
 namespace Swipe2Try.Pages.RestaurantOwner
 {
     [Authorize(Roles = "Restaurant Owner")]
-    public class IndexModel : PageModel
+    public class RestaurantsModel : PageModel
     {
-        private readonly DishManager _dishManager;
+        private readonly RestaurantManager _restaurantManager;
 
-        public IndexModel(DishManager dishManager)
+        public RestaurantsModel(RestaurantManager restaurantManager)
         {
-            _dishManager = dishManager;
+            _restaurantManager = restaurantManager;
         }
 
-        public List<Dish> Dishes { get; set; } = new List<Dish>();        public async Task OnGetAsync()
+        public List<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
+
+        public async Task OnGetAsync()
         {
             // Get the current user's ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!string.IsNullOrEmpty(userId))
             {
-                // Only get dishes for the current user
-                Dishes = await _dishManager.GetDishesByUserIdAsync(userId);
+                // Only get restaurants for the current user
+                Restaurants = await _restaurantManager.GetRestaurantsByUserIdAsync(userId);
             }
-        }        public async Task<IActionResult> OnPostDeleteAsync(string id)
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(string id)
         {
             // Get the current user's ID for security check
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -38,21 +42,21 @@ namespace Swipe2Try.Pages.RestaurantOwner
                 return RedirectToPage();
             }
 
-            // First check if the dish belongs to the user
-            var dish = await _dishManager.GetDishByIdAsync(id);
-            if (dish == null)
+            // First check if the restaurant belongs to the user
+            var restaurant = await _restaurantManager.GetRestaurantByIdAsync(id);
+            if (restaurant == null)
             {
-                TempData["ErrorMessage"] = "Dish not found";
+                TempData["ErrorMessage"] = "Restaurant not found";
                 return RedirectToPage();
             }
 
-            if (dish.UserId != userId)
+            if (restaurant.UserId != userId)
             {
-                TempData["ErrorMessage"] = "Unauthorized to delete this dish";
+                TempData["ErrorMessage"] = "Unauthorized to delete this restaurant";
                 return RedirectToPage();
             }
 
-            var result = await _dishManager.DeleteDishWithMessageAsync(id);
+            var result = await _restaurantManager.DeleteRestaurantWithMessageAsync(id);
             
             if (result.Success)
             {
@@ -62,7 +66,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
             {
                 TempData["ErrorMessage"] = result.Message;
             }
-            
+
             return RedirectToPage();
         }
     }

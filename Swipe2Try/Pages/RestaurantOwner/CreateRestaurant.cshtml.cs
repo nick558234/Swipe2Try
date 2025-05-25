@@ -9,24 +9,26 @@ using System.Threading.Tasks;
 
 namespace Swipe2Try.Pages.RestaurantOwner
 {
-    [Authorize(Roles = "Admin, Restaurant Owner")]
-    public class CreateModel : PageModel
+    [Authorize(Roles = "Restaurant Owner")]
+    public class CreateRestaurantModel : PageModel
     {
-        private readonly DishManager _dishManager;
+        private readonly RestaurantManager _restaurantManager;
 
-        public CreateModel(DishManager dishManager)
+        public CreateRestaurantModel(RestaurantManager restaurantManager)
         {
-            _dishManager = dishManager;
+            _restaurantManager = restaurantManager;
         }
 
         [BindProperty]
-        public Dish Input { get; set; } = new Dish { Name = "", Description = "" };
+        public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "" };
 
         public List<string> ValidationErrors { get; set; } = new List<string>();
 
         public void OnGet()
         {
-        }        public async Task<IActionResult> OnPostAsync()
+        }
+
+        public async Task<IActionResult> OnPostAsync()
         {
             // Get the current user's ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -36,21 +38,21 @@ namespace Swipe2Try.Pages.RestaurantOwner
                 return Page();
             }
 
-            // Assign the user ID to the dish
+            // Assign the user ID to the restaurant
             Input.UserId = userId;
 
-            // Use DishManager to handle creation logic
-            var result = await _dishManager.AddDishWithMessageAsync(Input);
+            // Use RestaurantManager to handle creation logic
+            var result = await _restaurantManager.AddRestaurantWithMessageAsync(Input);
             
             if (result.Success)
             {
                 TempData["SuccessMessage"] = result.Message;
-                return RedirectToPage("/RestaurantOwner/Index");
+                return RedirectToPage("/RestaurantOwner/Restaurants");
             }
             else
             {
                 // For detailed validation errors, still use the detailed method
-                var detailedResult = await _dishManager.AddDishAsync(Input);
+                var detailedResult = await _restaurantManager.AddRestaurantAsync(Input);
                 ValidationErrors = detailedResult.Errors;
                 return Page();
             }

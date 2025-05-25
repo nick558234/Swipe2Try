@@ -7,7 +7,7 @@ namespace Swipe2Try.Core.Interfaces
     public interface IRoleRepository
     {
         Task<List<Role>> GetAllRolesAsync();
-        Task<Role> GetRoleByIdAsync(string roleId);
+        Task<Role?> GetRoleByIdAsync(string roleId); // Changed to Task<Role?>
         Task<bool> RoleExistsAsync(string roleId);
     }
-} 
+}

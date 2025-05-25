@@ -14,17 +14,12 @@ using System.Security.Claims;
 using System; // For Guid
 
 namespace Swipe2Try.Pages
-{
-    public class SignUpModel : PageModel
+{    public class SignUpModel : PageModel
     {
-        private readonly IUserValidator _userValidator;
-        private readonly RoleManager _roleManager;
         private readonly UserManager _userManager;
 
-        public SignUpModel(IUserValidator userValidator, RoleManager roleManager, UserManager userManager)
+        public SignUpModel(UserManager userManager)
         {
-            _userValidator = userValidator;
-            _roleManager = roleManager;
             _userManager = userManager;
         }
 
@@ -37,7 +32,7 @@ namespace Swipe2Try.Pages
         // Populate AvailableRoles on GET
         public async Task OnGetAsync()
         {
-            var roles = await _roleManager.GetAllRolesAsync();
+            var roles = await _userManager.GetAllRolesAsync();
             AvailableRoles = roles
                 .Select(r => new SelectListItem { Value = r.RoleID, Text = r.RoleName })
                 .ToList();
@@ -48,64 +43,38 @@ namespace Swipe2Try.Pages
             // Repopulate AvailableRoles if returning to the page
             await OnGetAsync();
 
-            // Skip automatic model validation as we'll use our custom validator
-            ModelState.Clear();
+            // Use UserManager to handle all registration and login logic
+            var result = await _userManager.RegisterAndLoginUserAsync(
+                Input.Name, 
+                Input.Email, 
+                Input.Password, 
+                Input.Role);
 
-            // Create user object from input and generate a unique UserID
-            var user = new User
+            if (result.Success && result.Principal != null)
             {
-                UserID = Guid.NewGuid().ToString(),
-                Name = Input.Name,
-                Email = Input.Email,
-                Password = Input.Password,
-                RoleID = Input.Role
-            };
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    result.Principal);
 
-            // Validate the user using the UserValidator
-            var validationResult = await _userValidator.ValidateForRegistrationAsync(user);
-            if (!validationResult.IsValid)
+                // Redirect to home page
+                return RedirectToPage("/Index");
+            }
+            else
             {
-                ErrorMessages.AddRange(validationResult.Errors);
-                return Page();
-            } // Register user using the injected _userManager
-
-            var result = await _userManager.RegisterUserAsync(user);
-            if (!result.Success)
-            {
-                ErrorMessages.AddRange(result.Errors);
+                ErrorMessages = result.Errors ?? new List<string> { "Registration failed." };
                 return Page();
             }
-
-            // Fetch the role name for claims
-            var role = await _roleManager.GetRoleByIdAsync(user.RoleID);
-            var roleName = role?.RoleName ?? "Unknown";
-
-            // If sign up is successful and you want to log in the user immediately:
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, roleName)
-            };
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity));
-
-            // Redirect as appropriate
-            return RedirectToPage("/Index");
         }
     }
 
     public class RegisterInputModel
     {
         // Remove validation attributes as we'll use the UserValidator instead
-        [DataType(DataType.Text)] public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
-        [DataType(DataType.EmailAddress)] public string Email { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
 
-        [DataType(DataType.Password)] public string Password { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
 
         public string Role { get; set; } = string.Empty;
     }
