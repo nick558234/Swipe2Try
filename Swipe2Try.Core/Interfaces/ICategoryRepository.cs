@@ -6,7 +6,7 @@ namespace Swipe2Try.Core.Interfaces
 {
     public interface ICategoryRepository
     {
-        Task<IList<Category>> GetAllCategoriesAsync();
+        Task<List<Category>> GetAllCategoriesAsync();
         Task<Category?> GetCategoryByIdAsync(string id);
         Task AddCategoryAsync(Category category);
         Task UpdateCategoryAsync(Category category);

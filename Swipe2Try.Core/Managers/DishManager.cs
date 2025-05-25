@@ -8,15 +8,14 @@ using System;
 namespace Swipe2Try.Core.Managers
 {
     public class DishManager
-    {
-        private readonly IDishRepository _dishRepository;
-        private readonly DishValidator _dishValidator;
+    {        private readonly IDishRepository _dishRepository;
+        private readonly IDishValidator _dishValidator;
 
-        public DishManager(IDishRepository dishRepository)
+        public DishManager(IDishRepository dishRepository, IDishValidator dishValidator)
         {
-            _dishRepository = dishRepository;
-            _dishValidator = new DishValidator();
-        }        public async Task<List<Dish>> GetAllDishesAsync()
+            _dishRepository = dishRepository ?? throw new ArgumentNullException(nameof(dishRepository));
+            _dishValidator = dishValidator ?? throw new ArgumentNullException(nameof(dishValidator));
+        }public async Task<List<Dish>> GetAllDishesAsync()
         {
             return await _dishRepository.GetAllDishesAsync();
         }
@@ -40,7 +39,7 @@ namespace Swipe2Try.Core.Managers
             try
             {
                 // Validate dish
-                var validationResult = _dishValidator.ValidateForCreation(dish);
+                var validationResult = await _dishValidator.ValidateForCreationAsync(dish);
                 if (!validationResult.IsValid)
                     return (false, validationResult.Errors);
 
@@ -72,7 +71,7 @@ namespace Swipe2Try.Core.Managers
             try
             {
                 // Validate dish
-                var validationResult = _dishValidator.ValidateForUpdate(dish);
+                var validationResult = await _dishValidator.ValidateForUpdateAsync(dish);
                 if (!validationResult.IsValid)
                     return (false, validationResult.Errors);
 

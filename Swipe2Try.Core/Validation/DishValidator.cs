@@ -1,11 +1,13 @@
+using Swipe2Try.Core.Interfaces;
 using Swipe2Try.Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Swipe2Try.Core.Validation
 {
-    public class DishValidator
+    public class DishValidator : IDishValidator
     {
-        public (bool IsValid, List<string> Errors) ValidateForCreation(Dish dish)
+        public async Task<(bool IsValid, List<string> Errors)> ValidateForCreationAsync(Dish dish)
         {
             var errors = new List<string>();
 
@@ -38,7 +40,7 @@ namespace Swipe2Try.Core.Validation
             return (errors.Count == 0, errors);
         }
 
-        public (bool IsValid, List<string> Errors) ValidateForUpdate(Dish dish)
+        public async Task<(bool IsValid, List<string> Errors)> ValidateForUpdateAsync(Dish dish)
         {
             var errors = new List<string>();
 
@@ -53,13 +55,11 @@ namespace Swipe2Try.Core.Validation
                 errors.Add("Dish ID is required for update");
 
             // Use same validation rules as creation
-            var creationValidation = ValidateForCreation(dish);
+            var creationValidation = await ValidateForCreationAsync(dish);
             if (!creationValidation.IsValid)
             {
                 errors.AddRange(creationValidation.Errors);
-            }
-
-            return (errors.Count == 0, errors);
+            }            return (errors.Count == 0, errors);
         }
     }
 }

@@ -31,7 +31,8 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 // Register validators
 builder.Services.AddScoped<IUserValidator, UserValidator>();
 builder.Services.AddScoped<ICategoryValidator, CategoryValidator>();
-builder.Services.AddScoped<CategoryValidator>(); // Added this line
+builder.Services.AddScoped<IDishValidator, DishValidator>();
+builder.Services.AddScoped<IRestaurantValidator, RestaurantValidator>();
 
 // Register managers (both concrete classes and interfaces)
 builder.Services.AddScoped<UserManager>();

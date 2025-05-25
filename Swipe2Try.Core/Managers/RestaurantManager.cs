@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 using System;
 
 namespace Swipe2Try.Core.Managers
-{
+{    
     public class RestaurantManager
-    {
-        private readonly IRestaurantRepository _restaurantRepository;
-        private readonly RestaurantValidator _restaurantValidator;
+    {        private readonly IRestaurantRepository _restaurantRepository;
+        private readonly IRestaurantValidator _restaurantValidator;
 
-        public RestaurantManager(IRestaurantRepository restaurantRepository)
+        public RestaurantManager(IRestaurantRepository restaurantRepository, IRestaurantValidator restaurantValidator)
         {
-            _restaurantRepository = restaurantRepository;
-            _restaurantValidator = new RestaurantValidator();
+            _restaurantRepository = restaurantRepository ?? throw new ArgumentNullException(nameof(restaurantRepository));
+            _restaurantValidator = restaurantValidator ?? throw new ArgumentNullException(nameof(restaurantValidator));
         }
 
         public async Task<List<Restaurant>> GetAllRestaurantsAsync()
@@ -37,14 +36,12 @@ namespace Swipe2Try.Core.Managers
                 throw new ArgumentException("Restaurant ID cannot be null or empty", nameof(id));
 
             return await _restaurantRepository.GetRestaurantByIdAsync(id);
-        }
-
-        public async Task<(bool Success, List<string> Errors)> AddRestaurantAsync(Restaurant restaurant)
+        }        public async Task<(bool Success, List<string> Errors)> AddRestaurantAsync(Restaurant restaurant)
         {
             try
             {
                 // Validate restaurant
-                var validationResult = _restaurantValidator.ValidateForCreation(restaurant);
+                var validationResult = await _restaurantValidator.ValidateForCreationAsync(restaurant);
                 if (!validationResult.IsValid)
                     return (false, validationResult.Errors);
 
@@ -71,14 +68,12 @@ namespace Swipe2Try.Core.Managers
             {
                 return (false, string.Join(", ", result.Errors));
             }
-        }
-
-        public async Task<(bool Success, List<string> Errors)> UpdateRestaurantAsync(Restaurant restaurant)
+        }        public async Task<(bool Success, List<string> Errors)> UpdateRestaurantAsync(Restaurant restaurant)
         {
             try
             {
                 // Validate restaurant
-                var validationResult = _restaurantValidator.ValidateForUpdate(restaurant);
+                var validationResult = await _restaurantValidator.ValidateForUpdateAsync(restaurant);
                 if (!validationResult.IsValid)
                     return (false, validationResult.Errors);
 

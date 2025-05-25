@@ -16,9 +16,7 @@ namespace Swipe2Try.DAL.Repositories
         public CategoryRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException(nameof(configuration));
-        }
-
-        public async Task<IList<Category>> GetAllCategoriesAsync()
+        }        public async Task<List<Category>> GetAllCategoriesAsync()
         {
             var categories = new List<Category>();
             try

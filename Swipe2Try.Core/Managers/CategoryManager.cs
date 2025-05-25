@@ -6,21 +6,18 @@ using System.Threading.Tasks;
 using System;
 
 namespace Swipe2Try.Core.Managers
-{
-    public class CategoryManager
+{    public class CategoryManager
     {
         private readonly ICategoryRepository _categoryRepository;
-        private readonly CategoryValidator _categoryValidator;
+        private readonly ICategoryValidator _categoryValidator;
 
-        public CategoryManager(ICategoryRepository categoryRepository, CategoryValidator categoryValidator)
+        public CategoryManager(ICategoryRepository categoryRepository, ICategoryValidator categoryValidator)
         {
-            _categoryRepository = categoryRepository;
-            _categoryValidator = categoryValidator; // Use injected validator
-        }
-
-        public async Task<IList<Category>> GetAllCategoriesAsync() // Changed List to IList
+            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _categoryValidator = categoryValidator ?? throw new ArgumentNullException(nameof(categoryValidator));
+        }        public async Task<List<Category>> GetAllCategoriesAsync()
         {
-            return await _categoryRepository.GetAllCategoriesAsync();
+            return await _categoryRepository.GetAllCategoriesAsync() as List<Category> ?? new List<Category>();
         }
 
         public async Task<Category?> GetCategoryByIdAsync(string id)
@@ -29,56 +26,93 @@ namespace Swipe2Try.Core.Managers
                 throw new ArgumentException("Category ID cannot be null or empty", nameof(id));
 
             return await _categoryRepository.GetCategoryByIdAsync(id);
-        }
-
-        // Modified to use string URL for photo
-        public async Task AddCategoryAsync(Category category)
+        }        public async Task<(bool Success, List<string> Errors)> AddCategoryAsync(Category category)
         {
-            var validationResult = await _categoryValidator.ValidateForCreationAsync(category); // Changed to ValidateForCreationAsync and added await
-            if (!validationResult.IsValid)
+            try
             {
-                // Convert FluentValidation errors to a single string or handle as needed
-                throw new ValidationException(string.Join(", ", validationResult.Errors));
-            }
+                // Validate category
+                var validationResult = await _categoryValidator.ValidateForCreationAsync(category);
+                if (!validationResult.IsValid)
+                    return (false, validationResult.Errors);
 
-            category.Id = Guid.NewGuid().ToString("N").Substring(0, 10);
-            // Photo URL is now expected to be set on the category object directly
-            
-            await _categoryRepository.AddCategoryAsync(category);
+                // Generate a short random string for CategoryID (length 10)
+                category.Id = Guid.NewGuid().ToString("N").Substring(0, 10);
+                
+                await _categoryRepository.AddCategoryAsync(category);
+                return (true, new List<string>());
+            }
+            catch (Exception ex)
+            {
+                return (false, new List<string> { $"Failed to add category: {ex.Message}" });
+            }
         }
         
-        // Removed AddCategoryWithMessageAsync as UI will handle messages based on try-catch
-
-        // Modified to use string URL for photo
-        public async Task UpdateCategoryAsync(Category category)
+        public async Task<(bool Success, string Message)> AddCategoryWithMessageAsync(Category category)
         {
-            var validationResult = await _categoryValidator.ValidateForUpdateAsync(category); // Changed to ValidateForUpdateAsync and added await
-            if (!validationResult.IsValid)
+            var result = await AddCategoryAsync(category);
+            if (result.Success)
             {
-                throw new ValidationException(string.Join(", ", validationResult.Errors));
+                return (true, "Category created successfully!");
             }
-            // Photo URL is now expected to be set on the category object directly
-
-            await _categoryRepository.UpdateCategoryAsync(category);
-        }
-
-        // Removed UpdateCategoryWithMessageAsync
-
-        // Modified to return Task for direct use by UI
-        public async Task DeleteCategoryAsync(string id)
+            else
+            {
+                return (false, string.Join(", ", result.Errors));
+            }
+        }        public async Task<(bool Success, List<string> Errors)> UpdateCategoryAsync(Category category)
         {
-            if (string.IsNullOrEmpty(id))
-                throw new ArgumentException("Invalid category ID", nameof(id));
+            try
+            {
+                // Validate category
+                var validationResult = await _categoryValidator.ValidateForUpdateAsync(category);
+                if (!validationResult.IsValid)
+                    return (false, validationResult.Errors);
 
-            await _categoryRepository.DeleteCategoryAsync(id);
+                await _categoryRepository.UpdateCategoryAsync(category);
+                return (true, new List<string>());
+            }
+            catch (Exception ex)
+            {
+                return (false, new List<string> { $"Failed to update category: {ex.Message}" });
+            }
         }
 
-        // Removed DeleteCategoryWithMessageAsync
-    }
+        public async Task<(bool Success, string Message)> UpdateCategoryWithMessageAsync(Category category)
+        {
+            var result = await UpdateCategoryAsync(category);
+            if (result.Success)
+            {
+                return (true, "Category updated successfully!");
+            }
+            else
+            {
+                return (false, string.Join(", ", result.Errors));
+            }
+        }        public async Task<(bool Success, List<string> Errors)> DeleteCategoryAsync(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                    return (false, new List<string> { "Invalid category ID" });
 
-    // Custom ValidationException to carry validation messages
-    public class ValidationException : Exception
-    {
-        public ValidationException(string message) : base(message) { }
+                await _categoryRepository.DeleteCategoryAsync(id);
+                return (true, new List<string>());
+            }
+            catch (Exception ex)
+            {
+                return (false, new List<string> { $"Failed to delete category: {ex.Message}" });
+            }
+        }
+
+        public async Task<(bool Success, string Message)> DeleteCategoryWithMessageAsync(string id)
+        {
+            var result = await DeleteCategoryAsync(id);
+            if (result.Success)
+            {
+                return (true, "Category deleted successfully!");
+            }
+            else
+            {
+                return (false, string.Join(", ", result.Errors));
+            }        }
     }
 }
