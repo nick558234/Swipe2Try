@@ -16,11 +16,17 @@ namespace Swipe2Try.Core.Managers
         {
             _dishRepository = dishRepository;
             _dishValidator = new DishValidator();
-        }
-
-        public async Task<List<Dish>> GetAllDishesAsync()
+        }        public async Task<List<Dish>> GetAllDishesAsync()
         {
             return await _dishRepository.GetAllDishesAsync();
+        }
+
+        public async Task<List<Dish>> GetDishesByUserIdAsync(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentException("User ID cannot be null or empty", nameof(userId));
+
+            return await _dishRepository.GetDishesByUserIdAsync(userId);
         }
 
         public async Task<Dish?> GetDishByIdAsync(string id)

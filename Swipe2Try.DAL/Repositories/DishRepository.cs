@@ -25,20 +25,19 @@ namespace Swipe2Try.DAL.Repositories
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    await connection.OpenAsync();
-                    var command = new SqlCommand(
-                        @"SELECT DishID, Name, Description, HealthFactor, Photo, 'Not Available' AS Restaurant FROM Dishes",
+                    await connection.OpenAsync();                    var command = new SqlCommand(
+                        @"SELECT DishID, Name, Description, HealthFactor, Photo, UserId, 'Not Available' AS Restaurant FROM Dishes",
                         connection);
 
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
-                        {
-                            var dish = new Dish
+                        {                            var dish = new Dish
                             {
                                 Id = reader["DishID"]?.ToString() ?? string.Empty,
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Description = reader["Description"]?.ToString() ?? string.Empty,
+                                UserId = reader["UserId"]?.ToString() ?? string.Empty,
                                 HealthFactor = reader["HealthFactor"]?.ToString(),
                                 Photo = reader["Photo"]?.ToString(),
                                 Restaurant = reader["Restaurant"]?.ToString()
@@ -56,6 +55,44 @@ namespace Swipe2Try.DAL.Repositories
                 // Or, add an error message to a list that can be returned
                 Console.WriteLine($"Error in GetAllDishesAsync: {ex.Message}");
                 // Depending on requirements, you might throw, return a custom error object, or an empty list with logged error.
+            }            return dishes;
+        }
+
+        public async Task<List<Dish>> GetDishesByUserIdAsync(string userId)
+        {
+            var dishes = new List<Dish>();
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+                    var command = new SqlCommand(
+                        @"SELECT DishID, Name, Description, HealthFactor, Photo, UserId, 'Not Available' AS Restaurant FROM Dishes WHERE UserId = @UserId",
+                        connection);
+                    command.Parameters.AddWithValue("@UserId", userId);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var dish = new Dish
+                            {
+                                Id = reader["DishID"]?.ToString() ?? string.Empty,
+                                Name = reader["Name"]?.ToString() ?? string.Empty,
+                                Description = reader["Description"]?.ToString() ?? string.Empty,
+                                UserId = reader["UserId"]?.ToString() ?? string.Empty,
+                                HealthFactor = reader["HealthFactor"]?.ToString(),
+                                Photo = reader["Photo"]?.ToString(),
+                                Restaurant = reader["Restaurant"]?.ToString()
+                            };
+                            dishes.Add(dish);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetDishesByUserIdAsync: {ex.Message}");
             }
             return dishes;
         }
@@ -67,18 +104,18 @@ namespace Swipe2Try.DAL.Repositories
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("SELECT DishID, Name, Description, HealthFactor, Photo, 'Not Available' AS Restaurant FROM Dishes WHERE DishID = @DishID", connection);
+                    var command = new SqlCommand("SELECT DishID, Name, Description, HealthFactor, Photo, UserId, 'Not Available' AS Restaurant FROM Dishes WHERE DishID = @DishID", connection);
                     command.Parameters.AddWithValue("@DishID", id);
 
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
-                        {
-                            return new Dish
+                        {                            return new Dish
                             {
                                 Id = reader["DishID"]?.ToString() ?? string.Empty,
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Description = reader["Description"]?.ToString() ?? string.Empty,
+                                UserId = reader["UserId"]?.ToString() ?? string.Empty,
                                 HealthFactor = reader["HealthFactor"]?.ToString(),
                                 Photo = reader["Photo"]?.ToString(),
                                 Restaurant = reader["Restaurant"]?.ToString()
@@ -100,15 +137,15 @@ namespace Swipe2Try.DAL.Repositories
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    await connection.OpenAsync();
-                    var command = new SqlCommand(
-                        "INSERT INTO Dishes (DishID, Name, Description, HealthFactor, Photo) VALUES (@DishID, @Name, @Description, @HealthFactor, @Photo)",
+                    await connection.OpenAsync();                    var command = new SqlCommand(
+                        "INSERT INTO Dishes (DishID, Name, Description, HealthFactor, Photo, UserId) VALUES (@DishID, @Name, @Description, @HealthFactor, @Photo, @UserId)",
                         connection);
                     command.Parameters.AddWithValue("@DishID", dish.Id);
                     command.Parameters.AddWithValue("@Name", dish.Name);
                     command.Parameters.AddWithValue("@Description", dish.Description);
                     command.Parameters.AddWithValue("@HealthFactor", (object?)dish.HealthFactor ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Photo", (object?)dish.Photo ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@UserId", dish.UserId);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -125,15 +162,15 @@ namespace Swipe2Try.DAL.Repositories
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    await connection.OpenAsync();
-                    var command = new SqlCommand(
-                        "UPDATE Dishes SET Name = @Name, Description = @Description, HealthFactor = @HealthFactor, Photo = @Photo WHERE DishID = @DishID",
+                    await connection.OpenAsync();                    var command = new SqlCommand(
+                        "UPDATE Dishes SET Name = @Name, Description = @Description, HealthFactor = @HealthFactor, Photo = @Photo, UserId = @UserId WHERE DishID = @DishID",
                         connection);
                     command.Parameters.AddWithValue("@DishID", dish.Id);
                     command.Parameters.AddWithValue("@Name", dish.Name);
                     command.Parameters.AddWithValue("@Description", dish.Description);
                     command.Parameters.AddWithValue("@HealthFactor", (object?)dish.HealthFactor ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Photo", (object?)dish.Photo ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@UserId", dish.UserId);
                     await command.ExecuteNonQueryAsync();
                 }
             }

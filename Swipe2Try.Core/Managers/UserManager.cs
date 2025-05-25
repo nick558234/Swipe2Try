@@ -106,11 +106,10 @@ namespace Swipe2Try.Core.Managers
 
             // Get role from database
             var role = await _roleManager.GetRoleByIdAsync(authResult.User.RoleID);
-            var roleNameToStore = role?.RoleName ?? "Unknown";
-
-            // Create claims
+            var roleNameToStore = role?.RoleName ?? "Unknown";            // Create claims
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.NameIdentifier, authResult.User.UserID),
                 new Claim(ClaimTypes.Name, authResult.User.Name),
                 new Claim(ClaimTypes.Email, authResult.User.Email),
                 new Claim(ClaimTypes.Role, roleNameToStore)
@@ -147,11 +146,10 @@ namespace Swipe2Try.Core.Managers
 
             // Get role name for claims
             var role = await _roleManager.GetRoleByIdAsync(user.RoleID);
-            var roleName = role?.RoleName ?? "Unknown";
-
-            // Create claims for immediate login
+            var roleName = role?.RoleName ?? "Unknown";            // Create claims for immediate login
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.NameIdentifier, user.UserID),
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, roleName)
