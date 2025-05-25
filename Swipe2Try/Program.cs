@@ -21,6 +21,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IDishRepository, Swipe2Try.DAL.Repositories.DishRepository>();
 builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IUserRepository, Swipe2Try.DAL.Repositories.UserRepository>();
 builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IRoleRepository, Swipe2Try.DAL.Repositories.RoleRepository>();
+builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IRestaurantRepository, Swipe2Try.DAL.Repositories.RestaurantRepository>();
 
 // Register validators
 builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IUserValidator, Swipe2Try.Core.Validation.UserValidator>();
@@ -30,6 +31,7 @@ builder.Services.AddScoped<Swipe2Try.Core.Managers.UserManager>();
 builder.Services.AddScoped<Swipe2Try.Core.Managers.RoleManager>();
 builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IRoleManager, Swipe2Try.Core.Managers.RoleManager>();
 builder.Services.AddScoped<Swipe2Try.Core.Managers.DishManager>();
+builder.Services.AddScoped<Swipe2Try.Core.Managers.RestaurantManager>();
 
 // Add built-in cookie authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
