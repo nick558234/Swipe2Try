@@ -1,0 +1,43 @@
+@page "{id}"
+@model Swipe2Try.Pages.Admin.Categories.EditModel
+
+@{    ViewData["Title"] = "Edit Category";
+}
+
+<h1>Edit Category</h1>
+
+<h4>Category</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Category.Id" />
+            <div class="form-group">
+                <label asp-for="Category.Name" class="control-label"></label>
+                <input asp-for="Category.Name" class="form-control" />
+                <span asp-validation-for="Category.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Category.Photo" class="control-label"></label>
+                <input type="file" name="photoFile" class="form-control" />
+                <span asp-validation-for="Category.Photo" class="text-danger"></span>
+                @if (!string.IsNullOrEmpty(Model.Category.Photo))
+                {
+                    <img src="@Model.Category.Photo" alt="Current category image" style="max-width: 100px; max-height: 100px; margin-top:10px;" />
+                }
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
