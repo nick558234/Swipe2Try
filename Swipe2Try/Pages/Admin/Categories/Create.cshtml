@@ -4,37 +4,36 @@
 @{    
     ViewData["Title"] = "Create Category";
     Layout = "_AdminLayout";
-
     ViewData["ActivePage"] = "Categories";
 }
 
-<h1>Create Category</h1>
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Create Category</h1>
 
-<h4>Category</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <form method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Category.Name" class="control-label"></label>
-                <input asp-for="Category.Name" class="form-control" />
-                <span asp-validation-for="Category.Name" class="text-danger"></span>
+            <div asp-validation-summary="ModelOnly" class="text-red-500 text-xs italic mb-4"></div>
+            
+            <div class="mb-4">
+                <label asp-for="Category.Name" class="block text-gray-700 text-sm font-bold mb-2"></label>
+                <input asp-for="Category.Name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                <span asp-validation-for="Category.Name" class="text-red-500 text-xs italic"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Category.Photo" class="control-label"></label>
-                <input type="file" name="photoFile" class="form-control" />
-                <span asp-validation-for="Category.Photo" class="text-danger"></span>
+            
+            <div class="mb-6">
+                <label asp-for="Category.Photo" class="block text-gray-700 text-sm font-bold mb-2"></label>
+                <input type="file" name="photoFile" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                <span asp-validation-for="Category.Photo" class="text-red-500 text-xs italic"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            
+            <div class="flex items-center justify-between">
+                <input type="submit" value="Create" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" />
+                <a asp-page="Index" class="inline-block align-baseline font-bold text-sm text-purple-600 hover:text-purple-800">
+                    Back to List
+                </a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="Index">Back to List</a>
 </div>
 
 @section Scripts {
