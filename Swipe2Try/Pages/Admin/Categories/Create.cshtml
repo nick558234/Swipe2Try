@@ -1,7 +1,11 @@
 @page
 @model Swipe2Try.Pages.Admin.Categories.CreateModel
 
-@{    ViewData["Title"] = "Create Category";
+@{    
+    ViewData["Title"] = "Create Category";
+    Layout = "_AdminLayout";
+
+    ViewData["ActivePage"] = "Categories";
 }
 
 <h1>Create Category</h1>
