@@ -11,7 +11,7 @@
     <h1 class="text-2xl font-semibold text-gray-800 mb-6">Create Category</h1>
 
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <form method="post" enctype="multipart/form-data">
+        <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-red-500 text-xs italic mb-4"></div>
             
             <div class="mb-4">
@@ -22,7 +22,7 @@
             
             <div class="mb-6">
                 <label asp-for="Category.Photo" class="block text-gray-700 text-sm font-bold mb-2"></label>
-                <input type="file" name="photoFile" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                <input type="text" asp-for="Category.Photo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
                 <span asp-validation-for="Category.Photo" class="text-red-500 text-xs italic"></span>
             </div>
             

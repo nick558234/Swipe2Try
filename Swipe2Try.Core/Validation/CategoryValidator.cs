@@ -65,9 +65,9 @@ namespace Swipe2Try.Core.Validation
             }
 
             // Validate ID is provided for update
-            if (string.IsNullOrWhiteSpace(category.Id))
+            if (category.Id <= 0) // Check if the integer ID is valid (e.g., greater than 0)
             {
-                errors.Add("Category ID is required for an update.");
+                errors.Add("A valid Category ID is required for an update.");
             }
 
             if (string.IsNullOrWhiteSpace(category.Name))

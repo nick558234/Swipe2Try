@@ -32,7 +32,7 @@ namespace Swipe2Try.DAL.Repositories
                         {
                             var category = new Category
                             {
-                                Id = reader["CategoryID"]?.ToString() ?? string.Empty,
+                                Id = reader.GetInt32(reader.GetOrdinal("CategoryID")), // Changed to GetInt32
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Photo = reader["Photo"]?.ToString()
                             };
@@ -48,7 +48,7 @@ namespace Swipe2Try.DAL.Repositories
             return categories;
         }
 
-        public async Task<Category?> GetCategoryByIdAsync(string id)
+        public async Task<Category?> GetCategoryByIdAsync(int id) // Changed string to int
         {
             try
             {
@@ -56,7 +56,7 @@ namespace Swipe2Try.DAL.Repositories
                 {
                     await connection.OpenAsync();
                     var command = new SqlCommand("SELECT CategoryID, Name, Photo FROM Categories WHERE CategoryID = @CategoryID", connection);
-                    command.Parameters.AddWithValue("@CategoryID", id);
+                    command.Parameters.AddWithValue("@CategoryID", id); // id is now int
 
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -64,7 +64,7 @@ namespace Swipe2Try.DAL.Repositories
                         {
                             return new Category
                             {
-                                Id = reader["CategoryID"]?.ToString() ?? string.Empty,
+                                Id = reader.GetInt32(reader.GetOrdinal("CategoryID")), // Changed to GetInt32
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Photo = reader["Photo"]?.ToString()
                             };
@@ -86,12 +86,18 @@ namespace Swipe2Try.DAL.Repositories
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("INSERT INTO Categories (CategoryID, Name, Photo) VALUES (@CategoryID, @Name, @Photo)", connection);
-                    command.Parameters.AddWithValue("@CategoryID", category.Id);
+                    // Removed CategoryID from INSERT statement as it's auto-incrementing
+                    // Added OUTPUT INSERTED.CategoryID to retrieve the generated ID
+                    var command = new SqlCommand("INSERT INTO Categories (Name, Photo) OUTPUT INSERTED.CategoryID VALUES (@Name, @Photo)", connection);
                     command.Parameters.AddWithValue("@Name", category.Name);
                     command.Parameters.AddWithValue("@Photo", (object?)category.Photo ?? DBNull.Value);
 
-                    await command.ExecuteNonQueryAsync();
+                    // ExecuteScalarAsync to get the newly generated ID
+                    var newId = await command.ExecuteScalarAsync();
+                    if (newId != null && newId != DBNull.Value)
+                    {
+                        category.Id = Convert.ToInt32(newId);
+                    }
                 }
             }
             catch (Exception ex)
@@ -111,7 +117,7 @@ namespace Swipe2Try.DAL.Repositories
                     var command = new SqlCommand("UPDATE Categories SET Name = @Name, Photo = @Photo WHERE CategoryID = @CategoryID", connection);
                     command.Parameters.AddWithValue("@Name", category.Name);
                     command.Parameters.AddWithValue("@Photo", (object?)category.Photo ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@CategoryID", category.Id);
+                    command.Parameters.AddWithValue("@CategoryID", category.Id); // Id is now int
 
                     await command.ExecuteNonQueryAsync();
                 }
@@ -123,7 +129,7 @@ namespace Swipe2Try.DAL.Repositories
             }
         }
 
-        public async Task DeleteCategoryAsync(string id)
+        public async Task DeleteCategoryAsync(int id) // Changed string to int
         {
             try
             {
@@ -131,7 +137,7 @@ namespace Swipe2Try.DAL.Repositories
                 {
                     await connection.OpenAsync();
                     var command = new SqlCommand("DELETE FROM Categories WHERE CategoryID = @CategoryID", connection);
-                    command.Parameters.AddWithValue("@CategoryID", id);
+                    command.Parameters.AddWithValue("@CategoryID", id); // id is now int
 
                     await command.ExecuteNonQueryAsync();
                 }

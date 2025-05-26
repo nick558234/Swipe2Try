@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System;
 
 namespace Swipe2Try.Core.Managers
-{    public class CategoryManager
+{
+    public class CategoryManager
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly ICategoryValidator _categoryValidator;
@@ -15,18 +16,20 @@ namespace Swipe2Try.Core.Managers
         {
             _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
             _categoryValidator = categoryValidator ?? throw new ArgumentNullException(nameof(categoryValidator));
-        }        public async Task<List<Category>> GetAllCategoriesAsync()
+        }
+        public async Task<List<Category>> GetAllCategoriesAsync()
         {
             return await _categoryRepository.GetAllCategoriesAsync() as List<Category> ?? new List<Category>();
         }
 
-        public async Task<Category?> GetCategoryByIdAsync(string id)
+        public async Task<Category?> GetCategoryByIdAsync(int id) // Changed string to int
         {
-            if (string.IsNullOrEmpty(id))
-                throw new ArgumentException("Category ID cannot be null or empty", nameof(id));
+            if (id <= 0) // Changed validation for int
+                throw new ArgumentException("Category ID must be a positive integer", nameof(id));
 
             return await _categoryRepository.GetCategoryByIdAsync(id);
-        }        public async Task<(bool Success, List<string> Errors)> AddCategoryAsync(Category category)
+        }
+        public async Task<(bool Success, List<string> Errors)> AddCategoryAsync(Category category)
         {
             try
             {
@@ -35,9 +38,8 @@ namespace Swipe2Try.Core.Managers
                 if (!validationResult.IsValid)
                     return (false, validationResult.Errors);
 
-                // Generate a short random string for CategoryID (length 10)
-                category.Id = Guid.NewGuid().ToString("N").Substring(0, 10);
-                
+                // category.Id will be set by the database
+
                 await _categoryRepository.AddCategoryAsync(category);
                 return (true, new List<string>());
             }
@@ -46,7 +48,7 @@ namespace Swipe2Try.Core.Managers
                 return (false, new List<string> { $"Failed to add category: {ex.Message}" });
             }
         }
-        
+
         public async Task<(bool Success, string Message)> AddCategoryWithMessageAsync(Category category)
         {
             var result = await AddCategoryAsync(category);
@@ -58,7 +60,8 @@ namespace Swipe2Try.Core.Managers
             {
                 return (false, string.Join(", ", result.Errors));
             }
-        }        public async Task<(bool Success, List<string> Errors)> UpdateCategoryAsync(Category category)
+        }
+        public async Task<(bool Success, List<string> Errors)> UpdateCategoryAsync(Category category)
         {
             try
             {
@@ -87,11 +90,12 @@ namespace Swipe2Try.Core.Managers
             {
                 return (false, string.Join(", ", result.Errors));
             }
-        }        public async Task<(bool Success, List<string> Errors)> DeleteCategoryAsync(string id)
+        }
+        public async Task<(bool Success, List<string> Errors)> DeleteCategoryAsync(int id) // Changed string to int
         {
             try
             {
-                if (string.IsNullOrEmpty(id))
+                if (id <= 0) // Changed validation for int
                     return (false, new List<string> { "Invalid category ID" });
 
                 await _categoryRepository.DeleteCategoryAsync(id);
@@ -103,7 +107,7 @@ namespace Swipe2Try.Core.Managers
             }
         }
 
-        public async Task<(bool Success, string Message)> DeleteCategoryWithMessageAsync(string id)
+        public async Task<(bool Success, string Message)> DeleteCategoryWithMessageAsync(int id) // Changed string to int
         {
             var result = await DeleteCategoryAsync(id);
             if (result.Success)
@@ -113,6 +117,7 @@ namespace Swipe2Try.Core.Managers
             else
             {
                 return (false, string.Join(", ", result.Errors));
-            }        }
+            }
+        }
     }
 }

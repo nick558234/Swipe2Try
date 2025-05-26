@@ -32,6 +32,11 @@ namespace Swipe2Try.Pages.Admin.Categories
                 return Page();
             }
 
+            if (string.IsNullOrEmpty(Category.Photo))
+            {
+                Category.Photo = null;
+            }
+
             await _categoryManager.AddCategoryAsync(Category);
 
             return RedirectToPage("./Index");

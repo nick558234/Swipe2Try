@@ -20,9 +20,9 @@ namespace Swipe2Try.Pages.Admin.Categories
         [BindProperty]
         public Category Category { get; set; } = new Category { Name = string.Empty };
 
-        public async Task<IActionResult> OnGetAsync(string id)
+        public async Task<IActionResult> OnGetAsync(int id) // Changed string to int
         {
-            if (id == null)
+            if (id <= 0) // Changed check for int
             {
                 return NotFound();
             }
