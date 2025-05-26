@@ -170,7 +170,7 @@ namespace Swipe2Try.Core.Managers
             return roleName switch
             {
                 "Admin" => "/Admin/Index",
-                "OWNER" => "/RestaurantOwner/Index",
+                "Restaurant Owner" => "/RestaurantOwner/Index",
                 _ => "/swipe"
             };
         }

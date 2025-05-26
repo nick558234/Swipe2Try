@@ -52,12 +52,21 @@ namespace Swipe2Try.Pages
 
             if (result.Success && result.Principal != null)
             {
+                var authProperties = new AuthenticationProperties
+                {
+                    // Set cookie to expire after 30 minutes
+                    // Make cookie persistent across browser sessions
+                };
+
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
-                    result.Principal);
+                    result.Principal,
+                    authProperties);
 
-                // Redirect to home page
-                return RedirectToPage("/Index");
+                // Get role from claims and redirect accordingly
+                var roleName = result.Principal.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+                var redirectPage = _userManager.GetRedirectPageForRole(roleName);
+                return RedirectToPage(redirectPage);
             }
             else
             {

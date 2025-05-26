@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Swipe2Try.Core.Models;
+using Swipe2Try.Core.Managers;
 using Swipe2Try.Core.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,12 +13,12 @@ namespace Swipe2Try.Pages.Admin.Dishes
     [Authorize(Roles = "Admin, Restaurant Owner")]
     public class IndexModel : PageModel
     {
-        private readonly IDishRepository _dishRepository;
-        private readonly IUserManager _userManager;
+        private readonly DishManager _dishManager;
+        private readonly UserManager _userManager;
 
-        public IndexModel(IDishRepository dishRepository, IUserManager userManager)
+        public IndexModel(DishManager dishManager, UserManager userManager)
         {
-            _dishRepository = dishRepository;
+            _dishManager = dishManager;
             _userManager = userManager;
         }
 
@@ -31,7 +32,7 @@ namespace Swipe2Try.Pages.Admin.Dishes
             UserName = User.Identity?.Name ?? "Guest";
             UserRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
 
-            Dishes = await _dishRepository.GetAllDishesAsync();
+            Dishes = await _dishManager.GetAllDishesAsync();
         }
     }
 }
