@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 namespace Swipe2Try.Core.Validation
 {
     public class RestaurantValidator : IRestaurantValidator
-    {
-        public async Task<(bool IsValid, List<string> Errors)> ValidateForCreationAsync(Restaurant restaurant)
+    {        public Task<(bool IsValid, List<string> Errors)> ValidateForCreationAsync(Restaurant restaurant)
         {
             var errors = new List<string>();
 
             if (restaurant == null)
             {
                 errors.Add("Restaurant cannot be null");
-                return (false, errors);
+                return Task.FromResult((false, errors));
             }
             
             if (string.IsNullOrWhiteSpace(restaurant.Name))
@@ -33,14 +32,16 @@ namespace Swipe2Try.Core.Validation
             else if (restaurant.Location.Length > 200)
             {
                 errors.Add("Restaurant location cannot exceed 200 characters");
-            }
-
-            if (string.IsNullOrWhiteSpace(restaurant.UserId))
+            }            if (string.IsNullOrWhiteSpace(restaurant.UserId))
             {
                 errors.Add("User ID is required");
             }
+            else if (restaurant.UserId.Length > 450) // Match ASP.NET Identity default
+            {
+                errors.Add("User ID cannot exceed 450 characters");
+            }
 
-            return (errors.Count == 0, errors);
+            return Task.FromResult((errors.Count == 0, errors));
         }
 
         public async Task<(bool IsValid, List<string> Errors)> ValidateForUpdateAsync(Restaurant restaurant)
@@ -51,18 +52,14 @@ namespace Swipe2Try.Core.Validation
             {
                 errors.Add("Restaurant cannot be null");
                 return (false, errors);
-            }
-
-            // First run the same validations as creation
+            }            // First run the same validations as creation
             var creationValidation = await ValidateForCreationAsync(restaurant);
             if (!creationValidation.IsValid)
             {
                 return creationValidation;
-            }
-
-            if (string.IsNullOrWhiteSpace(restaurant.Id))
+            }if (restaurant.Id <= 0)
             {
-                errors.Add("Restaurant ID is required for update");
+                errors.Add("Restaurant ID must be a positive integer for update");
             }
 
             return (errors.Count == 0, errors);

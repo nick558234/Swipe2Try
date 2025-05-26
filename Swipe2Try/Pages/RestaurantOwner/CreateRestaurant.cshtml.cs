@@ -17,10 +17,8 @@ namespace Swipe2Try.Pages.RestaurantOwner
         public CreateRestaurantModel(RestaurantManager restaurantManager)
         {
             _restaurantManager = restaurantManager;
-        }
-
-        [BindProperty]
-        public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "" };
+        }        [BindProperty]
+        public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "", UserId = "" };
 
         public List<string> ValidationErrors { get; set; } = new List<string>();
 

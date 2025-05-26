@@ -28,12 +28,10 @@ namespace Swipe2Try.Core.Managers
                 throw new ArgumentException("User ID cannot be null or empty", nameof(userId));
 
             return await _restaurantRepository.GetRestaurantsByUserIdAsync(userId);
-        }
-
-        public async Task<Restaurant?> GetRestaurantByIdAsync(string id)
+        }        public async Task<Restaurant?> GetRestaurantByIdAsync(int id)
         {
-            if (string.IsNullOrEmpty(id))
-                throw new ArgumentException("Restaurant ID cannot be null or empty", nameof(id));
+            if (id <= 0)
+                throw new ArgumentException("Restaurant ID must be a positive integer", nameof(id));
 
             return await _restaurantRepository.GetRestaurantByIdAsync(id);
         }        public async Task<(bool Success, List<string> Errors)> AddRestaurantAsync(Restaurant restaurant)
@@ -45,9 +43,7 @@ namespace Swipe2Try.Core.Managers
                 if (!validationResult.IsValid)
                     return (false, validationResult.Errors);
 
-                // Generate a short random string for RestaurantID (length 10)
-                restaurant.Id = Guid.NewGuid().ToString("N").Substring(0, 10);
-                
+                // The database will auto-generate the ID
                 await _restaurantRepository.AddRestaurantAsync(restaurant);
                 return (true, new List<string>());
             }
@@ -97,13 +93,11 @@ namespace Swipe2Try.Core.Managers
             {
                 return (false, string.Join(", ", result.Errors));
             }
-        }
-
-        public async Task<(bool Success, List<string> Errors)> DeleteRestaurantAsync(string id)
+        }        public async Task<(bool Success, List<string> Errors)> DeleteRestaurantAsync(int id)
         {
             try
             {
-                if (string.IsNullOrEmpty(id))
+                if (id <= 0)
                     return (false, new List<string> { "Invalid restaurant ID" });
 
                 await _restaurantRepository.DeleteRestaurantAsync(id);
@@ -115,7 +109,7 @@ namespace Swipe2Try.Core.Managers
             }
         }
 
-        public async Task<(bool Success, string Message)> DeleteRestaurantWithMessageAsync(string id)
+        public async Task<(bool Success, string Message)> DeleteRestaurantWithMessageAsync(int id)
         {
             var result = await DeleteRestaurantAsync(id);
             if (result.Success)

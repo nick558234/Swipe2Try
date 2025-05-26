@@ -8,9 +8,9 @@ namespace Swipe2Try.Core.Interfaces
     {
         Task<List<Restaurant>> GetAllRestaurantsAsync();
         Task<List<Restaurant>> GetRestaurantsByUserIdAsync(string userId);
-        Task<Restaurant?> GetRestaurantByIdAsync(string id);
+        Task<Restaurant?> GetRestaurantByIdAsync(int id);
         Task AddRestaurantAsync(Restaurant restaurant);
         Task UpdateRestaurantAsync(Restaurant restaurant);
-        Task DeleteRestaurantAsync(string id);
+        Task DeleteRestaurantAsync(int id);
     }
 }

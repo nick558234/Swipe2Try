@@ -19,9 +19,7 @@ namespace Swipe2Try.Core.Managers
         public async Task<List<Role>> GetAllRolesAsync()
         {
             return await _roleRepository.GetAllRolesAsync();
-        }
-
-        public async Task<Role> GetRoleByIdAsync(string roleId)
+        }        public async Task<Role?> GetRoleByIdAsync(string roleId)
         {
             return await _roleRepository.GetRoleByIdAsync(roleId);
         }
@@ -45,9 +43,7 @@ namespace Swipe2Try.Core.Managers
         {
             // Same as assigning a role in this simple implementation
             return await AssignRoleAsync(user, newRole);
-        }
-
-        public Task<bool> DeleteRoleAsync(string roleId)
+        }        public Task<bool> DeleteRoleAsync(string roleId)
         {
             // In a real application, we would delete the role from the database
             // This would require checking for users with this role first and perhaps reassigning them
@@ -55,11 +51,11 @@ namespace Swipe2Try.Core.Managers
             return Task.FromResult(false);
         }
 
-        public async Task<List<User>> GetUsersByRoleAsync(string roleId)
+        public Task<List<User>> GetUsersByRoleAsync(string roleId)
         {
             // In a real application, we would query the database for all users with this role
             // For this simple demo, we'll return an empty list
-            return new List<User>();
+            return Task.FromResult(new List<User>());
         }
     }
 }

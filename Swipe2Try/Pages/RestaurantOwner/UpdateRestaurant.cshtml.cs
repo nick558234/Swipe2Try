@@ -17,21 +17,23 @@ namespace Swipe2Try.Pages.RestaurantOwner
         public UpdateRestaurantModel(RestaurantManager restaurantManager)
         {
             _restaurantManager = restaurantManager;
-        }
+        }        [BindProperty]
+        public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "", UserId = "" };
 
-        [BindProperty]
-        public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "" };
-
-        public List<string> ValidationErrors { get; set; } = new List<string>();
-
-        public async Task<IActionResult> OnGetAsync(string id)
+        public List<string> ValidationErrors { get; set; } = new List<string>();        public async Task<IActionResult> OnGetAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var restaurant = await _restaurantManager.GetRestaurantByIdAsync(id);
+            // Parse the ID to integer
+            if (!int.TryParse(id, out int restaurantId))
+            {
+                return NotFound();
+            }
+
+            var restaurant = await _restaurantManager.GetRestaurantByIdAsync(restaurantId);
             if (restaurant == null)
             {
                 return NotFound();
