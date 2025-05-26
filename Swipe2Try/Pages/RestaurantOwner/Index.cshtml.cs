@@ -28,13 +28,20 @@ namespace Swipe2Try.Pages.RestaurantOwner
                 // Only get dishes for the current user
                 Dishes = await _dishManager.GetDishesByUserIdAsync(userId);
             }
-        }        public async Task<IActionResult> OnPostDeleteAsync(string id)
+        }        public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             // Get the current user's ID for security check
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
                 TempData["ErrorMessage"] = "User not found";
+                return RedirectToPage();
+            }
+
+            // Validate dish ID
+            if (id <= 0)
+            {
+                TempData["ErrorMessage"] = "Invalid dish ID";
                 return RedirectToPage();
             }
 

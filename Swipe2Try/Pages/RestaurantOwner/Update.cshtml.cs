@@ -20,9 +20,9 @@ namespace Swipe2Try.Pages.RestaurantOwner
         }        [BindProperty]
         public Dish Input { get; set; } = new Dish { Name = "", Description = "" };
 
-        public List<string> ValidationErrors { get; set; } = new List<string>();        public async Task<IActionResult> OnGetAsync(string id)
+        public List<string> ValidationErrors { get; set; } = new List<string>();        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id <= 0)
             {
                 return NotFound();
             }
@@ -42,7 +42,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
 
             Input = dish;
             return Page();
-        }        public async Task<IActionResult> OnPostAsync()
+        }public async Task<IActionResult> OnPostAsync()
         {
             // Security check: ensure user can only update their own dishes
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

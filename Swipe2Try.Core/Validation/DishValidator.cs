@@ -27,11 +27,9 @@ namespace Swipe2Try.Core.Validation
             if (string.IsNullOrWhiteSpace(dish.Description))
                 errors.Add("Dish description is required");
             else if (dish.Description.Length > 500)
-                errors.Add("Dish description cannot exceed 500 characters");
-
-            // Validate Health Factor (optional but if provided, should be valid)
-            if (!string.IsNullOrEmpty(dish.HealthFactor) && dish.HealthFactor.Length > 50)
-                errors.Add("Health factor cannot exceed 50 characters");
+                errors.Add("Dish description cannot exceed 500 characters");            // Validate Health Factor (optional but if provided, should be valid)
+            if (dish.HealthFactor.HasValue && (dish.HealthFactor.Value < 1 || dish.HealthFactor.Value > 10))
+                errors.Add("Health factor must be between 1 and 10");
 
             // Validate Photo URL (optional but if provided, should be reasonable length)
             if (!string.IsNullOrEmpty(dish.Photo) && dish.Photo.Length > 500)
@@ -48,11 +46,9 @@ namespace Swipe2Try.Core.Validation
             {
                 errors.Add("Dish cannot be null");
                 return (false, errors);
-            }
-
-            // Validate ID is provided for update
-            if (string.IsNullOrWhiteSpace(dish.Id))
-                errors.Add("Dish ID is required for update");
+            }            // Validate ID is provided for update
+            if (dish.Id <= 0)
+                errors.Add("Dish ID must be a positive integer for update");
 
             // Use same validation rules as creation
             var creationValidation = await ValidateForCreationAsync(dish);

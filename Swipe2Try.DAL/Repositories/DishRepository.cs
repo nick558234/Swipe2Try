@@ -30,15 +30,14 @@ namespace Swipe2Try.DAL.Repositories
                         connection);
 
                     using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
+                    {                        while (await reader.ReadAsync())
                         {                            var dish = new Dish
                             {
-                                Id = reader["DishID"]?.ToString() ?? string.Empty,
+                                Id = reader.GetInt32("DishID"),
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Description = reader["Description"]?.ToString() ?? string.Empty,
                                 UserId = reader["UserId"]?.ToString() ?? string.Empty,
-                                HealthFactor = reader["HealthFactor"]?.ToString(),
+                                HealthFactor = reader["HealthFactor"] == DBNull.Value ? null : (int?)reader.GetInt32("HealthFactor"),
                                 Photo = reader["Photo"]?.ToString(),
                                 Restaurant = reader["Restaurant"]?.ToString()
                             };
@@ -72,16 +71,15 @@ namespace Swipe2Try.DAL.Repositories
                     command.Parameters.AddWithValue("@UserId", userId);
 
                     using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
+                    {                        while (await reader.ReadAsync())
                         {
                             var dish = new Dish
                             {
-                                Id = reader["DishID"]?.ToString() ?? string.Empty,
+                                Id = reader.GetInt32("DishID"),
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Description = reader["Description"]?.ToString() ?? string.Empty,
                                 UserId = reader["UserId"]?.ToString() ?? string.Empty,
-                                HealthFactor = reader["HealthFactor"]?.ToString(),
+                                HealthFactor = reader["HealthFactor"] == DBNull.Value ? null : (int?)reader.GetInt32("HealthFactor"),
                                 Photo = reader["Photo"]?.ToString(),
                                 Restaurant = reader["Restaurant"]?.ToString()
                             };
@@ -95,9 +93,7 @@ namespace Swipe2Try.DAL.Repositories
                 Console.WriteLine($"Error in GetDishesByUserIdAsync: {ex.Message}");
             }
             return dishes;
-        }
-
-        public async Task<Dish?> GetDishByIdAsync(string id)
+        }        public async Task<Dish?> GetDishByIdAsync(int id)
         {
             try
             {
@@ -112,11 +108,11 @@ namespace Swipe2Try.DAL.Repositories
                         if (await reader.ReadAsync())
                         {                            return new Dish
                             {
-                                Id = reader["DishID"]?.ToString() ?? string.Empty,
+                                Id = reader.GetInt32("DishID"),
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Description = reader["Description"]?.ToString() ?? string.Empty,
                                 UserId = reader["UserId"]?.ToString() ?? string.Empty,
-                                HealthFactor = reader["HealthFactor"]?.ToString(),
+                                HealthFactor = reader["HealthFactor"] == DBNull.Value ? null : (int?)reader.GetInt32("HealthFactor"),
                                 Photo = reader["Photo"]?.ToString(),
                                 Restaurant = reader["Restaurant"]?.ToString()
                             };
@@ -129,18 +125,15 @@ namespace Swipe2Try.DAL.Repositories
                 Console.WriteLine($"Error in GetDishByIdAsync: {ex.Message}");
             }
             return null;
-        }
-
-        public async Task AddDishAsync(Dish dish)
+        }        public async Task AddDishAsync(Dish dish)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();                    var command = new SqlCommand(
-                        "INSERT INTO Dishes (DishID, Name, Description, HealthFactor, Photo, UserId) VALUES (@DishID, @Name, @Description, @HealthFactor, @Photo, @UserId)",
+                        "INSERT INTO Dishes (Name, Description, HealthFactor, Photo, UserId) VALUES (@Name, @Description, @HealthFactor, @Photo, @UserId)",
                         connection);
-                    command.Parameters.AddWithValue("@DishID", dish.Id);
                     command.Parameters.AddWithValue("@Name", dish.Name);
                     command.Parameters.AddWithValue("@Description", dish.Description);
                     command.Parameters.AddWithValue("@HealthFactor", (object?)dish.HealthFactor ?? DBNull.Value);
@@ -178,9 +171,7 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in UpdateDishAsync: {ex.Message}");
             }
-        }
-
-        public async Task DeleteDishAsync(string id)
+        }        public async Task DeleteDishAsync(int id)
         {
             try
             {
