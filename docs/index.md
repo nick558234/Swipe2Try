@@ -12,6 +12,9 @@ Swipe2Try is a restaurant discovery and food ordering application that allows us
 - **[Architecture Overview](Architecture.md)** - Complete guide to the three-layer architecture implementation
 - **[Diagrams](diagrams/index.md)** - Visual representations of system architecture and relationships
 
+### 📊 Core Components
+- **[Domain Models](DomainModels.md)** - Comprehensive documentation of core business entities
+
 ### 🔐 Security
 - **[Authentication](Authentication.md)** - User authentication system using ASP.NET Core Identity
 - **[Authorization](Authorization.md)** - Role-based access control and security policies

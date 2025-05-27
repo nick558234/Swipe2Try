@@ -11,8 +11,10 @@
       
       
       
-        <link rel="prev" href="../TupleReturnTypePattern/">
+        <link rel="prev" href="../Architecture/">
       
+      
+        <link rel="next" href="../Authentication/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -20,7 +22,7 @@
     
     
       
-        <title>Overview - Swipe2Try Documentation</title>
+        <title>Domain Models - Swipe2Try Documentation</title>
       
     
     
@@ -71,11 +73,6 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
-        
-        <a href="#swipe2try-diagrams" class="md-skip">
-          Skip to content
-        </a>
-      
     </div>
     <div data-md-component="announce">
       
@@ -108,7 +105,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Domain Models
             
           </span>
         </div>
@@ -242,11 +239,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../DomainModels/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -302,13 +301,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../diagrams/" class="md-tabs__link">
           
   
   
@@ -407,24 +404,29 @@
       
   
   
+    
   
   
+  
     
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -437,7 +439,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Core Components
@@ -448,10 +450,17 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../DomainModels/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -462,6 +471,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -643,29 +653,24 @@
       
   
   
-    
   
   
-  
     
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -678,7 +683,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Diagrams
@@ -689,32 +694,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Overview
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../diagrams/" class="md-nav__link">
         
   
   
@@ -725,149 +708,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#architecture-diagrams" class="md-nav__link">
-    <span class="md-ellipsis">
-      🏗️ Architecture Diagrams
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🏗️ Architecture Diagrams">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#three-layer-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      Three-Layer Architecture
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#authentication-authorization" class="md-nav__link">
-    <span class="md-ellipsis">
-      🔐 Authentication &amp; Authorization
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🔐 Authentication &amp; Authorization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#authentication-class-diagram" class="md-nav__link">
-    <span class="md-ellipsis">
-      Authentication Class Diagram
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#user-role-relationships" class="md-nav__link">
-    <span class="md-ellipsis">
-      User Role Relationships
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-models" class="md-nav__link">
-    <span class="md-ellipsis">
-      📊 Data Models
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="📊 Data Models">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#dish-class-diagram" class="md-nav__link">
-    <span class="md-ellipsis">
-      Dish Class Diagram
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#navigation-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      🗺️ Navigation Map
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🗺️ Navigation Map">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#diagrams-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      Diagrams Map
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-view-diagrams" class="md-nav__link">
-    <span class="md-ellipsis">
-      How to View Diagrams
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#diagram-types-used" class="md-nav__link">
-    <span class="md-ellipsis">
-      Diagram Types Used
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -897,139 +737,6 @@
   
   
   
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#architecture-diagrams" class="md-nav__link">
-    <span class="md-ellipsis">
-      🏗️ Architecture Diagrams
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🏗️ Architecture Diagrams">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#three-layer-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      Three-Layer Architecture
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#authentication-authorization" class="md-nav__link">
-    <span class="md-ellipsis">
-      🔐 Authentication &amp; Authorization
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🔐 Authentication &amp; Authorization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#authentication-class-diagram" class="md-nav__link">
-    <span class="md-ellipsis">
-      Authentication Class Diagram
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#user-role-relationships" class="md-nav__link">
-    <span class="md-ellipsis">
-      User Role Relationships
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-models" class="md-nav__link">
-    <span class="md-ellipsis">
-      📊 Data Models
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="📊 Data Models">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#dish-class-diagram" class="md-nav__link">
-    <span class="md-ellipsis">
-      Dish Class Diagram
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#navigation-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      🗺️ Navigation Map
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🗺️ Navigation Map">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#diagrams-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      Diagrams Map
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-view-diagrams" class="md-nav__link">
-    <span class="md-ellipsis">
-      How to View Diagrams
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#diagram-types-used" class="md-nav__link">
-    <span class="md-ellipsis">
-      Diagram Types Used
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -1045,39 +752,9 @@
 
 
 
-<h1 id="swipe2try-diagrams">Swipe2Try Diagrams<a class="headerlink" href="#swipe2try-diagrams" title="Permanent link">&para;</a></h1>
-<p>This section contains visual representations of the Swipe2Try application architecture, data models, and system flows.</p>
-<h2 id="architecture-diagrams">🏗️ Architecture Diagrams<a class="headerlink" href="#architecture-diagrams" title="Permanent link">&para;</a></h2>
-<h3 id="three-layer-architecture"><a href="three_layer_architecture.mmd">Three-Layer Architecture</a><a class="headerlink" href="#three-layer-architecture" title="Permanent link">&para;</a></h3>
-<p>Visual representation of the clean architecture implementation showing the separation between Presentation, Core, and Data Access layers.</p>
-<h2 id="authentication-authorization">🔐 Authentication &amp; Authorization<a class="headerlink" href="#authentication-authorization" title="Permanent link">&para;</a></h2>
-<h3 id="authentication-class-diagram"><a href="auth_class_diagram.mmd">Authentication Class Diagram</a><a class="headerlink" href="#authentication-class-diagram" title="Permanent link">&para;</a></h3>
-<p>Shows the relationships between classes involved in user authentication, including User, Role, and authentication managers.</p>
-<h3 id="user-role-relationships"><a href="user_role_relationships.mmd">User Role Relationships</a><a class="headerlink" href="#user-role-relationships" title="Permanent link">&para;</a></h3>
-<p>Illustrates how users are assigned roles and how roles determine access permissions throughout the system.</p>
-<h2 id="data-models">📊 Data Models<a class="headerlink" href="#data-models" title="Permanent link">&para;</a></h2>
-<h3 id="dish-class-diagram"><a href="dish_class_diagram.mmd">Dish Class Diagram</a><a class="headerlink" href="#dish-class-diagram" title="Permanent link">&para;</a></h3>
-<p>Displays the structure and relationships of dish-related entities including categories, restaurants, and dish properties.</p>
-<h2 id="navigation-map">🗺️ Navigation Map<a class="headerlink" href="#navigation-map" title="Permanent link">&para;</a></h2>
-<h3 id="diagrams-map"><a href="diagrams_map.mmd">Diagrams Map</a><a class="headerlink" href="#diagrams-map" title="Permanent link">&para;</a></h3>
-<p>Interactive overview of all available diagrams with direct links for easy navigation.</p>
-<hr />
-<h2 id="how-to-view-diagrams">How to View Diagrams<a class="headerlink" href="#how-to-view-diagrams" title="Permanent link">&para;</a></h2>
-<p>All diagrams are created using Mermaid syntax and can be viewed:</p>
-<ol>
-<li><strong>In this documentation</strong> - Rendered automatically by MkDocs</li>
-<li><strong>In VS Code</strong> - Using the Mermaid preview extension</li>
-<li><strong>On GitHub</strong> - Native Mermaid rendering support</li>
-<li><strong>Mermaid Live Editor</strong> - Copy the content to <a href="https://mermaid.live">mermaid.live</a> for editing</li>
-</ol>
-<h2 id="diagram-types-used">Diagram Types Used<a class="headerlink" href="#diagram-types-used" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Flowcharts</strong> - For process flows and decision trees</li>
-<li><strong>Class Diagrams</strong> - For entity relationships and object structure</li>
-<li><strong>Architecture Diagrams</strong> - For system component relationships</li>
-<li><strong>Sequence Diagrams</strong> - For interaction flows (when applicable)</li>
-</ul>
-<p>Each diagram includes comments and clear labeling to ensure accessibility and understanding.</p>
+  <h1>Domain Models</h1>
+
+
 
 
 

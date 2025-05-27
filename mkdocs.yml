@@ -29,6 +29,8 @@ plugins:
 nav:
   - Home: index.md
   - Architecture: Architecture.md
+  - Core Components:
+    - Domain Models: DomainModels.md
   - Security:
     - Authentication: Authentication.md
     - Authorization: Authorization.md
