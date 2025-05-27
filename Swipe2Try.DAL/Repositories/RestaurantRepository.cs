@@ -15,8 +15,11 @@ namespace Swipe2Try.DAL.Repositories
 
         public RestaurantRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException(nameof(configuration));
-        }        public async Task<List<Restaurant>> GetAllRestaurantsAsync()
+            _connectionString = configuration.GetConnectionString("DefaultConnection") ??
+                                throw new ArgumentNullException(nameof(configuration));
+        }
+
+        public async Task<List<Restaurant>> GetAllRestaurantsAsync()
         {
             var restaurants = new List<Restaurant>();
             try
@@ -48,8 +51,11 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetAllRestaurantsAsync: {ex.Message}");
             }
+
             return restaurants;
-        }        public async Task<List<Restaurant>> GetRestaurantsByUserIdAsync(string userId)
+        }
+
+        public async Task<List<Restaurant>> GetRestaurantsByUserIdAsync(string userId)
         {
             var restaurants = new List<Restaurant>();
             try
@@ -82,15 +88,21 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetRestaurantsByUserIdAsync: {ex.Message}");
             }
+
             return restaurants;
-        }        public async Task<Restaurant?> GetRestaurantByIdAsync(int id)
+        }
+
+        public async Task<Restaurant?> GetRestaurantByIdAsync(int id)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("SELECT RestaurantID, Name, Location, UserId FROM Restaurants WHERE RestaurantID = @RestaurantID", connection);
+                    var command =
+                        new SqlCommand(
+                            "SELECT RestaurantID, Name, Location, UserId FROM Restaurants WHERE RestaurantID = @RestaurantID",
+                            connection);
                     command.Parameters.AddWithValue("@RestaurantID", id);
 
                     using (var reader = await command.ExecuteReaderAsync())
@@ -112,8 +124,11 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetRestaurantByIdAsync: {ex.Message}");
             }
+
             return null;
-        }        public async Task AddRestaurantAsync(Restaurant restaurant)
+        }
+
+        public async Task AddRestaurantAsync(Restaurant restaurant)
         {
             try
             {
@@ -123,7 +138,8 @@ namespace Swipe2Try.DAL.Repositories
                 if (string.IsNullOrEmpty(restaurant.Name))
                     throw new ArgumentException("Restaurant name cannot be null or empty", nameof(restaurant.Name));
                 if (string.IsNullOrEmpty(restaurant.Location))
-                    throw new ArgumentException("Restaurant location cannot be null or empty", nameof(restaurant.Location));
+                    throw new ArgumentException("Restaurant location cannot be null or empty",
+                        nameof(restaurant.Location));
                 if (string.IsNullOrEmpty(restaurant.UserId))
                     throw new ArgumentException("Restaurant UserId cannot be null or empty", nameof(restaurant.UserId));
 
@@ -167,14 +183,17 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in UpdateRestaurantAsync: {ex.Message}");
             }
-        }        public async Task DeleteRestaurantAsync(int id)
+        }
+
+        public async Task DeleteRestaurantAsync(int id)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("DELETE FROM Restaurants WHERE RestaurantID = @RestaurantID", connection);
+                    var command = new SqlCommand("DELETE FROM Restaurants WHERE RestaurantID = @RestaurantID",
+                        connection);
                     command.Parameters.AddWithValue("@RestaurantID", id);
                     await command.ExecuteNonQueryAsync();
                 }

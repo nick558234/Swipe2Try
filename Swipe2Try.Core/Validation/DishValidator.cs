@@ -27,7 +27,8 @@ namespace Swipe2Try.Core.Validation
             if (string.IsNullOrWhiteSpace(dish.Description))
                 errors.Add("Dish description is required");
             else if (dish.Description.Length > 500)
-                errors.Add("Dish description cannot exceed 500 characters");            // Validate Health Factor (optional but if provided, should be valid)
+                errors.Add(
+                    "Dish description cannot exceed 500 characters"); // Validate Health Factor (optional but if provided, should be valid)
             if (dish.HealthFactor.HasValue && (dish.HealthFactor.Value < 1 || dish.HealthFactor.Value > 10))
                 errors.Add("Health factor must be between 1 and 10");
 
@@ -46,7 +47,8 @@ namespace Swipe2Try.Core.Validation
             {
                 errors.Add("Dish cannot be null");
                 return (false, errors);
-            }            // Validate ID is provided for update
+            } // Validate ID is provided for update
+
             if (dish.Id <= 0)
                 errors.Add("Dish ID must be a positive integer for update");
 
@@ -55,7 +57,9 @@ namespace Swipe2Try.Core.Validation
             if (!creationValidation.IsValid)
             {
                 errors.AddRange(creationValidation.Errors);
-            }            return (errors.Count == 0, errors);
+            }
+
+            return (errors.Count == 0, errors);
         }
     }
 }

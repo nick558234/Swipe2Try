@@ -1,46 +1,47 @@
 @page "{id}"
 @model Swipe2Try.Pages.Admin.Categories.DetailsModel
 
-@{    ViewData["Title"] = "Category Details";
-    Layout = "_AdminLayout";
-    ViewData["ActivePage"] = "Categories";
+@{
+	ViewData["Title"] = "Category Details";
+	Layout = "_AdminLayout";
+	ViewData["ActivePage"] = "Categories";
 }
 
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Category Details</h1>
+	<h1 class="text-2xl font-semibold text-gray-800 mb-6">Category Details</h1>
 
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h4 class="text-xl text-gray-700 font-semibold mb-4">Category</h4>
-        <hr class="mb-4"/>
-        <dl class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-8">
-            <div class="sm:col-span-1">
-                <dt class="text-sm font-medium text-gray-500">
-                    @Html.DisplayNameFor(model => model.Category.Name)
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900">
-                    @Html.DisplayFor(model => model.Category.Name)
-                </dd>
-            </div>
+	<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+		<h4 class="text-xl text-gray-700 font-semibold mb-4">Category</h4>
+		<hr class="mb-4"/>
+		<dl class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-8">
+			<div class="sm:col-span-1">
+				<dt class="text-sm font-medium text-gray-500">
+					@Html.DisplayNameFor(model => model.Category.Name)
+				</dt>
+				<dd class="mt-1 text-sm text-gray-900">
+					@Html.DisplayFor(model => model.Category.Name)
+				</dd>
+			</div>
 
-            <div class="sm:col-span-1">
-                <dt class="text-sm font-medium text-gray-500">
-                    @Html.DisplayNameFor(model => model.Category.Photo)
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900">
-                    @if (!string.IsNullOrEmpty(Model.Category.Photo))
-                    {
-                        <img src="@Model.Category.Photo" alt="Category image" class="rounded max-w-xs max-h-48" />
-                    }
-                    else
-                    {
-                        <span class="text-gray-500">No image</span>
-                    }
-                </dd>
-            </div>
-        </dl>
-    </div>
-    <div class="mt-6">
-        <a asp-page="./Edit" asp-route-id="@Model.Category.Id" class="text-purple-600 hover:text-purple-900 font-medium">Edit</a> |
-        <a asp-page="./Index" class="text-indigo-600 hover:text-indigo-900 font-medium">Back to List</a>
-    </div>
+			<div class="sm:col-span-1">
+				<dt class="text-sm font-medium text-gray-500">
+					@Html.DisplayNameFor(model => model.Category.Photo)
+				</dt>
+				<dd class="mt-1 text-sm text-gray-900">
+					@if (!string.IsNullOrEmpty(Model.Category.Photo))
+					{
+						<img src="@Model.Category.Photo" alt="Category image" class="rounded max-w-xs max-h-48"/>
+					}
+					else
+					{
+						<span class="text-gray-500">No image</span>
+					}
+				</dd>
+			</div>
+		</dl>
+	</div>
+	<div class="mt-6">
+		<a asp-page="./Edit" asp-route-id="@Model.Category.Id" class="text-purple-600 hover:text-purple-900 font-medium">Edit</a> |
+		<a asp-page="./Index" class="text-indigo-600 hover:text-indigo-900 font-medium">Back to List</a>
+	</div>
 </div>

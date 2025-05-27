@@ -65,4 +65,4 @@ namespace Swipe2Try.Core.Validation
             return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         }
     }
-} 
+}

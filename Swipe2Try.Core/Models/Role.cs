@@ -5,7 +5,9 @@ namespace Swipe2Try.Core.Models
         public string RoleID { get; set; } = string.Empty;
         public string RoleName { get; set; } = string.Empty;
 
-        public Role() { }
+        public Role()
+        {
+        }
 
         public Role(string roleID, string roleName)
         {
@@ -13,4 +15,4 @@ namespace Swipe2Try.Core.Models
             RoleName = roleName;
         }
     }
-} 
+}

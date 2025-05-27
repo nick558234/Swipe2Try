@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 using System;
 
 namespace Swipe2Try.Core.Managers
-{    
+{
     public class RestaurantManager
-    {        private readonly IRestaurantRepository _restaurantRepository;
+    {
+        private readonly IRestaurantRepository _restaurantRepository;
         private readonly IRestaurantValidator _restaurantValidator;
 
         public RestaurantManager(IRestaurantRepository restaurantRepository, IRestaurantValidator restaurantValidator)
         {
-            _restaurantRepository = restaurantRepository ?? throw new ArgumentNullException(nameof(restaurantRepository));
+            _restaurantRepository =
+                restaurantRepository ?? throw new ArgumentNullException(nameof(restaurantRepository));
             _restaurantValidator = restaurantValidator ?? throw new ArgumentNullException(nameof(restaurantValidator));
         }
 
@@ -28,13 +30,17 @@ namespace Swipe2Try.Core.Managers
                 throw new ArgumentException("User ID cannot be null or empty", nameof(userId));
 
             return await _restaurantRepository.GetRestaurantsByUserIdAsync(userId);
-        }        public async Task<Restaurant?> GetRestaurantByIdAsync(int id)
+        }
+
+        public async Task<Restaurant?> GetRestaurantByIdAsync(int id)
         {
             if (id <= 0)
                 throw new ArgumentException("Restaurant ID must be a positive integer", nameof(id));
 
             return await _restaurantRepository.GetRestaurantByIdAsync(id);
-        }        public async Task<(bool Success, List<string> Errors)> AddRestaurantAsync(Restaurant restaurant)
+        }
+
+        public async Task<(bool Success, List<string> Errors)> AddRestaurantAsync(Restaurant restaurant)
         {
             try
             {
@@ -64,7 +70,9 @@ namespace Swipe2Try.Core.Managers
             {
                 return (false, string.Join(", ", result.Errors));
             }
-        }        public async Task<(bool Success, List<string> Errors)> UpdateRestaurantAsync(Restaurant restaurant)
+        }
+
+        public async Task<(bool Success, List<string> Errors)> UpdateRestaurantAsync(Restaurant restaurant)
         {
             try
             {
@@ -93,7 +101,9 @@ namespace Swipe2Try.Core.Managers
             {
                 return (false, string.Join(", ", result.Errors));
             }
-        }        public async Task<(bool Success, List<string> Errors)> DeleteRestaurantAsync(int id)
+        }
+
+        public async Task<(bool Success, List<string> Errors)> DeleteRestaurantAsync(int id)
         {
             try
             {

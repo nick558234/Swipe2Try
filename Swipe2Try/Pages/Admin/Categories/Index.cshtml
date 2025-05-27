@@ -1,51 +1,53 @@
 @page
 @model Swipe2Try.Pages.Admin.Categories.IndexModel
 
-@{    ViewData["Title"] = "Categories";
-    Layout = "_AdminLayout";
-    ViewData["ActivePage"] = "Categories";
+@{
+	ViewData["Title"] = "Categories";
+	Layout = "_AdminLayout";
+	ViewData["ActivePage"] = "Categories";
 }
 
 <div class="flex justify-between items-center mb-6">
-    <h1 class="text-gray-700 text-3xl font-medium">Categories</h1>
-    <a asp-page="Create" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-        Create New
-    </a>
+	<h1 class="text-gray-700 text-3xl font-medium">Categories</h1>
+	<a asp-page="Create" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+		Create New
+	</a>
 </div>
 
 <div class="flex flex-col mt-8">
-    <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
-            <table class="min-w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                            @Html.DisplayNameFor(model => model.Categories[0].Name)
-                        </th>
-                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                            @Html.DisplayNameFor(model => model.Categories[0].Photo)
-                        </th>
-                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white">
-            @foreach (var item in Model.Categories) {
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                            @Html.DisplayFor(modelItem => item.Name)
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                            <img src="@item.Photo" alt="Category image" style="max-width: 100px; max-height: 100px;" class="rounded"/>
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                            <a asp-page="./Edit" asp-route-id="@item.Id" class="text-purple-600 hover:text-purple-900">Edit</a> |
-                            <a asp-page="./Details" asp-route-id="@item.Id" class="text-indigo-600 hover:text-indigo-900">Details</a> |
-                            <a asp-page="./Delete" asp-route-id="@item.Id" class="text-red-600 hover:text-red-900">Delete</a>
-                        </td>
-                    </tr>
-            }
-                </tbody>
-            </table>
-        </div>
-    </div>
+	<div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+		<div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+			<table class="min-w-full">
+				<thead class="bg-gray-50">
+				<tr>
+					<th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+						@Html.DisplayNameFor(model => model.Categories[0].Name)
+					</th>
+					<th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+						@Html.DisplayNameFor(model => model.Categories[0].Photo)
+					</th>
+					<th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
+				</tr>
+				</thead>
+				<tbody class="bg-white">
+				@foreach (var item in Model.Categories)
+				{
+					<tr class="hover:bg-gray-100">
+						<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+							@Html.DisplayFor(modelItem => item.Name)
+						</td>
+						<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+							<img src="@item.Photo" alt="Category image" style="max-width: 100px; max-height: 100px;" class="rounded"/>
+						</td>
+						<td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+							<a asp-page="./Edit" asp-route-id="@item.Id" class="text-purple-600 hover:text-purple-900">Edit</a> |
+							<a asp-page="./Details" asp-route-id="@item.Id" class="text-indigo-600 hover:text-indigo-900">Details</a> |
+							<a asp-page="./Delete" asp-route-id="@item.Id" class="text-red-600 hover:text-red-900">Delete</a>
+						</td>
+					</tr>
+				}
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>

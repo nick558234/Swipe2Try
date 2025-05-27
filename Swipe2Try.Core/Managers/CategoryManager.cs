@@ -17,6 +17,7 @@ namespace Swipe2Try.Core.Managers
             _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
             _categoryValidator = categoryValidator ?? throw new ArgumentNullException(nameof(categoryValidator));
         }
+
         public async Task<List<Category>> GetAllCategoriesAsync()
         {
             return await _categoryRepository.GetAllCategoriesAsync() as List<Category> ?? new List<Category>();
@@ -29,6 +30,7 @@ namespace Swipe2Try.Core.Managers
 
             return await _categoryRepository.GetCategoryByIdAsync(id);
         }
+
         public async Task<(bool Success, List<string> Errors)> AddCategoryAsync(Category category)
         {
             try
@@ -61,6 +63,7 @@ namespace Swipe2Try.Core.Managers
                 return (false, string.Join(", ", result.Errors));
             }
         }
+
         public async Task<(bool Success, List<string> Errors)> UpdateCategoryAsync(Category category)
         {
             try
@@ -91,6 +94,7 @@ namespace Swipe2Try.Core.Managers
                 return (false, string.Join(", ", result.Errors));
             }
         }
+
         public async Task<(bool Success, List<string> Errors)> DeleteCategoryAsync(int id) // Changed string to int
         {
             try
@@ -107,7 +111,8 @@ namespace Swipe2Try.Core.Managers
             }
         }
 
-        public async Task<(bool Success, string Message)> DeleteCategoryWithMessageAsync(int id) // Changed string to int
+        public async Task<(bool Success, string Message)>
+            DeleteCategoryWithMessageAsync(int id) // Changed string to int
         {
             var result = await DeleteCategoryAsync(id);
             if (result.Success)

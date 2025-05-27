@@ -17,8 +17,7 @@ namespace Swipe2Try.Pages.Admin.Categories
             _categoryManager = categoryManager;
         }
 
-        [BindProperty]
-        public Category Category { get; set; } = new Category { Name = string.Empty };
+        [BindProperty] public Category Category { get; set; } = new Category { Name = string.Empty };
 
         public IActionResult OnGet()
         {

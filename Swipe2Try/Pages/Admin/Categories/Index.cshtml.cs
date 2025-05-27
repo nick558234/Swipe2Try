@@ -18,7 +18,7 @@ namespace Swipe2Try.Pages.Admin.Categories
             _categoryManager = categoryManager;
         }
 
-        public IList<Category> Categories { get;set; } = new List<Category>();
+        public IList<Category> Categories { get; set; } = new List<Category>();
 
         public async Task OnGetAsync()
         {

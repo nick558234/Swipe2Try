@@ -11,7 +11,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Swipe2Try.Pages
-{    public class loginModel : PageModel
+{
+    public class loginModel : PageModel
     {
         private readonly UserManager _userManager;
 
@@ -20,8 +21,7 @@ namespace Swipe2Try.Pages
             _userManager = userManager;
         }
 
-        [BindProperty]
-        public LoginInputModel Input { get; set; } = new LoginInputModel();
+        [BindProperty] public LoginInputModel Input { get; set; } = new LoginInputModel();
 
         public List<string> ErrorMessages { get; set; } = new();
 
@@ -60,6 +60,7 @@ namespace Swipe2Try.Pages
             }
         }
     }
+
     public class LoginInputModel
     {
         // Removed validation attributes as we'll use the UserValidator instead

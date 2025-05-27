@@ -15,7 +15,8 @@ namespace Swipe2Try.DAL.Repositories
 
         public DishRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException(nameof(configuration));
+            _connectionString = configuration.GetConnectionString("DefaultConnection") ??
+                                throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<List<Dish>> GetAllDishesAsync()
@@ -25,19 +26,24 @@ namespace Swipe2Try.DAL.Repositories
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    await connection.OpenAsync();                    var command = new SqlCommand(
+                    await connection.OpenAsync();
+                    var command = new SqlCommand(
                         @"SELECT DishID, Name, Description, HealthFactor, Photo, UserId, 'Not Available' AS Restaurant FROM Dishes",
                         connection);
 
                     using (var reader = await command.ExecuteReaderAsync())
-                    {                        while (await reader.ReadAsync())
-                        {                            var dish = new Dish
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var dish = new Dish
                             {
                                 Id = reader.GetInt32("DishID"),
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Description = reader["Description"]?.ToString() ?? string.Empty,
                                 UserId = reader["UserId"]?.ToString() ?? string.Empty,
-                                HealthFactor = reader["HealthFactor"] == DBNull.Value ? null : (int?)reader.GetInt32("HealthFactor"),
+                                HealthFactor = reader["HealthFactor"] == DBNull.Value
+                                    ? null
+                                    : (int?)reader.GetInt32("HealthFactor"),
                                 Photo = reader["Photo"]?.ToString(),
                                 Restaurant = reader["Restaurant"]?.ToString()
                             };
@@ -54,7 +60,9 @@ namespace Swipe2Try.DAL.Repositories
                 // Or, add an error message to a list that can be returned
                 Console.WriteLine($"Error in GetAllDishesAsync: {ex.Message}");
                 // Depending on requirements, you might throw, return a custom error object, or an empty list with logged error.
-            }            return dishes;
+            }
+
+            return dishes;
         }
 
         public async Task<List<Dish>> GetDishesByUserIdAsync(string userId)
@@ -71,7 +79,8 @@ namespace Swipe2Try.DAL.Repositories
                     command.Parameters.AddWithValue("@UserId", userId);
 
                     using (var reader = await command.ExecuteReaderAsync())
-                    {                        while (await reader.ReadAsync())
+                    {
+                        while (await reader.ReadAsync())
                         {
                             var dish = new Dish
                             {
@@ -79,7 +88,9 @@ namespace Swipe2Try.DAL.Repositories
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Description = reader["Description"]?.ToString() ?? string.Empty,
                                 UserId = reader["UserId"]?.ToString() ?? string.Empty,
-                                HealthFactor = reader["HealthFactor"] == DBNull.Value ? null : (int?)reader.GetInt32("HealthFactor"),
+                                HealthFactor = reader["HealthFactor"] == DBNull.Value
+                                    ? null
+                                    : (int?)reader.GetInt32("HealthFactor"),
                                 Photo = reader["Photo"]?.ToString(),
                                 Restaurant = reader["Restaurant"]?.ToString()
                             };
@@ -92,27 +103,36 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetDishesByUserIdAsync: {ex.Message}");
             }
+
             return dishes;
-        }        public async Task<Dish?> GetDishByIdAsync(int id)
+        }
+
+        public async Task<Dish?> GetDishByIdAsync(int id)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("SELECT DishID, Name, Description, HealthFactor, Photo, UserId, 'Not Available' AS Restaurant FROM Dishes WHERE DishID = @DishID", connection);
+                    var command =
+                        new SqlCommand(
+                            "SELECT DishID, Name, Description, HealthFactor, Photo, UserId, 'Not Available' AS Restaurant FROM Dishes WHERE DishID = @DishID",
+                            connection);
                     command.Parameters.AddWithValue("@DishID", id);
 
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
-                        {                            return new Dish
+                        {
+                            return new Dish
                             {
                                 Id = reader.GetInt32("DishID"),
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Description = reader["Description"]?.ToString() ?? string.Empty,
                                 UserId = reader["UserId"]?.ToString() ?? string.Empty,
-                                HealthFactor = reader["HealthFactor"] == DBNull.Value ? null : (int?)reader.GetInt32("HealthFactor"),
+                                HealthFactor = reader["HealthFactor"] == DBNull.Value
+                                    ? null
+                                    : (int?)reader.GetInt32("HealthFactor"),
                                 Photo = reader["Photo"]?.ToString(),
                                 Restaurant = reader["Restaurant"]?.ToString()
                             };
@@ -124,14 +144,18 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetDishByIdAsync: {ex.Message}");
             }
+
             return null;
-        }        public async Task AddDishAsync(Dish dish)
+        }
+
+        public async Task AddDishAsync(Dish dish)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    await connection.OpenAsync();                    var command = new SqlCommand(
+                    await connection.OpenAsync();
+                    var command = new SqlCommand(
                         "INSERT INTO Dishes (Name, Description, HealthFactor, Photo, UserId) VALUES (@Name, @Description, @HealthFactor, @Photo, @UserId)",
                         connection);
                     command.Parameters.AddWithValue("@Name", dish.Name);
@@ -155,7 +179,8 @@ namespace Swipe2Try.DAL.Repositories
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    await connection.OpenAsync();                    var command = new SqlCommand(
+                    await connection.OpenAsync();
+                    var command = new SqlCommand(
                         "UPDATE Dishes SET Name = @Name, Description = @Description, HealthFactor = @HealthFactor, Photo = @Photo, UserId = @UserId WHERE DishID = @DishID",
                         connection);
                     command.Parameters.AddWithValue("@DishID", dish.Id);
@@ -171,7 +196,9 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in UpdateDishAsync: {ex.Message}");
             }
-        }        public async Task DeleteDishAsync(int id)
+        }
+
+        public async Task DeleteDishAsync(int id)
         {
             try
             {

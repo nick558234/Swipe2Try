@@ -13,7 +13,9 @@ namespace Swipe2Try.DAL.Repositories
 
         public UserRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException(nameof(configuration), "Connection string 'DefaultConnection' not found.");
+            _connectionString = configuration.GetConnectionString("DefaultConnection") ??
+                                throw new ArgumentNullException(nameof(configuration),
+                                    "Connection string 'DefaultConnection' not found.");
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
@@ -51,6 +53,7 @@ namespace Swipe2Try.DAL.Repositories
                 // Propagate or log the exception as per application's error handling strategy
                 // For now, returning null indicates failure or user not found
             }
+
             return null;
         }
 
@@ -90,7 +93,8 @@ namespace Swipe2Try.DAL.Repositories
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("SELECT COUNT(1) FROM dbo.USERS WHERE LOWER(Email) = LOWER(@Email)", connection);
+                    var command = new SqlCommand("SELECT COUNT(1) FROM dbo.USERS WHERE LOWER(Email) = LOWER(@Email)",
+                        connection);
                     command.Parameters.AddWithValue("@Email", email);
                     var result = await command.ExecuteScalarAsync();
                     return result != null && Convert.ToInt32(result) > 0;
@@ -133,6 +137,7 @@ namespace Swipe2Try.DAL.Repositories
                 Console.WriteLine($"Error in GetAllUsersAsync: {ex.Message}");
                 // Depending on requirements, you might throw, or return an empty list with logged error.
             }
+
             return users;
         }
     }

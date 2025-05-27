@@ -19,7 +19,9 @@ namespace Swipe2Try.Pages.RestaurantOwner
             _dishManager = dishManager;
         }
 
-        public List<Dish> Dishes { get; set; } = new List<Dish>();        public async Task OnGetAsync()
+        public List<Dish> Dishes { get; set; } = new List<Dish>();
+
+        public async Task OnGetAsync()
         {
             // Get the current user's ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -28,7 +30,9 @@ namespace Swipe2Try.Pages.RestaurantOwner
                 // Only get dishes for the current user
                 Dishes = await _dishManager.GetDishesByUserIdAsync(userId);
             }
-        }        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             // Get the current user's ID for security check
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -60,7 +64,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
             }
 
             var result = await _dishManager.DeleteDishWithMessageAsync(id);
-            
+
             if (result.Success)
             {
                 TempData["SuccessMessage"] = result.Message;
@@ -69,7 +73,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
             {
                 TempData["ErrorMessage"] = result.Message;
             }
-            
+
             return RedirectToPage();
         }
     }

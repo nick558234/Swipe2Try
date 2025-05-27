@@ -30,7 +30,9 @@ namespace Swipe2Try.Pages.RestaurantOwner
                 // Only get restaurants for the current user
                 Restaurants = await _restaurantManager.GetRestaurantsByUserIdAsync(userId);
             }
-        }        public async Task<IActionResult> OnPostDeleteAsync(string id)
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(string id)
         {
             // Get the current user's ID for security check
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -62,7 +64,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
             }
 
             var result = await _restaurantManager.DeleteRestaurantWithMessageAsync(restaurantId);
-            
+
             if (result.Success)
             {
                 TempData["SuccessMessage"] = result.Message;

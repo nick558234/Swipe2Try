@@ -14,7 +14,8 @@ using System.Security.Claims;
 using System; // For Guid
 
 namespace Swipe2Try.Pages
-{    public class SignUpModel : PageModel
+{
+    public class SignUpModel : PageModel
     {
         private readonly UserManager _userManager;
 
@@ -45,9 +46,9 @@ namespace Swipe2Try.Pages
 
             // Use UserManager to handle all registration and login logic
             var result = await _userManager.RegisterAndLoginUserAsync(
-                Input.Name, 
-                Input.Email, 
-                Input.Password, 
+                Input.Name,
+                Input.Email,
+                Input.Password,
                 Input.Role);
 
             if (result.Success && result.Principal != null)

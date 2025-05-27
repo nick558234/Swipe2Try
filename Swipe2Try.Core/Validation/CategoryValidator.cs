@@ -46,7 +46,8 @@ namespace Swipe2Try.Core.Validation
                 errors.Add("Photo URL cannot exceed 500 characters");
             }
             // Photo URL validation (optional, can be simple or regex-based)
-            else if (!string.IsNullOrEmpty(category.Photo) && !Uri.IsWellFormedUriString(category.Photo, UriKind.Absolute))
+            else if (!string.IsNullOrEmpty(category.Photo) &&
+                     !Uri.IsWellFormedUriString(category.Photo, UriKind.Absolute))
             {
                 errors.Add("Photo URL is not a valid URL.");
             }

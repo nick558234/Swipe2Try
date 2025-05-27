@@ -17,10 +17,13 @@ namespace Swipe2Try.Pages.RestaurantOwner
         public UpdateModel(DishManager dishManager)
         {
             _dishManager = dishManager;
-        }        [BindProperty]
-        public Dish Input { get; set; } = new Dish { Name = "", Description = "" };
+        }
 
-        public List<string> ValidationErrors { get; set; } = new List<string>();        public async Task<IActionResult> OnGetAsync(int id)
+        [BindProperty] public Dish Input { get; set; } = new Dish { Name = "", Description = "" };
+
+        public List<string> ValidationErrors { get; set; } = new List<string>();
+
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             if (id <= 0)
             {
@@ -42,7 +45,9 @@ namespace Swipe2Try.Pages.RestaurantOwner
 
             Input = dish;
             return Page();
-        }public async Task<IActionResult> OnPostAsync()
+        }
+
+        public async Task<IActionResult> OnPostAsync()
         {
             // Security check: ensure user can only update their own dishes
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -63,7 +68,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
 
             // Use DishManager to handle update logic
             var result = await _dishManager.UpdateDishWithMessageAsync(Input);
-            
+
             if (result.Success)
             {
                 TempData["SuccessMessage"] = result.Message;

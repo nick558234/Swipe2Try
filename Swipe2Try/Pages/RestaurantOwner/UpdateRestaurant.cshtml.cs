@@ -17,10 +17,13 @@ namespace Swipe2Try.Pages.RestaurantOwner
         public UpdateRestaurantModel(RestaurantManager restaurantManager)
         {
             _restaurantManager = restaurantManager;
-        }        [BindProperty]
-        public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "", UserId = "" };
+        }
 
-        public List<string> ValidationErrors { get; set; } = new List<string>();        public async Task<IActionResult> OnGetAsync(string id)
+        [BindProperty] public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "", UserId = "" };
+
+        public List<string> ValidationErrors { get; set; } = new List<string>();
+
+        public async Task<IActionResult> OnGetAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -68,7 +71,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
 
             // Use RestaurantManager to handle update logic
             var result = await _restaurantManager.UpdateRestaurantWithMessageAsync(Input);
-            
+
             if (result.Success)
             {
                 TempData["SuccessMessage"] = result.Message;

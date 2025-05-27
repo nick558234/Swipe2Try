@@ -17,8 +17,9 @@ namespace Swipe2Try.Pages.RestaurantOwner
         public CreateRestaurantModel(RestaurantManager restaurantManager)
         {
             _restaurantManager = restaurantManager;
-        }        [BindProperty]
-        public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "", UserId = "" };
+        }
+
+        [BindProperty] public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "", UserId = "" };
 
         public List<string> ValidationErrors { get; set; } = new List<string>();
 
@@ -41,7 +42,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
 
             // Use RestaurantManager to handle creation logic
             var result = await _restaurantManager.AddRestaurantWithMessageAsync(Input);
-            
+
             if (result.Success)
             {
                 TempData["SuccessMessage"] = result.Message;

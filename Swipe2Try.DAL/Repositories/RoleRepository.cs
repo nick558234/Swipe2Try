@@ -14,7 +14,9 @@ namespace Swipe2Try.DAL.Repositories
 
         public RoleRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException(nameof(configuration), "Connection string 'DefaultConnection' not found.");
+            _connectionString = configuration.GetConnectionString("DefaultConnection") ??
+                                throw new ArgumentNullException(nameof(configuration),
+                                    "Connection string 'DefaultConnection' not found.");
         }
 
         public async Task<List<Role>> GetAllRolesAsync()
@@ -44,6 +46,7 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetAllRolesAsync: {ex.Message}");
             }
+
             return roles;
         }
 
@@ -54,7 +57,8 @@ namespace Swipe2Try.DAL.Repositories
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("SELECT RoleID, RoleName FROM dbo.ROLES WHERE RoleID = @RoleID", connection);
+                    var command = new SqlCommand("SELECT RoleID, RoleName FROM dbo.ROLES WHERE RoleID = @RoleID",
+                        connection);
                     command.Parameters.AddWithValue("@RoleID", roleId);
 
                     using (var reader = await command.ExecuteReaderAsync())
@@ -74,6 +78,7 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetRoleByIdAsync: {ex.Message}");
             }
+
             return null;
         }
 

@@ -14,33 +14,34 @@
 
 @if (!ViewData.ModelState.IsValid || Model.ValidationErrors.Any())
 {
-    <div class="mt-4 bg-red-50 border border-red-200 text-red-800 rounded-md p-4">
-        @if (Model.ValidationErrors.Any())
-        {
-            <ul class="list-disc list-inside">
-                @foreach (var error in Model.ValidationErrors)
-                {
-                    <li>@error</li>
-                }
-            </ul>
-        }
-        else
-        {
-            <div asp-validation-summary="All" class="text-red-600"></div>
-        }
-    </div>
+	<div class="mt-4 bg-red-50 border border-red-200 text-red-800 rounded-md p-4">
+		@if (Model.ValidationErrors.Any())
+		{
+			<ul class="list-disc list-inside">
+				@foreach (var error in Model.ValidationErrors)
+				{
+					<li>@error</li>
+				}
+			</ul>
+		}
+		else
+		{
+			<div asp-validation-summary="All" class="text-red-600"></div>
+		}
+	</div>
 }
 
 <div class="mt-8">
-	<form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+	<form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<!-- Dish Name -->
 			<div class="mb-4">
 				<label asp-for="Input.Name" class="block text-gray-700 text-sm font-bold mb-2">
 					Dish Name *
 				</label>
-				<input asp-for="Input.Name" 
-					   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					   placeholder="Enter dish name">
+				<input asp-for="Input.Name"
+				       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+				       placeholder="Enter dish name">
 			</div>
 
 			<!-- Health Factor -->
@@ -48,9 +49,9 @@
 				<label asp-for="Input.HealthFactor" class="block text-gray-700 text-sm font-bold mb-2">
 					Health Factor
 				</label>
-				<input asp-for="Input.HealthFactor" 
-					   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					   placeholder="e.g., High, Medium, Low">
+				<input asp-for="Input.HealthFactor"
+				       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+				       placeholder="e.g., High, Medium, Low">
 			</div>
 
 			<!-- Photo URL -->
@@ -58,10 +59,10 @@
 				<label asp-for="Input.Photo" class="block text-gray-700 text-sm font-bold mb-2">
 					Photo URL
 				</label>
-				<input asp-for="Input.Photo" 
-					   type="url"
-					   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					   placeholder="https://example.com/image.jpg">
+				<input asp-for="Input.Photo"
+				       type="url"
+				       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+				       placeholder="https://example.com/image.jpg">
 			</div>
 
 			<!-- Description -->
@@ -77,11 +78,11 @@
 		</div>
 
 		<div class="flex items-center justify-between mt-8">
-			<button type="submit" 
-					class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+			<button type="submit"
+			        class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
 				Create Dish
 			</button>
-			<a asp-page="/RestaurantOwner/Index" 
+			<a asp-page="/RestaurantOwner/Index"
 			   class="text-gray-600 hover:text-gray-800 font-medium">
 				Cancel
 			</a>

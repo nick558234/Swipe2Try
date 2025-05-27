@@ -15,8 +15,11 @@ namespace Swipe2Try.DAL.Repositories
 
         public CategoryRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException(nameof(configuration));
-        }        public async Task<List<Category>> GetAllCategoriesAsync()
+            _connectionString = configuration.GetConnectionString("DefaultConnection") ??
+                                throw new ArgumentNullException(nameof(configuration));
+        }
+
+        public async Task<List<Category>> GetAllCategoriesAsync()
         {
             var categories = new List<Category>();
             try
@@ -45,6 +48,7 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetAllCategoriesAsync: {ex.Message}");
             }
+
             return categories;
         }
 
@@ -55,7 +59,9 @@ namespace Swipe2Try.DAL.Repositories
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("SELECT CategoryID, Name, Photo FROM Categories WHERE CategoryID = @CategoryID", connection);
+                    var command =
+                        new SqlCommand("SELECT CategoryID, Name, Photo FROM Categories WHERE CategoryID = @CategoryID",
+                            connection);
                     command.Parameters.AddWithValue("@CategoryID", id); // id is now int
 
                     using (var reader = await command.ExecuteReaderAsync())
@@ -76,6 +82,7 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetCategoryByIdAsync: {ex.Message}");
             }
+
             return null;
         }
 
@@ -88,7 +95,10 @@ namespace Swipe2Try.DAL.Repositories
                     await connection.OpenAsync();
                     // Removed CategoryID from INSERT statement as it's auto-incrementing
                     // Added OUTPUT INSERTED.CategoryID to retrieve the generated ID
-                    var command = new SqlCommand("INSERT INTO Categories (Name, Photo) OUTPUT INSERTED.CategoryID VALUES (@Name, @Photo)", connection);
+                    var command =
+                        new SqlCommand(
+                            "INSERT INTO Categories (Name, Photo) OUTPUT INSERTED.CategoryID VALUES (@Name, @Photo)",
+                            connection);
                     command.Parameters.AddWithValue("@Name", category.Name);
                     command.Parameters.AddWithValue("@Photo", (object?)category.Photo ?? DBNull.Value);
 
@@ -114,7 +124,10 @@ namespace Swipe2Try.DAL.Repositories
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("UPDATE Categories SET Name = @Name, Photo = @Photo WHERE CategoryID = @CategoryID", connection);
+                    var command =
+                        new SqlCommand(
+                            "UPDATE Categories SET Name = @Name, Photo = @Photo WHERE CategoryID = @CategoryID",
+                            connection);
                     command.Parameters.AddWithValue("@Name", category.Name);
                     command.Parameters.AddWithValue("@Photo", (object?)category.Photo ?? DBNull.Value);
                     command.Parameters.AddWithValue("@CategoryID", category.Id); // Id is now int

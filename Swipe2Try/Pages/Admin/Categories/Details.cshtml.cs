@@ -31,6 +31,7 @@ namespace Swipe2Try.Pages.Admin.Categories
             {
                 return NotFound();
             }
+
             Category = category;
             return Page();
         }
