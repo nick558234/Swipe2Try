@@ -6,9 +6,9 @@ This document outlines the authorization mechanism implemented in the Swipe2Try 
 
 For a visual representation of the authorization system, refer to:
 
-- [Authentication & Authorization Flow Diagram](diagrams/authentication_authorization_flow.mmd): Shows the decision flow for authenticating and authorizing requests
 - [Authentication Class Diagram](diagrams/auth_class_diagram.mmd): Displays the relationships between classes involved in authentication and authorization
-- [Login Sequence Diagram](diagrams/user_authentication_flow.mmd): Shows the step-by-step flow of the login process
+- [User Role Relationships](diagrams/user_role_relationships.mmd): Shows how users are assigned roles and permissions
+- [Three-Layer Architecture](diagrams/three_layer_architecture.mmd): Overall system architecture including security layers
 
 ## 🧩 Core Components
 

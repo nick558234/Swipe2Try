@@ -1,0 +1,1399 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Complete documentation for the Swipe2Try application architecture, authentication, and implementation patterns.">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../Authentication/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>Architecture - Swipe2Try Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#swipe2try-user-authentication-data-layer-system" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Swipe2Try Documentation" class="md-header__button md-logo" aria-label="Swipe2Try Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Swipe2Try Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Authentication/" class="md-tabs__link">
+          
+  
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../TupleReturnTypePattern/" class="md-tabs__link">
+          
+  
+  
+  Implementation Patterns
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../diagrams/" class="md-tabs__link">
+          
+  
+  
+  Diagrams
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Swipe2Try Documentation" class="md-nav__button md-logo" aria-label="Swipe2Try Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Swipe2Try Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-layer-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Layer Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Layer Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#domain-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Domain Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interfaces
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-business-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation &amp; Business Logic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-access-layer-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Access Layer Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Access Layer Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-repositories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Repositories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-access-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Access Implementation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication &amp; Data Flow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication &amp; Data Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registration-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registration Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#login-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Login Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dish-management-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dish Management Flow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database Schema
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database Schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#users-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      USERS Table
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roles-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      ROLES Table
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dishes-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      DISHES Table
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restaurants-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      RESTAURANTS Table
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user_dish_interactions-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      USER_DISH_INTERACTIONS Table
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-layer-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Layer Best Practices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-data-layer-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Data Layer Enhancements
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Security
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Authentication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Authorization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Implementation Patterns
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Implementation Patterns
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TupleReturnTypePattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tuple Return Types
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Diagrams
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Diagrams
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-layer-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Layer Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Layer Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#domain-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Domain Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interfaces
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-business-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation &amp; Business Logic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-access-layer-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Access Layer Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Access Layer Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-repositories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Repositories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-access-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Access Implementation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication &amp; Data Flow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication &amp; Data Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registration-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registration Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#login-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Login Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dish-management-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dish Management Flow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database Schema
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database Schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#users-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      USERS Table
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roles-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      ROLES Table
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dishes-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      DISHES Table
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restaurants-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      RESTAURANTS Table
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user_dish_interactions-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      USER_DISH_INTERACTIONS Table
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-layer-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Layer Best Practices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-data-layer-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Data Layer Enhancements
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="swipe2try-user-authentication-data-layer-system">Swipe2Try User Authentication &amp; Data Layer System<a class="headerlink" href="#swipe2try-user-authentication-data-layer-system" title="Permanent link">&para;</a></h1>
+<p>This document explains how the user authentication system and data layers work in the Swipe2Try application.</p>
+<h2 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
+<p>The application follows a clean architecture approach with three main layers:</p>
+<ol>
+<li><strong>Core Layer</strong> (<code>Swipe2Try.Core</code>)</li>
+<li>Contains domain models, interfaces, business logic, and validation</li>
+<li>
+<p>Independent of external frameworks and databases</p>
+</li>
+<li>
+<p><strong>Data Access Layer</strong> (<code>Swipe2Try.DAL</code>)</p>
+</li>
+<li>Implements data access using repositories</li>
+<li>Depends on the Core layer interfaces</li>
+<li>
+<p>Isolates database implementation details</p>
+</li>
+<li>
+<p><strong>Presentation Layer</strong> (<code>Swipe2Try</code>)</p>
+</li>
+<li>Contains the Razor Pages UI</li>
+<li>Depends on Core layer for business logic</li>
+<li>Uses the DAL through dependency injection</li>
+</ol>
+<h2 id="core-layer-components">Core Layer Components<a class="headerlink" href="#core-layer-components" title="Permanent link">&para;</a></h2>
+<h3 id="domain-models">Domain Models<a class="headerlink" href="#domain-models" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>User.cs</code> - User entity with properties:</li>
+<li>UserID (PK, nvarchar(10))</li>
+<li>Name (nvarchar(100))</li>
+<li>Email (nvarchar(255))</li>
+<li>Password (nvarchar(255))</li>
+<li>
+<p>RoleID (FK, nvarchar(10))</p>
+</li>
+<li>
+<p><code>Role.cs</code> - Role entity with properties:</p>
+</li>
+<li>RoleID (PK, nvarchar(10))</li>
+<li>
+<p>RoleName (nvarchar(50))</p>
+</li>
+<li>
+<p><code>Dish.cs</code> - Dish entity with properties:</p>
+</li>
+<li>DishID (PK, nvarchar(10))</li>
+<li>Name (nvarchar(100))</li>
+<li>Description (nvarchar(255))</li>
+<li>Price (decimal)</li>
+<li>ImageUrl (nvarchar(255))</li>
+<li>RestaurantID (FK, nvarchar(10))</li>
+<li>Category (nvarchar(50))</li>
+<li>HealthFactor (int)</li>
+<li>IsActive (bit)</li>
+</ul>
+<h3 id="interfaces">Interfaces<a class="headerlink" href="#interfaces" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>IUserRepository.cs</code> - Interface for user data access operations</li>
+<li><code>IRoleRepository.cs</code> - Interface for role data access operations</li>
+<li><code>IDishRepository.cs</code> - Interface for dish data access operations</li>
+<li><code>IUserValidator.cs</code> - Interface for user input validation</li>
+<li><code>IUserManager.cs</code> - Interface for user business logic</li>
+<li><code>IRoleManager.cs</code> - Interface for role management</li>
+</ul>
+<h3 id="validation-business-logic">Validation &amp; Business Logic<a class="headerlink" href="#validation-business-logic" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>UserValidator.cs</code> - Implements validation logic for user operations</li>
+<li><code>UserManager.cs</code> - Implements business logic for user operations</li>
+<li><code>RoleManager.cs</code> - Implements business logic for role operations</li>
+</ul>
+<h2 id="data-access-layer-components">Data Access Layer Components<a class="headerlink" href="#data-access-layer-components" title="Permanent link">&para;</a></h2>
+<p>The DAL implements the Core layer interfaces and provides the actual data access logic.</p>
+<h3 id="key-repositories">Key Repositories<a class="headerlink" href="#key-repositories" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>UserRepository.cs</code> - Implements <code>IUserRepository</code></li>
+<li>Handles CRUD operations for users</li>
+<li>Maps database results to User domain models</li>
+<li>
+<p>Manages user authentication data</p>
+</li>
+<li>
+<p><code>RoleRepository.cs</code> - Implements <code>IRoleRepository</code></p>
+</li>
+<li>Manages role data and user-role relationships</li>
+<li>
+<p>Supports role-based access control</p>
+</li>
+<li>
+<p><code>DishRepository.cs</code> - Implements <code>IDishRepository</code></p>
+</li>
+<li>Handles dish operations (creation, retrieval, updates)</li>
+<li>Supports filtering, sorting, and search operations</li>
+<li>Maps between database entities and domain models</li>
+</ul>
+<h3 id="data-access-implementation">Data Access Implementation<a class="headerlink" href="#data-access-implementation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Repositories use SQL commands to interact with the database</li>
+<li>Each repository handles transactions for its specific domain entity</li>
+<li>Repositories are designed to be testable with dependency injection</li>
+</ul>
+<h2 id="authentication-data-flow">Authentication &amp; Data Flow<a class="headerlink" href="#authentication-data-flow" title="Permanent link">&para;</a></h2>
+<h3 id="registration-process">Registration Process<a class="headerlink" href="#registration-process" title="Permanent link">&para;</a></h3>
+<ol>
+<li>User submits registration form with personal details and role selection</li>
+<li><code>UserValidator</code> validates the input data</li>
+<li><code>UserManager</code> generates a unique ID and prepares the user object</li>
+<li><code>UserRepository</code> saves the new user to the database</li>
+<li>User is redirected to login</li>
+</ol>
+<h3 id="login-process">Login Process<a class="headerlink" href="#login-process" title="Permanent link">&para;</a></h3>
+<ol>
+<li>User enters credentials (email/password)</li>
+<li><code>UserValidator</code> validates the format</li>
+<li><code>UserManager</code> requests authentication from <code>UserRepository</code></li>
+<li><code>UserRepository</code> verifies credentials against the database</li>
+<li>Upon success, user session is created with role information</li>
+<li>User is redirected based on their role</li>
+</ol>
+<h3 id="dish-management-flow">Dish Management Flow<a class="headerlink" href="#dish-management-flow" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Restaurant owner creates a new dish through the UI</li>
+<li>Input is validated</li>
+<li><code>DishRepository</code> saves the dish to the database</li>
+<li>When users browse dishes, <code>DishRepository</code> retrieves filtered data</li>
+<li>Presentation layer displays dishes with "swipe" interaction</li>
+</ol>
+<h2 id="database-schema">Database Schema<a class="headerlink" href="#database-schema" title="Permanent link">&para;</a></h2>
+<h3 id="users-table">USERS Table<a class="headerlink" href="#users-table" title="Permanent link">&para;</a></h3>
+<ul>
+<li>UserID (PK, nvarchar(10), not null)</li>
+<li>Name (nvarchar(100), not null)</li>
+<li>Email (nvarchar(255), not null)</li>
+<li>Password (nvarchar(255), not null)</li>
+<li>RoleID (FK, nvarchar(10), null) - Foreign key to ROLES table</li>
+</ul>
+<h3 id="roles-table">ROLES Table<a class="headerlink" href="#roles-table" title="Permanent link">&para;</a></h3>
+<ul>
+<li>RoleID (PK, nvarchar(10), not null)</li>
+<li>RoleName (nvarchar(50), not null)</li>
+</ul>
+<h3 id="dishes-table">DISHES Table<a class="headerlink" href="#dishes-table" title="Permanent link">&para;</a></h3>
+<ul>
+<li>DishID (PK, nvarchar(10), not null)</li>
+<li>Name (nvarchar(100), not null)</li>
+<li>Description (nvarchar(255), null)</li>
+<li>Price (decimal(10,2), not null)</li>
+<li>ImageUrl (nvarchar(255), null)</li>
+<li>RestaurantID (FK, nvarchar(10), not null)</li>
+<li>Category (nvarchar(50), null)</li>
+<li>HealthFactor (int, null)</li>
+<li>IsActive (bit, not null, default 1)</li>
+<li>CreatedDate (datetime, not null)</li>
+<li>ModifiedDate (datetime, null)</li>
+</ul>
+<h3 id="restaurants-table">RESTAURANTS Table<a class="headerlink" href="#restaurants-table" title="Permanent link">&para;</a></h3>
+<ul>
+<li>RestaurantID (PK, nvarchar(10), not null)</li>
+<li>Name (nvarchar(100), not null)</li>
+<li>OwnerID (FK, nvarchar(10), not null) - Foreign key to USERS table</li>
+<li>Address (nvarchar(255), null)</li>
+<li>Phone (nvarchar(20), null)</li>
+<li>IsActive (bit, not null, default 1)</li>
+</ul>
+<h3 id="user_dish_interactions-table">USER_DISH_INTERACTIONS Table<a class="headerlink" href="#user_dish_interactions-table" title="Permanent link">&para;</a></h3>
+<ul>
+<li>InteractionID (PK, nvarchar(10), not null)</li>
+<li>UserID (FK, nvarchar(10), not null)</li>
+<li>DishID (FK, nvarchar(10), not null)</li>
+<li>InteractionType (nvarchar(20), not null) - 'LIKE', 'DISLIKE', 'SAVED'</li>
+<li>InteractionDate (datetime, not null)</li>
+</ul>
+<h2 id="data-layer-best-practices">Data Layer Best Practices<a class="headerlink" href="#data-layer-best-practices" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Repository Pattern</strong>: Each entity type has its own repository with specific methods</li>
+<li><strong>Dependency Injection</strong>: Repositories are injected into page models</li>
+<li><strong>Asynchronous Operations</strong>: Database operations use async/await pattern</li>
+<li><strong>Error Handling</strong>: Repository methods use try/catch and proper error propagation</li>
+<li><strong>Transaction Management</strong>: Multiple related operations use transactions</li>
+<li><strong>Parameterized Queries</strong>: All SQL uses parameters to prevent SQL injection</li>
+</ol>
+<h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<p>Current implementation is for demonstration purposes with some limitations:
+- Passwords are stored in plain text (not recommended for production)
+- Authentication is session-based without token management
+- No CSRF protection is implemented
+- No account lockout mechanism is implemented</p>
+<p>For a production system, implement:
+- Password hashing (Argon2, BCrypt, or PBKDF2)
+- HTTPS enforcement
+- Anti-forgery tokens
+- Rate limiting
+- Account lockout after failed attempts
+- Input sanitization
+- Proper error handling that doesn't expose sensitive information</p>
+<h2 id="future-data-layer-enhancements">Future Data Layer Enhancements<a class="headerlink" href="#future-data-layer-enhancements" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Entity Framework Core</strong>: Consider migrating to EF Core for more robust ORM capabilities</li>
+<li><strong>Caching Layer</strong>: Add caching for frequently accessed data</li>
+<li><strong>Audit Trails</strong>: Implement logging of data changes</li>
+<li><strong>Soft Delete</strong>: Add soft delete functionality instead of permanent deletion</li>
+<li><strong>Unit of Work Pattern</strong>: Add transaction coordination across repositories</li>
+<li><strong>Pagination</strong>: Implement efficient pagination for large datasets</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "search.highlight", "search.share"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
