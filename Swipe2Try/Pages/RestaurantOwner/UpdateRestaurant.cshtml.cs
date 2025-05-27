@@ -19,8 +19,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
             _restaurantManager = restaurantManager;
         }
 
-        [BindProperty]
-        public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "" };
+        [BindProperty] public Restaurant Input { get; set; } = new Restaurant { Name = "", Location = "", UserId = "" };
 
         public List<string> ValidationErrors { get; set; } = new List<string>();
 
@@ -31,7 +30,13 @@ namespace Swipe2Try.Pages.RestaurantOwner
                 return NotFound();
             }
 
-            var restaurant = await _restaurantManager.GetRestaurantByIdAsync(id);
+            // Parse the ID to integer
+            if (!int.TryParse(id, out int restaurantId))
+            {
+                return NotFound();
+            }
+
+            var restaurant = await _restaurantManager.GetRestaurantByIdAsync(restaurantId);
             if (restaurant == null)
             {
                 return NotFound();
@@ -66,7 +71,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
 
             // Use RestaurantManager to handle update logic
             var result = await _restaurantManager.UpdateRestaurantWithMessageAsync(Input);
-            
+
             if (result.Success)
             {
                 TempData["SuccessMessage"] = result.Message;

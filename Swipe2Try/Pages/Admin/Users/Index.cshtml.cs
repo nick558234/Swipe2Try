@@ -26,6 +26,7 @@ namespace Swipe2Try.Pages.Admin.Users
         public Dictionary<string, string> RoleNames { get; set; } = new();
         public string CurrentUserName { get; set; } = string.Empty;
         public string CurrentUserRole { get; set; } = string.Empty;
+
         public async Task OnGetAsync()
         {
             CurrentUserName = User.Identity?.Name ?? "Guest";

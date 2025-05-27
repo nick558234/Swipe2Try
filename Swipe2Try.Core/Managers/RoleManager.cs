@@ -21,7 +21,7 @@ namespace Swipe2Try.Core.Managers
             return await _roleRepository.GetAllRolesAsync();
         }
 
-        public async Task<Role> GetRoleByIdAsync(string roleId)
+        public async Task<Role?> GetRoleByIdAsync(string roleId)
         {
             return await _roleRepository.GetRoleByIdAsync(roleId);
         }
@@ -34,10 +34,10 @@ namespace Swipe2Try.Core.Managers
 
             // Update user with new role
             user.RoleID = role.RoleID;
-            
+
             // In a real application, we would update the user in the database here
             // For this demo, we'll assume it happens elsewhere
-            
+
             return true;
         }
 
@@ -55,11 +55,11 @@ namespace Swipe2Try.Core.Managers
             return Task.FromResult(false);
         }
 
-        public async Task<List<User>> GetUsersByRoleAsync(string roleId)
+        public Task<List<User>> GetUsersByRoleAsync(string roleId)
         {
             // In a real application, we would query the database for all users with this role
             // For this simple demo, we'll return an empty list
-            return new List<User>();
+            return Task.FromResult(new List<User>());
         }
     }
 }

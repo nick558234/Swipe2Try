@@ -1,6 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Swipe2Try.Core.Interfaces;
+using Swipe2Try.Core.Validation;
+using Swipe2Try.DAL.Repositories;
+using Swipe2Try.Core.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,20 +22,25 @@ builder.Services.AddSession(options =>
 });
 
 // Register repositories
-builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IDishRepository, Swipe2Try.DAL.Repositories.DishRepository>();
-builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IUserRepository, Swipe2Try.DAL.Repositories.UserRepository>();
-builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IRoleRepository, Swipe2Try.DAL.Repositories.RoleRepository>();
-builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IRestaurantRepository, Swipe2Try.DAL.Repositories.RestaurantRepository>();
+builder.Services.AddScoped<IDishRepository, DishRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRestaurantRepository, RestaurantRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // Register validators
-builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IUserValidator, Swipe2Try.Core.Validation.UserValidator>();
+builder.Services.AddScoped<IUserValidator, UserValidator>();
+builder.Services.AddScoped<ICategoryValidator, CategoryValidator>();
+builder.Services.AddScoped<IDishValidator, DishValidator>();
+builder.Services.AddScoped<IRestaurantValidator, RestaurantValidator>();
 
 // Register managers (both concrete classes and interfaces)
-builder.Services.AddScoped<Swipe2Try.Core.Managers.UserManager>();
-builder.Services.AddScoped<Swipe2Try.Core.Managers.RoleManager>();
-builder.Services.AddScoped<Swipe2Try.Core.Interfaces.IRoleManager, Swipe2Try.Core.Managers.RoleManager>();
-builder.Services.AddScoped<Swipe2Try.Core.Managers.DishManager>();
-builder.Services.AddScoped<Swipe2Try.Core.Managers.RestaurantManager>();
+builder.Services.AddScoped<UserManager>();
+builder.Services.AddScoped<RoleManager>();
+builder.Services.AddScoped<IRoleManager, RoleManager>();
+builder.Services.AddScoped<DishManager>();
+builder.Services.AddScoped<RestaurantManager>();
+builder.Services.AddScoped<CategoryManager>();
 
 // Add built-in cookie authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

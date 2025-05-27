@@ -15,7 +15,8 @@ namespace Swipe2Try.DAL.Repositories
 
         public RestaurantRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException(nameof(configuration));
+            _connectionString = configuration.GetConnectionString("DefaultConnection") ??
+                                throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<List<Restaurant>> GetAllRestaurantsAsync()
@@ -36,7 +37,7 @@ namespace Swipe2Try.DAL.Repositories
                         {
                             var restaurant = new Restaurant
                             {
-                                Id = reader["RestaurantID"]?.ToString() ?? string.Empty,
+                                Id = reader.GetInt32("RestaurantID"),
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Location = reader["Location"]?.ToString() ?? string.Empty,
                                 UserId = reader["UserId"]?.ToString() ?? string.Empty
@@ -50,6 +51,7 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetAllRestaurantsAsync: {ex.Message}");
             }
+
             return restaurants;
         }
 
@@ -72,7 +74,7 @@ namespace Swipe2Try.DAL.Repositories
                         {
                             var restaurant = new Restaurant
                             {
-                                Id = reader["RestaurantID"]?.ToString() ?? string.Empty,
+                                Id = reader.GetInt32("RestaurantID"),
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Location = reader["Location"]?.ToString() ?? string.Empty,
                                 UserId = reader["UserId"]?.ToString() ?? string.Empty
@@ -86,17 +88,21 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetRestaurantsByUserIdAsync: {ex.Message}");
             }
+
             return restaurants;
         }
 
-        public async Task<Restaurant?> GetRestaurantByIdAsync(string id)
+        public async Task<Restaurant?> GetRestaurantByIdAsync(int id)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("SELECT RestaurantID, Name, Location, UserId FROM Restaurants WHERE RestaurantID = @RestaurantID", connection);
+                    var command =
+                        new SqlCommand(
+                            "SELECT RestaurantID, Name, Location, UserId FROM Restaurants WHERE RestaurantID = @RestaurantID",
+                            connection);
                     command.Parameters.AddWithValue("@RestaurantID", id);
 
                     using (var reader = await command.ExecuteReaderAsync())
@@ -105,7 +111,7 @@ namespace Swipe2Try.DAL.Repositories
                         {
                             return new Restaurant
                             {
-                                Id = reader["RestaurantID"]?.ToString() ?? string.Empty,
+                                Id = reader.GetInt32("RestaurantID"),
                                 Name = reader["Name"]?.ToString() ?? string.Empty,
                                 Location = reader["Location"]?.ToString() ?? string.Empty,
                                 UserId = reader["UserId"]?.ToString() ?? string.Empty
@@ -118,6 +124,7 @@ namespace Swipe2Try.DAL.Repositories
             {
                 Console.WriteLine($"Error in GetRestaurantByIdAsync: {ex.Message}");
             }
+
             return null;
         }
 
@@ -125,13 +132,23 @@ namespace Swipe2Try.DAL.Repositories
         {
             try
             {
+                // Defensive programming: ensure no null values
+                if (restaurant == null)
+                    throw new ArgumentNullException(nameof(restaurant));
+                if (string.IsNullOrEmpty(restaurant.Name))
+                    throw new ArgumentException("Restaurant name cannot be null or empty", nameof(restaurant.Name));
+                if (string.IsNullOrEmpty(restaurant.Location))
+                    throw new ArgumentException("Restaurant location cannot be null or empty",
+                        nameof(restaurant.Location));
+                if (string.IsNullOrEmpty(restaurant.UserId))
+                    throw new ArgumentException("Restaurant UserId cannot be null or empty", nameof(restaurant.UserId));
+
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
                     var command = new SqlCommand(
-                        "INSERT INTO Restaurants (RestaurantID, Name, Location, UserId) VALUES (@RestaurantID, @Name, @Location, @UserId)",
+                        "INSERT INTO Restaurants (Name, Location, UserId) VALUES (@Name, @Location, @UserId)",
                         connection);
-                    command.Parameters.AddWithValue("@RestaurantID", restaurant.Id);
                     command.Parameters.AddWithValue("@Name", restaurant.Name);
                     command.Parameters.AddWithValue("@Location", restaurant.Location);
                     command.Parameters.AddWithValue("@UserId", restaurant.UserId);
@@ -141,7 +158,7 @@ namespace Swipe2Try.DAL.Repositories
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in AddRestaurantAsync: {ex.Message}");
-                // Handle or re-throw the exception as appropriate
+                throw; // Re-throw to ensure the error propagates properly
             }
         }
 
@@ -168,14 +185,15 @@ namespace Swipe2Try.DAL.Repositories
             }
         }
 
-        public async Task DeleteRestaurantAsync(string id)
+        public async Task DeleteRestaurantAsync(int id)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    var command = new SqlCommand("DELETE FROM Restaurants WHERE RestaurantID = @RestaurantID", connection);
+                    var command = new SqlCommand("DELETE FROM Restaurants WHERE RestaurantID = @RestaurantID",
+                        connection);
                     command.Parameters.AddWithValue("@RestaurantID", id);
                     await command.ExecuteNonQueryAsync();
                 }

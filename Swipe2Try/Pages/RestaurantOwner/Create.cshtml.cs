@@ -19,14 +19,15 @@ namespace Swipe2Try.Pages.RestaurantOwner
             _dishManager = dishManager;
         }
 
-        [BindProperty]
-        public Dish Input { get; set; } = new Dish { Name = "", Description = "" };
+        [BindProperty] public Dish Input { get; set; } = new Dish { Name = "", Description = "" };
 
         public List<string> ValidationErrors { get; set; } = new List<string>();
 
         public void OnGet()
         {
-        }        public async Task<IActionResult> OnPostAsync()
+        }
+
+        public async Task<IActionResult> OnPostAsync()
         {
             // Get the current user's ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -41,7 +42,7 @@ namespace Swipe2Try.Pages.RestaurantOwner
 
             // Use DishManager to handle creation logic
             var result = await _dishManager.AddDishWithMessageAsync(Input);
-            
+
             if (result.Success)
             {
                 TempData["SuccessMessage"] = result.Message;

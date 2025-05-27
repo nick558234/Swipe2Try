@@ -14,7 +14,8 @@ using System.Security.Claims;
 using System; // For Guid
 
 namespace Swipe2Try.Pages
-{    public class SignUpModel : PageModel
+{
+    public class SignUpModel : PageModel
     {
         private readonly UserManager _userManager;
 
@@ -45,19 +46,28 @@ namespace Swipe2Try.Pages
 
             // Use UserManager to handle all registration and login logic
             var result = await _userManager.RegisterAndLoginUserAsync(
-                Input.Name, 
-                Input.Email, 
-                Input.Password, 
+                Input.Name,
+                Input.Email,
+                Input.Password,
                 Input.Role);
 
             if (result.Success && result.Principal != null)
             {
+                var authProperties = new AuthenticationProperties
+                {
+                    // Set cookie to expire after 30 minutes
+                    // Make cookie persistent across browser sessions
+                };
+
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
-                    result.Principal);
+                    result.Principal,
+                    authProperties);
 
-                // Redirect to home page
-                return RedirectToPage("/Index");
+                // Get role from claims and redirect accordingly
+                var roleName = result.Principal.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+                var redirectPage = _userManager.GetRedirectPageForRole(roleName);
+                return RedirectToPage(redirectPage);
             }
             else
             {

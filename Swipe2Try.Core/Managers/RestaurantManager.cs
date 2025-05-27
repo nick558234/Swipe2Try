@@ -10,12 +10,13 @@ namespace Swipe2Try.Core.Managers
     public class RestaurantManager
     {
         private readonly IRestaurantRepository _restaurantRepository;
-        private readonly RestaurantValidator _restaurantValidator;
+        private readonly IRestaurantValidator _restaurantValidator;
 
-        public RestaurantManager(IRestaurantRepository restaurantRepository)
+        public RestaurantManager(IRestaurantRepository restaurantRepository, IRestaurantValidator restaurantValidator)
         {
-            _restaurantRepository = restaurantRepository;
-            _restaurantValidator = new RestaurantValidator();
+            _restaurantRepository =
+                restaurantRepository ?? throw new ArgumentNullException(nameof(restaurantRepository));
+            _restaurantValidator = restaurantValidator ?? throw new ArgumentNullException(nameof(restaurantValidator));
         }
 
         public async Task<List<Restaurant>> GetAllRestaurantsAsync()
@@ -31,10 +32,10 @@ namespace Swipe2Try.Core.Managers
             return await _restaurantRepository.GetRestaurantsByUserIdAsync(userId);
         }
 
-        public async Task<Restaurant?> GetRestaurantByIdAsync(string id)
+        public async Task<Restaurant?> GetRestaurantByIdAsync(int id)
         {
-            if (string.IsNullOrEmpty(id))
-                throw new ArgumentException("Restaurant ID cannot be null or empty", nameof(id));
+            if (id <= 0)
+                throw new ArgumentException("Restaurant ID must be a positive integer", nameof(id));
 
             return await _restaurantRepository.GetRestaurantByIdAsync(id);
         }
@@ -44,13 +45,11 @@ namespace Swipe2Try.Core.Managers
             try
             {
                 // Validate restaurant
-                var validationResult = _restaurantValidator.ValidateForCreation(restaurant);
+                var validationResult = await _restaurantValidator.ValidateForCreationAsync(restaurant);
                 if (!validationResult.IsValid)
                     return (false, validationResult.Errors);
 
-                // Generate a short random string for RestaurantID (length 10)
-                restaurant.Id = Guid.NewGuid().ToString("N").Substring(0, 10);
-                
+                // The database will auto-generate the ID
                 await _restaurantRepository.AddRestaurantAsync(restaurant);
                 return (true, new List<string>());
             }
@@ -78,7 +77,7 @@ namespace Swipe2Try.Core.Managers
             try
             {
                 // Validate restaurant
-                var validationResult = _restaurantValidator.ValidateForUpdate(restaurant);
+                var validationResult = await _restaurantValidator.ValidateForUpdateAsync(restaurant);
                 if (!validationResult.IsValid)
                     return (false, validationResult.Errors);
 
@@ -104,11 +103,11 @@ namespace Swipe2Try.Core.Managers
             }
         }
 
-        public async Task<(bool Success, List<string> Errors)> DeleteRestaurantAsync(string id)
+        public async Task<(bool Success, List<string> Errors)> DeleteRestaurantAsync(int id)
         {
             try
             {
-                if (string.IsNullOrEmpty(id))
+                if (id <= 0)
                     return (false, new List<string> { "Invalid restaurant ID" });
 
                 await _restaurantRepository.DeleteRestaurantAsync(id);
@@ -120,7 +119,7 @@ namespace Swipe2Try.Core.Managers
             }
         }
 
-        public async Task<(bool Success, string Message)> DeleteRestaurantWithMessageAsync(string id)
+        public async Task<(bool Success, string Message)> DeleteRestaurantWithMessageAsync(int id)
         {
             var result = await DeleteRestaurantAsync(id);
             if (result.Success)

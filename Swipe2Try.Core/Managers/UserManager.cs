@@ -21,6 +21,7 @@ namespace Swipe2Try.Core.Managers
             _userValidator = userValidator;
             _roleManager = roleManager;
         }
+
         public async Task<(bool Success, List<string> Errors)> RegisterUserAsync(User user)
         {
             // Validate user input
@@ -39,7 +40,8 @@ namespace Swipe2Try.Core.Managers
             return (success, success ? new List<string>() : new List<string> { "Failed to create user" });
         }
 
-        public async Task<(bool Success, User? User, List<string> Errors)> AuthenticateUserAsync(string email, string password)
+        public async Task<(bool Success, User? User, List<string> Errors)> AuthenticateUserAsync(string email,
+            string password)
         {
             var errors = new List<string>();
 
@@ -54,15 +56,19 @@ namespace Swipe2Try.Core.Managers
             {
                 errors.Add("Invalid email or password");
                 return (false, null, errors);
-            }            // Compare emails case-insensitively and verify hashed password
-            if (!string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase) || !VerifyPassword(password, user.Password))
+            } // Compare emails case-insensitively and verify hashed password
+
+            if (!string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase) ||
+                !VerifyPassword(password, user.Password))
             {
                 errors.Add("Invalid email or password");
                 return (false, null, errors);
             }
 
             return (true, user, errors);
-        }        private string GenerateUserID()
+        }
+
+        private string GenerateUserID()
         {
             // Generate full GUID for 40-character UserID column
             return Guid.NewGuid().ToString();
@@ -88,7 +94,8 @@ namespace Swipe2Try.Core.Managers
             return await _userRepository.GetAllUsersAsync();
         }
 
-        public async Task<(bool Success, List<string> Errors, ClaimsPrincipal? Principal)> LoginUserAsync(string email, string password)
+        public async Task<(bool Success, List<string> Errors, ClaimsPrincipal? Principal)> LoginUserAsync(string email,
+            string password)
         {
             // Validate inputs using the UserValidator
             var validationResult = _userValidator.ValidateForLogin(email, password);
@@ -106,7 +113,7 @@ namespace Swipe2Try.Core.Managers
 
             // Get role from database
             var role = await _roleManager.GetRoleByIdAsync(authResult.User.RoleID);
-            var roleNameToStore = role?.RoleName ?? "Unknown";            // Create claims
+            var roleNameToStore = role?.RoleName ?? "Unknown"; // Create claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, authResult.User.UserID),
@@ -118,7 +125,10 @@ namespace Swipe2Try.Core.Managers
             var principal = new ClaimsPrincipal(claimsIdentity);
 
             return (true, new List<string>(), principal);
-        }        public async Task<(bool Success, List<string> Errors, ClaimsPrincipal? Principal)> RegisterAndLoginUserAsync(string name, string email, string password, string roleId)
+        }
+
+        public async Task<(bool Success, List<string> Errors, ClaimsPrincipal? Principal)> RegisterAndLoginUserAsync(
+            string name, string email, string password, string roleId)
         {
             // Create user object and generate unique UserID
             var user = new User
@@ -146,7 +156,7 @@ namespace Swipe2Try.Core.Managers
 
             // Get role name for claims
             var role = await _roleManager.GetRoleByIdAsync(user.RoleID);
-            var roleName = role?.RoleName ?? "Unknown";            // Create claims for immediate login
+            var roleName = role?.RoleName ?? "Unknown"; // Create claims for immediate login
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserID),
@@ -170,7 +180,7 @@ namespace Swipe2Try.Core.Managers
             return roleName switch
             {
                 "Admin" => "/Admin/Index",
-                "OWNER" => "/RestaurantOwner/Index",
+                "Restaurant Owner" => "/RestaurantOwner/Index",
                 _ => "/swipe"
             };
         }

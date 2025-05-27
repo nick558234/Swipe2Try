@@ -42,8 +42,15 @@ namespace Swipe2Try.Pages.RestaurantOwner
                 return RedirectToPage();
             }
 
+            // Parse the ID to integer
+            if (!int.TryParse(id, out int restaurantId))
+            {
+                TempData["ErrorMessage"] = "Invalid restaurant ID";
+                return RedirectToPage();
+            }
+
             // First check if the restaurant belongs to the user
-            var restaurant = await _restaurantManager.GetRestaurantByIdAsync(id);
+            var restaurant = await _restaurantManager.GetRestaurantByIdAsync(restaurantId);
             if (restaurant == null)
             {
                 TempData["ErrorMessage"] = "Restaurant not found";
@@ -56,8 +63,8 @@ namespace Swipe2Try.Pages.RestaurantOwner
                 return RedirectToPage();
             }
 
-            var result = await _restaurantManager.DeleteRestaurantWithMessageAsync(id);
-            
+            var result = await _restaurantManager.DeleteRestaurantWithMessageAsync(restaurantId);
+
             if (result.Success)
             {
                 TempData["SuccessMessage"] = result.Message;
