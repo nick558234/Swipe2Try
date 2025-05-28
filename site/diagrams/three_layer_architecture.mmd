@@ -1,5 +1,5 @@
 classDiagram
-direction TB
+direction LR
 
 %% ===============================================
 %% CORE LAYER - Business Logic & Services
@@ -187,33 +187,33 @@ namespace DataAccessLayer {
 }
 
 %% CROSS-LAYER RELATIONSHIPS
-DishManager --> IDishRepository
-DishManager --> IDishValidator
-RestaurantManager --> IRestaurantRepository
-RestaurantManager --> IRestaurantValidator
-CategoryManager --> ICategoryRepository
-CategoryManager --> ICategoryValidator
+DishManager "1" --> "1" IDishRepository : uses
+DishManager "1" --> "1" IDishValidator : validates with
+RestaurantManager "1" --> "1" IRestaurantRepository : uses
+RestaurantManager "1" --> "1" IRestaurantValidator : validates with
+CategoryManager "1" --> "1" ICategoryRepository : uses
+CategoryManager "1" --> "1" ICategoryValidator : validates with
 
-DishManager --> Dish
-RestaurantManager --> Restaurant
-CategoryManager --> Category
+DishManager "1" --> "*" Dish : manages
+RestaurantManager "1" --> "*" Restaurant : manages
+CategoryManager "1" --> "*" Category : manages
 
-DishValidator ..|> IDishValidator
-RestaurantValidator ..|> IRestaurantValidator
-CategoryValidator ..|> ICategoryValidator
+DishValidator "1" ..|> "1" IDishValidator : implements
+RestaurantValidator "1" ..|> "1" IRestaurantValidator : implements
+CategoryValidator "1" ..|> "1" ICategoryValidator : implements
 
-DishRepository ..|> IDishRepository
-RestaurantRepository ..|> IRestaurantRepository
-CategoryRepository ..|> ICategoryRepository
+DishRepository "1" ..|> "1" IDishRepository : implements
+RestaurantRepository "1" ..|> "1" IRestaurantRepository : implements
+CategoryRepository "1" ..|> "1" ICategoryRepository : implements
 
-DishRepository --> Dish
-RestaurantRepository --> Restaurant
-CategoryRepository --> Category
+DishRepository "1" --> "*" Dish : persists
+RestaurantRepository "1" --> "*" Restaurant : persists
+CategoryRepository "1" --> "*" Category : persists
 
-DishRepository --> SqlDatabase
-RestaurantRepository --> SqlDatabase
-CategoryRepository --> SqlDatabase
+DishRepository "1" --> "1" SqlDatabase : connects to
+RestaurantRepository "1" --> "1" SqlDatabase : connects to
+CategoryRepository "1" --> "1" SqlDatabase : connects to
 
-Dish --> Restaurant : "belongs to"
-Dish --> Category : "has category"
-Restaurant --o Dish : "has dishes"
+Dish "*" --> "0..1" Restaurant : "belongs to"
+Dish "*" --> "0..1" Category : "has category"
+Restaurant "1" --o "*" Dish : "has dishes"
