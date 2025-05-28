@@ -746,26 +746,17 @@
         <li class="md-nav__item">
   <a href="#security-considerations" class="md-nav__link">
     <span class="md-ellipsis">
-      ⚠️ Security Considerations
+      Security Considerations
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="⚠️ Security Considerations">
+    <nav class="md-nav" aria-label="Security Considerations">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#current-implementation" class="md-nav__link">
     <span class="md-ellipsis">
       Current Implementation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#security-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Security Features
     </span>
   </a>
   
@@ -1151,26 +1142,17 @@
         <li class="md-nav__item">
   <a href="#security-considerations" class="md-nav__link">
     <span class="md-ellipsis">
-      ⚠️ Security Considerations
+      Security Considerations
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="⚠️ Security Considerations">
+    <nav class="md-nav" aria-label="Security Considerations">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#current-implementation" class="md-nav__link">
     <span class="md-ellipsis">
       Current Implementation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#security-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Security Features
     </span>
   </a>
   
@@ -1450,7 +1432,7 @@
 <span class="w">        </span><span class="n">options</span><span class="p">.</span><span class="n">SlidingExpiration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">;</span><span class="w"> </span><span class="c1">// Reset expiration time with each request</span>
 <span class="w">    </span><span class="p">});</span>
 </code></pre></div>
-<h2 id="security-considerations">⚠️ Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
 <h3 id="current-implementation">Current Implementation<a class="headerlink" href="#current-implementation" title="Permanent link">&para;</a></h3>
 <p>The application uses ASP.NET Core's built-in cookie authentication with the following configuration:</p>
 <ul>
@@ -1460,34 +1442,6 @@
 <li><strong>Logout Path</strong>: <code>/logout</code> for signing out</li>
 <li><strong>Access Denied Path</strong>: Redirects to <code>/Error</code> for unauthorized access</li>
 </ul>
-<h3 id="security-features">Security Features<a class="headerlink" href="#security-features" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Claims-Based Identity</strong>: User information is stored in secure claims</li>
-<li><strong>Cookie Authentication</strong>: Standard ASP.NET Core cookie authentication mechanism</li>
-<li><strong>Role-Based Authorization</strong>: Uses <code>[Authorize]</code> attribute with role specifications</li>
-<li><strong>Sliding Expiration</strong>: Extends session for active users while maintaining security</li>
-</ul>
-<div class="admonition warning">
-<p class="admonition-title">Current Implementation Limitations</p>
-<p>The current implementation has some security limitations:
--   <strong>Password Storage</strong>: Passwords are currently stored in plain text. <strong>This is not secure for production.</strong>
--   <strong>CSRF Protection</strong>: Anti-forgery tokens are not explicitly detailed for all forms in this document.
--   <strong>Account Security</strong>: No account lockout mechanisms after multiple failed login attempts.</p>
-</div>
-<div class="admonition danger">
-<p class="admonition-title">Production Environment Requirements</p>
-<p>For a production environment, the following improvements are <strong>essential</strong>:
-1.  <strong>Password Hashing</strong>: Implement a strong, salted hashing algorithm (e.g., Argon2, BCrypt, or PBKDF2).
-2.  <strong>HTTPS</strong>: Enforce HTTPS for all traffic, especially authentication.
-3.  <strong>Anti-Forgery Tokens</strong>: Ensure CSRF protection is implemented for all state-changing requests.
-4.  <strong>Rate Limiting</strong>: Implement rate limiting on login attempts to prevent brute-force attacks.
-5.  <strong>Cookie Security</strong>: Add additional security options to authentication cookies:
-    <div class="highlight"><pre><span></span><code><span class="n">options</span><span class="p">.</span><span class="n">Cookie</span><span class="p">.</span><span class="n">HttpOnly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">;</span>
-<span class="n">options</span><span class="p">.</span><span class="n">Cookie</span><span class="p">.</span><span class="n">SecurePolicy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CookieSecurePolicy</span><span class="p">.</span><span class="n">Always</span><span class="p">;</span>
-<span class="n">options</span><span class="p">.</span><span class="n">Cookie</span><span class="p">.</span><span class="n">SameSite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SameSiteMode</span><span class="p">.</span><span class="n">Strict</span><span class="p">;</span>
-</code></pre></div>
-6.  <strong>Session Management</strong>: Consider implementing refresh tokens for longer-lived sessions.</p>
-</div>
 
 
 

@@ -248,7 +248,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 ```
 
-## ⚠️ Security Considerations
+## Security Considerations
 
 ### Current Implementation
 
@@ -259,30 +259,3 @@ The application uses ASP.NET Core's built-in cookie authentication with the foll
 - **Login Path**: Redirects to `/login` for unauthenticated requests
 - **Logout Path**: `/logout` for signing out
 - **Access Denied Path**: Redirects to `/Error` for unauthorized access
-
-### Security Features
-
-- **Claims-Based Identity**: User information is stored in secure claims
-- **Cookie Authentication**: Standard ASP.NET Core cookie authentication mechanism
-- **Role-Based Authorization**: Uses `[Authorize]` attribute with role specifications
-- **Sliding Expiration**: Extends session for active users while maintaining security
-
-!!! warning "Current Implementation Limitations"
-    The current implementation has some security limitations:
-    -   **Password Storage**: Passwords are currently stored in plain text. **This is not secure for production.**
-    -   **CSRF Protection**: Anti-forgery tokens are not explicitly detailed for all forms in this document.
-    -   **Account Security**: No account lockout mechanisms after multiple failed login attempts.
-
-!!! danger "Production Environment Requirements"
-    For a production environment, the following improvements are **essential**:
-    1.  **Password Hashing**: Implement a strong, salted hashing algorithm (e.g., Argon2, BCrypt, or PBKDF2).
-    2.  **HTTPS**: Enforce HTTPS for all traffic, especially authentication.
-    3.  **Anti-Forgery Tokens**: Ensure CSRF protection is implemented for all state-changing requests.
-    4.  **Rate Limiting**: Implement rate limiting on login attempts to prevent brute-force attacks.
-    5.  **Cookie Security**: Add additional security options to authentication cookies:
-        ```csharp
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Strict;
-        ```
-    6.  **Session Management**: Consider implementing refresh tokens for longer-lived sessions.

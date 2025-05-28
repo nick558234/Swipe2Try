@@ -156,28 +156,3 @@ The DAL implements the Core layer interfaces and provides the actual data access
 5. **Transaction Management**: Multiple related operations use transactions
 6. **Parameterized Queries**: All SQL uses parameters to prevent SQL injection
 
-## Security Considerations
-
-Current implementation is for demonstration purposes with some limitations:
-- Passwords are stored in plain text (not recommended for production)
-- Authentication is session-based without token management
-- No CSRF protection is implemented
-- No account lockout mechanism is implemented
-
-For a production system, implement:
-- Password hashing (Argon2, BCrypt, or PBKDF2)
-- HTTPS enforcement
-- Anti-forgery tokens
-- Rate limiting
-- Account lockout after failed attempts
-- Input sanitization
-- Proper error handling that doesn't expose sensitive information
-
-## Future Data Layer Enhancements
-
-1. **Entity Framework Core**: Consider migrating to EF Core for more robust ORM capabilities
-2. **Caching Layer**: Add caching for frequently accessed data
-3. **Audit Trails**: Implement logging of data changes
-4. **Soft Delete**: Add soft delete functionality instead of permanent deletion
-5. **Unit of Work Pattern**: Add transaction coordination across repositories
-6. **Pagination**: Implement efficient pagination for large datasets
