@@ -1,0 +1,85 @@
+---
+title: Swipe2Try Domain Models - Entity Relationship Diagram
+---
+erDiagram
+    %% Core Entities with Attributes
+    USER {
+        string UserID PK "Unique identifier (max 10 chars)"
+        string Name "Full name (max 100 chars)"
+        string Email UK "Email for login (max 255 chars)"
+        string Password "Hashed password (max 255 chars)"
+        string RoleID FK "Foreign key to Role"
+    }
+    
+    ROLE {
+        string RoleID PK "Unique identifier (max 10 chars)"
+        string RoleName UK "Display name (max 50 chars)"
+    }    
+    DISH {
+        int Id PK "Auto-generated unique identifier"
+        string Name "Dish name (max 100 chars)"
+        string Description "Detailed description (max 500 chars)"
+        string UserId FK "Foreign key to User who created"
+        int CategoryId FK "Foreign key to Category (optional)"
+        int HealthFactor "Health rating 1-10 (optional)"
+        string Photo "URL to dish image (optional, max 500 chars)"
+        string Restaurant "Restaurant name or identifier (optional)"
+    }
+    
+    RESTAURANT {
+        int Id PK "Auto-generated unique identifier"
+        string Name "Restaurant name (max 100 chars)"
+        string Location "Restaurant address (max 200 chars)"
+        string UserId FK "Foreign key to User who owns"
+        int CategoryId FK "Foreign key to Category (optional)"
+    }
+    
+    CATEGORY {
+        int Id PK "Auto-generated unique identifier"
+        string Name UK "Category name (max 100 chars)"
+        string Photo "URL to category image (optional, max 500 chars)"
+    }
+    
+    %% Additional Tables (mentioned in documentation)
+    LIKES_DISLIKES {
+        int Id PK "Auto-generated unique identifier"
+        string UserId FK "Foreign key to User"
+        int DishId FK "Foreign key to Dish"
+        boolean IsLike "True for like, false for dislike"
+        datetime CreatedAt "Timestamp of interaction"
+    }
+    
+    DISHRESTAURANT {
+        int DishId PK,FK "Foreign key to Dish"
+        int RestaurantId PK,FK "Foreign key to Restaurant"
+    }    
+    DISH_CATEGORIES {
+        int DishId PK,FK "Foreign key to Dish"
+        int CategoryId PK,FK "Foreign key to Category"
+    }
+    
+    RESTAURANT_CATEGORIES {
+        int RestaurantId PK,FK "Foreign key to Restaurant"
+        int CategoryId PK,FK "Foreign key to Category"
+    }
+    
+    %% Primary Relationships
+    USER ||--|| ROLE : "belongs to"
+    USER ||--o{ RESTAURANT : "owns"
+    USER ||--o{ DISH : "creates"
+    USER ||--o{ LIKES_DISLIKES : "makes"
+    
+    %% Dish Relationships
+    DISH ||--o{ LIKES_DISLIKES : "receives"
+    DISH ||--o{ DISHRESTAURANT : "served at"
+    DISH ||--o{ DISH_CATEGORIES : "belongs to"
+    
+    %% Restaurant Relationships
+    RESTAURANT ||--o{ DISHRESTAURANT : "serves"
+    RESTAURANT ||--o{ RESTAURANT_CATEGORIES : "belongs to"
+    
+    %% Category Relationships - Shows CATEGORY used by both DISH and RESTAURANT
+    CATEGORY ||--o{ DISH_CATEGORIES : "categorizes dishes"
+    CATEGORY ||--o{ RESTAURANT_CATEGORIES : "categorizes restaurants"
+    CATEGORY ||--o{ DISH : "categorizes"
+    CATEGORY ||--o{ RESTAURANT : "categorizes"
