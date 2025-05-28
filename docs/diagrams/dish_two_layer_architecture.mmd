@@ -82,23 +82,23 @@ classDiagram
         +ExecuteNonQueryAsync() int
     }
     
-    %% UI Layer Relationships
-    CreateModel --> DishManager : depends on
-    CreateModel --> Dish : creates/binds
+    %% UI Layer Relationships with Cardinalities
+    CreateModel "1" --> "1" DishManager
+    CreateModel "1" --> "0..*" Dish
     
-    %% Core Layer Relationships
-    DishManager --> IDishRepository : depends on
-    DishManager --> IDishValidator : depends on
-    DishValidator ..|> IDishValidator : implements
-    DishRepository ..|> IDishRepository : implements
+    %% Core Layer Relationships with Cardinalities
+    DishManager "1" --> "1" IDishRepository
+    DishManager "1" --> "1" IDishValidator
+    DishValidator "1" ..|> "1" IDishValidator
+    DishRepository "1" ..|> "1" IDishRepository
     
-    DishManager --> Dish : manages
-    DishValidator --> Dish : validates
-    DishRepository --> Dish : persists
+    DishManager "1" --> "0..*" Dish
+    DishValidator "1" --> "0..*" Dish
+    DishRepository "1" --> "0..*" Dish
     
-    %% DAL Layer Relationships
-    DishRepository --> SqlConnection : uses
-    DishRepository --> SqlCommand : uses
+    %% DAL Layer Relationships with Cardinalities
+    DishRepository "1" --> "0..*" SqlConnection
+    DishRepository "1" --> "0..*" SqlCommand
     
     %% Layer annotations
     note for CreateModel "UI Layer - Razor Page Model"
