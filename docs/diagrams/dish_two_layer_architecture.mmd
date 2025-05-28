@@ -1,0 +1,93 @@
+---
+title: "Dish CRUD Operations - Two-Layer Architecture"
+---
+classDiagram
+    direction TB
+    
+    %% Core Layer - Business Logic
+    class DishManager {
+        -IDishRepository dishRepository
+        -IDishValidator dishValidator
+        +GetAllDishesAsync() List~Dish~
+        +GetDishesByUserIdAsync(userId) List~Dish~
+        +GetDishByIdAsync(id) Dish
+        +AddDishAsync(dish) (bool Success, List~string~ Errors)
+        +UpdateDishAsync(dish) (bool Success, List~string~ Errors)
+        +DeleteDishAsync(id) (bool Success, List~string~ Errors)
+        +AddDishWithMessageAsync(dish) (bool Success, string Message)
+        +UpdateDishWithMessageAsync(dish) (bool Success, string Message)
+        +DeleteDishWithMessageAsync(id) (bool Success, string Message)
+    }
+    
+    class IDishValidator {
+        <<interface>>
+        +ValidateForCreationAsync(dish) (bool IsValid, List~string~ Errors)
+        +ValidateForUpdateAsync(dish) (bool IsValid, List~string~ Errors)
+    }
+    
+    class DishValidator {
+        +ValidateForCreationAsync(dish) (bool IsValid, List~string~ Errors)
+        +ValidateForUpdateAsync(dish) (bool IsValid, List~string~ Errors)
+    }
+    
+    class IDishRepository {
+        <<interface>>
+        +GetAllDishesAsync() List~Dish~
+        +GetDishesByUserIdAsync(userId) List~Dish~
+        +GetDishByIdAsync(id) Dish
+        +AddDishAsync(dish) Task
+        +UpdateDishAsync(dish) Task
+        +DeleteDishAsync(id) Task
+    }
+    
+    class Dish {
+        +int Id
+        +string Name
+        +string Description
+        +string UserId
+        +int? HealthFactor
+        +string Photo
+        +string Restaurant
+    }
+    
+    %% DAL Layer - Data Access
+    class DishRepository {
+        -string connectionString
+        +GetAllDishesAsync() List~Dish~
+        +GetDishesByUserIdAsync(userId) List~Dish~
+        +GetDishByIdAsync(id) Dish
+        +AddDishAsync(dish) Task
+        +UpdateDishAsync(dish) Task
+        +DeleteDishAsync(id) Task
+    }
+    
+    class SqlConnection {
+        <<external>>
+        +OpenAsync() Task
+        +ExecuteAsync() Task
+    }
+    
+    class SqlCommand {
+        <<external>>
+        +ExecuteReaderAsync() SqlDataReader
+        +ExecuteNonQueryAsync() int
+    }
+    
+    %% Relationships
+    DishManager --> IDishRepository : depends on
+    DishManager --> IDishValidator : depends on
+    DishValidator ..|> IDishValidator : implements
+    DishRepository ..|> IDishRepository : implements
+    
+    DishManager --> Dish : manages
+    DishValidator --> Dish : validates
+    DishRepository --> Dish : persists
+    
+    DishRepository --> SqlConnection : uses
+    DishRepository --> SqlCommand : uses
+    
+    %% Layer annotations
+    note for DishManager "Core Layer - Business Logic"
+    note for DishValidator "Core Layer - Validation"
+    note for DishRepository "DAL Layer - Data Access"
+    
