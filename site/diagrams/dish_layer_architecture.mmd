@@ -55,8 +55,10 @@ classDiagram
         +string Description
         +string UserId
         +int? HealthFactor
-        +string Photo
-        +string Restaurant
+        +string? Photo
+        +string? Restaurant
+        +Dish()
+        +Dish(name, description, userId, healthFactor, photo, restaurant)
     }
     
     %% DAL Layer - Data Access
