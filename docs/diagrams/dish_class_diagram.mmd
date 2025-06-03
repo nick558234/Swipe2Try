@@ -1,0 +1,89 @@
+```mermaid
+classDiagram
+    class Dish {
+        +int Id
+        +string Name
+        +string Description
+        +decimal Price
+        +int CategoryId
+        +int RestaurantId
+        +string ImageUrl
+        +bool IsAvailable
+        +DateTime CreatedAt
+        +DateTime UpdatedAt
+        +bool IsActive
+        +getDisplayPrice() string
+        +toggleAvailability() void
+        +updateDetails(name, description, price) bool
+    }
+    
+    class Category {
+        +int Id
+        +string Name
+        +string Description
+        +string IconUrl
+        +DateTime CreatedAt
+        +DateTime UpdatedAt
+        +bool IsActive
+        +getDishes() List~Dish~
+        +addDish(dish) bool
+        +removeDish(dishId) bool
+    }
+    
+    class Restaurant {
+        +int Id
+        +string Name
+        +string Description
+        +string Address
+        +string Phone
+        +string Email
+        +int OwnerId
+        +DateTime CreatedAt
+        +DateTime UpdatedAt
+        +bool IsActive
+        +getDishes() List~Dish~
+        +getDishesByCategory(categoryId) List~Dish~
+        +addDish(dish) bool
+        +updateDish(dish) bool
+    }
+    
+    class DishImage {
+        +int Id
+        +int DishId
+        +string ImageUrl
+        +string AltText
+        +bool IsPrimary
+        +DateTime CreatedAt
+        +bool IsActive
+    }
+    
+    class DishNutrition {
+        +int Id
+        +int DishId
+        +int Calories
+        +decimal Protein
+        +decimal Carbs
+        +decimal Fat
+        +decimal Fiber
+        +bool IsVegetarian
+        +bool IsVegan
+        +bool IsGlutenFree
+    }
+    
+    class User {
+        +int Id
+        +string FirstName
+        +string LastName
+        +string Email
+    }
+    
+    Restaurant ||--o{ Dish : "offers"
+    Category ||--o{ Dish : "categorizes"
+    Dish ||--o{ DishImage : "has images"
+    Dish ||--o DishNutrition : "has nutrition info"
+    User ||--o{ Restaurant : "owns"
+    
+    note for Dish "Core entity representing\nfood items in restaurants"
+    note for Category "Groups dishes by type\n(appetizers, mains, desserts)"
+    note for Restaurant "Restaurant that offers dishes"
+```

@@ -1,6 +1,8 @@
 site_name: Swipe2Try Documentation
 site_description: Complete documentation for the Swipe2Try application architecture, authentication, and implementation patterns.
 
+docs_dir: docs
+
 theme:
   name: material
   features:
