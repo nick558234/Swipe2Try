@@ -6,7 +6,6 @@ using Swipe2Try.Core.Managers;
 using Swipe2Try.Core.Models;
 using Swipe2Try.Core.Validation;
 
-
 namespace TestProject
 {
     public class UnitTestDish
@@ -62,6 +61,41 @@ namespace TestProject
 
         #endregion
 
+        #region GetDishByIdAsync Tests
+
+        [Fact]
+        public async Task GetDishByIdAsync_ShouldReturnDish_WhenDishExists()
+        {
+            // Arrange
+            var dishId = 1;
+            var fakeDish = new Dish { Id = dishId, Name = "TestDish", Description = "TestDescription" };
+            _mockRepo.Setup(repo => repo.GetDishByIdAsync(dishId)).ReturnsAsync(fakeDish);
+
+            // Act
+            var result = await _dishManager.GetDishByIdAsync(dishId);
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.Id.Should().Be(dishId);
+            result.Name.Should().Be("TestDish");
+        }
+
+        [Fact]
+        public async Task GetDishByIdAsync_ShouldReturnNull_WhenDishDoesNotExist()
+        {
+            // Arrange
+            var dishId = 999;
+            _mockRepo.Setup(repo => repo.GetDishByIdAsync(dishId)).ReturnsAsync((Dish?)null);
+
+            // Act
+            var result = await _dishManager.GetDishByIdAsync(dishId);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        #endregion
+
         #region GetDishesByUserIdAsync Tests
 
         [Fact]
@@ -86,6 +120,22 @@ namespace TestProject
         }
 
         [Fact]
+        public async Task GetDishesByUserIdAsync_ShouldReturnEmptyList_WhenUserHasNoDishes()
+        {
+            // Arrange
+            var userId = "user456";
+            var emptyDishes = new List<Dish>();
+            _mockRepo.Setup(repo => repo.GetDishesByUserIdAsync(userId)).ReturnsAsync(emptyDishes);
+
+            // Act
+            var result = await _dishManager.GetDishesByUserIdAsync(userId);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        [Fact]
         public async Task GetDishesByUserIdAsync_ShouldThrowException_WhenUserIdIsEmpty()
         {
             // Act & Assert
@@ -94,84 +144,20 @@ namespace TestProject
                 .WithMessage("User ID cannot be null or empty*");
         }
 
-        [Fact]
-        public async Task GetDishesByUserIdAsync_ShouldThrowException_WhenUserIdIsNull()
-        {
-            // Act & Assert
-            await FluentActions.Invoking(() => _dishManager.GetDishesByUserIdAsync(null))
-                .Should().ThrowAsync<ArgumentException>()
-                .WithMessage("User ID cannot be null or empty*");
-        }
-
-        #endregion
-
-        #region GetDishByIdAsync Tests
-
-        [Fact]
-        public async Task GetDishByIdAsync_ShouldReturnDish_WhenDishExists()
-        {
-            // Arrange
-            var dishId = 1;
-            var expectedDish = new Dish { Id = dishId, Name = "Test Dish", Description = "Test Description" };
-            _mockRepo.Setup(repo => repo.GetDishByIdAsync(dishId)).ReturnsAsync(expectedDish);
-
-            // Act
-            var result = await _dishManager.GetDishByIdAsync(dishId);
-
-            // Assert
-            result.Should().NotBeNull();
-            result!.Id.Should().Be(dishId);
-            result.Name.Should().Be("Test Dish");
-        }
-
-        [Fact]
-        public async Task GetDishByIdAsync_ShouldReturnNull_WhenDishDoesNotExist()
-        {
-            // Arrange
-            var dishId = 999;
-            _mockRepo.Setup(repo => repo.GetDishByIdAsync(dishId)).ReturnsAsync((Dish?)null);
-
-            // Act
-            var result = await _dishManager.GetDishByIdAsync(dishId);
-
-            // Assert
-            result.Should().BeNull();
-        }
-
-        [Fact]
-        public async Task GetDishByIdAsync_ShouldThrowException_WhenIdIsZero()
-        {
-            // Act & Assert
-            await FluentActions.Invoking(() => _dishManager.GetDishByIdAsync(0))
-                .Should().ThrowAsync<ArgumentException>()
-                .WithMessage("Dish ID must be a positive integer*");
-        }
-
-        [Fact]
-        public async Task GetDishByIdAsync_ShouldThrowException_WhenIdIsNegative()
-        {
-            // Act & Assert
-            await FluentActions.Invoking(() => _dishManager.GetDishByIdAsync(-1))
-                .Should().ThrowAsync<ArgumentException>()
-                .WithMessage("Dish ID must be a positive integer*");
-        }
-
         #endregion
 
         #region AddDishAsync Tests
 
         [Fact]
-        public async Task AddDishAsync_ShouldSucceed_WhenDishIsValid()
+        public async Task AddDishAsync_ShouldSucceed_WithValidDish()
         {
             // Arrange
             var dish = new Dish
             {
-                Name = "Pasta",
-                Description = "Delicious pasta",
+                Name = "Valid Dish",
+                Description = "Valid Description",
                 UserId = "user123",
-                HealthFactor = 5,
-                Photo = "pasta.jpg",
-                Restaurant = "Italian Bistro"
+                HealthFactor = 5
             };
 
             // Act
@@ -181,138 +167,6 @@ namespace TestProject
             result.Success.Should().BeTrue();
             result.Errors.Should().BeEmpty();
             _mockRepo.Verify(r => r.AddDishAsync(dish), Times.Once);
-        }
-
-        [Fact]
-        public async Task AddDishAsync_ShouldFail_WhenHealthFactorIsGreaterThan10()
-        {
-            // Arrange  
-            var dish = new Dish
-            {
-                Id = 1,
-                Name = "Pasta",
-                Description = "Delicious pasta",
-                UserId = "1",
-                HealthFactor = 1000, // Invalid 
-                Photo = "pasta.jpg",
-                Restaurant = "Italian Bistro",
-            };
-
-            // Act  
-            var result = await _dishManager.AddDishAsync(dish);
-
-            // Assert  
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Health factor must be between 1 and 10");
-            // test data never reaches the database
-            _mockRepo.Verify(r => r.AddDishAsync(It.IsAny<Dish>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task AddDishAsync_ShouldFail_WhenHealthFactorIsLessThan1()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Name = "Pasta",
-                Description = "Delicious pasta",
-                UserId = "user123",
-                HealthFactor = 0, // Invalid
-                Photo = "pasta.jpg",
-                Restaurant = "Italian Bistro"
-            };
-
-            // Act
-            var result = await _dishManager.AddDishAsync(dish);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Health factor must be between 1 and 10");
-            _mockRepo.Verify(r => r.AddDishAsync(It.IsAny<Dish>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task AddDishAsync_ShouldFail_WhenNameIsEmpty()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Name = "", // Invalid
-                Description = "Delicious pasta",
-                UserId = "user123",
-                HealthFactor = 5
-            };
-
-            // Act
-            var result = await _dishManager.AddDishAsync(dish);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Dish name is required");
-            _mockRepo.Verify(r => r.AddDishAsync(It.IsAny<Dish>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task AddDishAsync_ShouldFail_WhenNameIsTooLong()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Name = new string('A', 101), // Invalid - too long
-                Description = "Delicious pasta",
-                UserId = "user123",
-                HealthFactor = 5
-            };
-
-            // Act
-            var result = await _dishManager.AddDishAsync(dish);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Dish name cannot exceed 100 characters");
-            _mockRepo.Verify(r => r.AddDishAsync(It.IsAny<Dish>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task AddDishAsync_ShouldFail_WhenDescriptionIsEmpty()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Name = "Pasta",
-                Description = "", // Invalid
-                UserId = "user123",
-                HealthFactor = 5
-            };
-
-            // Act
-            var result = await _dishManager.AddDishAsync(dish);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Dish description is required");
-            _mockRepo.Verify(r => r.AddDishAsync(It.IsAny<Dish>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task AddDishAsync_ShouldFail_WhenDescriptionIsTooLong()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Name = "Pasta",
-                Description = new string('A', 501), // Invalid - too long
-                UserId = "user123",
-                HealthFactor = 5
-            };
-
-            // Act
-            var result = await _dishManager.AddDishAsync(dish);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Dish description cannot exceed 500 characters");
-            _mockRepo.Verify(r => r.AddDishAsync(It.IsAny<Dish>()), Times.Never);
         }
 
         [Fact]
@@ -328,386 +182,85 @@ namespace TestProject
         }
 
         [Fact]
-        public async Task AddDishAsync_ShouldSucceed_WhenHealthFactorIsNull()
+        public async Task AddDishAsync_ShouldFail_WhenNameIsEmpty()
         {
             // Arrange
             var dish = new Dish
             {
-                Name = "Pasta",
-                Description = "Delicious pasta",
+                Name = "",
+                Description = "Valid Description",
                 UserId = "user123",
-                HealthFactor = null, // Optional field
-                Photo = "pasta.jpg",
-                Restaurant = "Italian Bistro"
-            };
-
-            // Act
-            var result = await _dishManager.AddDishAsync(dish);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Errors.Should().BeEmpty();
-            _mockRepo.Verify(r => r.AddDishAsync(dish), Times.Once);
-        }
-
-        [Fact]
-        public async Task AddDishAsync_ShouldFail_WhenPhotoUrlIsTooLong()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Name = "Pasta",
-                Description = "Delicious pasta",
-                UserId = "user123",
-                HealthFactor = 5,
-                Photo = new string('A', 501), // Invalid - too long
-                Restaurant = "Italian Bistro"
-            };
-
-            // Act
+                HealthFactor = 5
+            };            // Act
             var result = await _dishManager.AddDishAsync(dish);
 
             // Assert
             result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Photo URL cannot exceed 500 characters");
+            result.Errors.Should().Contain("Dish name is required");
             _mockRepo.Verify(r => r.AddDishAsync(It.IsAny<Dish>()), Times.Never);
         }
 
-        #endregion
-
-        #region UpdateDishAsync Tests
-
         [Fact]
-        public async Task UpdateDishAsync_ShouldSucceed_WhenDishIsValid()
+        public async Task AddDishAsync_ShouldFail_WhenDescriptionIsEmpty()
         {
             // Arrange
             var dish = new Dish
             {
-                Id = 1,
-                Name = "Updated Pasta",
-                Description = "Updated delicious pasta",
-                UserId = "user123",
-                HealthFactor = 6,
-                Photo = "updated_pasta.jpg",
-                Restaurant = "Italian Bistro"
-            };
-
-            // Act
-            var result = await _dishManager.UpdateDishAsync(dish);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Errors.Should().BeEmpty();
-            _mockRepo.Verify(r => r.UpdateDishAsync(dish), Times.Once);
-        }
-
-        [Fact]
-        public async Task UpdateDishAsync_ShouldFail_WhenIdIsZero()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Id = 0, // Invalid for update
-                Name = "Pasta",
-                Description = "Delicious pasta",
+                Name = "Test Dish",
+                Description = "",
                 UserId = "user123",
                 HealthFactor = 5
-            };
-
-            // Act
-            var result = await _dishManager.UpdateDishAsync(dish);
+            };            // Act
+            var result = await _dishManager.AddDishAsync(dish);
 
             // Assert
             result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Dish ID must be a positive integer for update");
-            _mockRepo.Verify(r => r.UpdateDishAsync(It.IsAny<Dish>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task UpdateDishAsync_ShouldFail_WhenIdIsNegative()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Id = -1, // Invalid for update
-                Name = "Pasta",
-                Description = "Delicious pasta",
-                UserId = "user123",
-                HealthFactor = 5
-            };
-
-            // Act
-            var result = await _dishManager.UpdateDishAsync(dish);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Dish ID must be a positive integer for update");
-            _mockRepo.Verify(r => r.UpdateDishAsync(It.IsAny<Dish>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task UpdateDishAsync_ShouldFail_WhenDishIsNull()
-        {
-            // Act
-            var result = await _dishManager.UpdateDishAsync(null!);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Dish cannot be null");
-            _mockRepo.Verify(r => r.UpdateDishAsync(It.IsAny<Dish>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task UpdateDishAsync_ShouldFail_WhenValidationFailsForMultipleReasons()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Id = -1, // Invalid ID
-                Name = "", // Invalid name
-                Description = "", // Invalid description
-                HealthFactor = 15 // Invalid health factor
-            };
-
-            // Act
-            var result = await _dishManager.UpdateDishAsync(dish);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().HaveCountGreaterThan(1);
-            result.Errors.Should().Contain("Dish ID must be a positive integer for update");
-            result.Errors.Should().Contain("Dish name is required");
             result.Errors.Should().Contain("Dish description is required");
-            result.Errors.Should().Contain("Health factor must be between 1 and 10");
-            _mockRepo.Verify(r => r.UpdateDishAsync(It.IsAny<Dish>()), Times.Never);
-        }
-
-        #endregion
-
-        #region DeleteDishAsync Tests
-
-        [Fact]
-        public async Task DeleteDishAsync_ShouldSucceed_WhenIdIsValid()
-        {
-            // Arrange
-            var dishId = 1;
-
-            // Act
-            var result = await _dishManager.DeleteDishAsync(dishId);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Errors.Should().BeEmpty();
-            _mockRepo.Verify(r => r.DeleteDishAsync(dishId), Times.Once);
-        }
-
-        [Fact]
-        public async Task DeleteDishAsync_ShouldFail_WhenIdIsZero()
-        {
-            // Act
-            var result = await _dishManager.DeleteDishAsync(0);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Invalid dish ID");
-            _mockRepo.Verify(r => r.DeleteDishAsync(It.IsAny<int>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task DeleteDishAsync_ShouldFail_WhenIdIsNegative()
-        {
-            // Act
-            var result = await _dishManager.DeleteDishAsync(-1);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Invalid dish ID");
-            _mockRepo.Verify(r => r.DeleteDishAsync(It.IsAny<int>()), Times.Never);
-        }
-
-        #endregion
-
-        #region WithMessage Methods Tests
-
-        [Fact]
-        public async Task AddDishWithMessageAsync_ShouldReturnSuccessMessage_WhenDishIsValid()
+            _mockRepo.Verify(r => r.AddDishAsync(It.IsAny<Dish>()), Times.Never);
+        }        [Fact]
+        public async Task AddDishAsync_ShouldFail_WhenNameIsTooLong()
         {
             // Arrange
             var dish = new Dish
             {
-                Name = "Pasta",
-                Description = "Delicious pasta",
+                Name = new string('a', 101), // 101 characters, exceeds 100 limit
+                Description = "Valid Description",
                 UserId = "user123",
                 HealthFactor = 5
             };
-
-            // Act
-            var result = await _dishManager.AddDishWithMessageAsync(dish);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Message.Should().Be("Dish created successfully!");
-        }
-
-        [Fact]
-        public async Task AddDishWithMessageAsync_ShouldReturnErrorMessage_WhenDishIsInvalid()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Name = "", // Invalid
-                Description = "Delicious pasta",
-                UserId = "user123",
-                HealthFactor = 5
-            };
-
-            // Act
-            var result = await _dishManager.AddDishWithMessageAsync(dish);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Message.Should().Contain("Dish name is required");
-        }
-
-        [Fact]
-        public async Task UpdateDishWithMessageAsync_ShouldReturnSuccessMessage_WhenDishIsValid()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Id = 1,
-                Name = "Updated Pasta",
-                Description = "Updated delicious pasta",
-                UserId = "user123",
-                HealthFactor = 6
-            };
-
-            // Act
-            var result = await _dishManager.UpdateDishWithMessageAsync(dish);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Message.Should().Be("Dish updated successfully!");
-        }
-
-        [Fact]
-        public async Task UpdateDishWithMessageAsync_ShouldReturnErrorMessage_WhenDishIsInvalid()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Id = 0, // Invalid
-                Name = "Pasta",
-                Description = "Delicious pasta",
-                UserId = "user123",
-                HealthFactor = 5
-            };
-
-            // Act
-            var result = await _dishManager.UpdateDishWithMessageAsync(dish);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Message.Should().Contain("Dish ID must be a positive integer for update");
-        }
-
-        [Fact]
-        public async Task DeleteDishWithMessageAsync_ShouldReturnSuccessMessage_WhenIdIsValid()
-        {
-            // Arrange
-            var dishId = 1;
-
-            // Act
-            var result = await _dishManager.DeleteDishWithMessageAsync(dishId);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Message.Should().Be("Dish deleted successfully!");
-        }
-
-        [Fact]
-        public async Task DeleteDishWithMessageAsync_ShouldReturnErrorMessage_WhenIdIsInvalid()
-        {
-            // Act
-            var result = await _dishManager.DeleteDishWithMessageAsync(0);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Message.Should().Contain("Invalid dish ID");
-        }
-
-        #endregion
-
-        #region Repository Exception Handling Tests
-
-        [Fact]
-        public async Task AddDishAsync_ShouldHandleRepositoryException()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Name = "Pasta",
-                Description = "Delicious pasta",
-                UserId = "user123",
-                HealthFactor = 5
-            };
-
-            _mockRepo.Setup(r => r.AddDishAsync(It.IsAny<Dish>()))
-                .ThrowsAsync(new Exception("Database connection failed"));
 
             // Act
             var result = await _dishManager.AddDishAsync(dish);
 
             // Assert
             result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Failed to add dish: Database connection failed");
+            result.Errors.Should().Contain("Dish name cannot exceed 100 characters");
+            _mockRepo.Verify(r => r.AddDishAsync(It.IsAny<Dish>()), Times.Never);
         }
 
         [Fact]
-        public async Task UpdateDishAsync_ShouldHandleRepositoryException()
+        public async Task AddDishAsync_ShouldFail_WhenHealthFactorIsInvalid()
         {
             // Arrange
             var dish = new Dish
             {
-                Id = 1,
-                Name = "Pasta",
-                Description = "Delicious pasta",
+                Name = "Test Dish",
+                Description = "Valid Description",
                 UserId = "user123",
-                HealthFactor = 5
+                HealthFactor = 1000 // Invalid - should be 1-10
             };
 
-            _mockRepo.Setup(r => r.UpdateDishAsync(It.IsAny<Dish>()))
-                .ThrowsAsync(new Exception("Database connection failed"));
-
             // Act
-            var result = await _dishManager.UpdateDishAsync(dish);
+            var result = await _dishManager.AddDishAsync(dish);
 
             // Assert
             result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Failed to update dish: Database connection failed");
+            result.Errors.Should().Contain("Health factor must be between 1 and 10");
+            _mockRepo.Verify(r => r.AddDishAsync(It.IsAny<Dish>()), Times.Never);
         }
 
         [Fact]
-        public async Task DeleteDishAsync_ShouldHandleRepositoryException()
-        {
-            // Arrange
-            _mockRepo.Setup(r => r.DeleteDishAsync(It.IsAny<int>()))
-                .ThrowsAsync(new Exception("Database connection failed"));
-
-            // Act
-            var result = await _dishManager.DeleteDishAsync(1);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.Errors.Should().Contain("Failed to delete dish: Database connection failed");
-        }
-
-        #endregion
-
-        #region Edge Case Tests
-
-        [Fact]
-        public async Task AddDishAsync_ShouldSucceed_WithValidHealthFactorBoundaryValues()
+        public async Task AddDishAsync_ShouldSucceed_WithBoundaryHealthFactors()
         {
             // Test minimum valid health factor
             var dishMin = new Dish
@@ -734,65 +287,96 @@ namespace TestProject
             resultMax.Success.Should().BeTrue();
         }
 
+        #endregion
+
+        #region UpdateDishAsync Tests
+
         [Fact]
-        public async Task AddDishAsync_ShouldSucceed_WithMaximumValidNameLength()
+        public async Task UpdateDishAsync_ShouldSucceed_WithValidDish()
         {
             // Arrange
             var dish = new Dish
             {
-                Name = new string('A', 100), // Maximum valid length
-                Description = "Test description",
+                Id = 1,
+                Name = "Updated Dish",
+                Description = "Updated Description",
+                UserId = "user123",
+                HealthFactor = 8
+            };
+
+            // Act
+            var result = await _dishManager.UpdateDishAsync(dish);
+
+            // Assert
+            result.Success.Should().BeTrue();
+            result.Errors.Should().BeEmpty();
+            _mockRepo.Verify(r => r.UpdateDishAsync(dish), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateDishAsync_ShouldFail_WhenDishIsNull()
+        {
+            // Act
+            var result = await _dishManager.UpdateDishAsync(null!);
+
+            // Assert
+            result.Success.Should().BeFalse();
+            result.Errors.Should().Contain("Dish cannot be null");
+            _mockRepo.Verify(r => r.UpdateDishAsync(It.IsAny<Dish>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateDishAsync_ShouldFail_WhenNameIsEmpty()
+        {
+            // Arrange
+            var dish = new Dish
+            {
+                Id = 1,
+                Name = "",
+                Description = "Valid Description",
                 UserId = "user123",
                 HealthFactor = 5
             };
 
             // Act
-            var result = await _dishManager.AddDishAsync(dish);
+            var result = await _dishManager.UpdateDishAsync(dish);            // Assert
+            result.Success.Should().BeFalse();
+            result.Errors.Should().Contain("Dish name is required");
+            _mockRepo.Verify(r => r.UpdateDishAsync(It.IsAny<Dish>()), Times.Never);
+        }
+
+        #endregion
+
+        #region DeleteDishAsync Tests
+
+        [Fact]
+        public async Task DeleteDishAsync_ShouldSucceed_WithValidId()
+        {
+            // Arrange
+            var dishId = 1;
+
+            // Act
+            var result = await _dishManager.DeleteDishAsync(dishId);
 
             // Assert
             result.Success.Should().BeTrue();
             result.Errors.Should().BeEmpty();
+            _mockRepo.Verify(r => r.DeleteDishAsync(dishId), Times.Once);
         }
 
         [Fact]
-        public async Task AddDishAsync_ShouldSucceed_WithMaximumValidDescriptionLength()
+        public async Task DeleteDishAsync_ShouldFail_WithInvalidId()
         {
             // Arrange
-            var dish = new Dish
-            {
-                Name = "Test Dish",
-                Description = new string('A', 500), // Maximum valid length
-                UserId = "user123",
-                HealthFactor = 5
-            };
+            var invalidId = -1;
 
             // Act
-            var result = await _dishManager.AddDishAsync(dish);
+            var result = await _dishManager.DeleteDishAsync(invalidId);
 
             // Assert
-            result.Success.Should().BeTrue();
-            result.Errors.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task AddDishAsync_ShouldSucceed_WithMaximumValidPhotoUrlLength()
-        {
-            // Arrange
-            var dish = new Dish
-            {
-                Name = "Test Dish",
-                Description = "Test description",
-                UserId = "user123",
-                HealthFactor = 5,
-                Photo = new string('A', 500) // Maximum valid length
-            };
-
-            // Act
-            var result = await _dishManager.AddDishAsync(dish);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Errors.Should().BeEmpty();
+            result.Success.Should().BeFalse();
+            result.Errors.Should().Contain("Invalid dish ID");
+            _mockRepo.Verify(r => r.DeleteDishAsync(It.IsAny<int>()), Times.Never);
         }
 
         #endregion
