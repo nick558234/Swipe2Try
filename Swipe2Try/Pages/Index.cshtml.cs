@@ -14,7 +14,6 @@ namespace Swipe2Try.Pages
 
         public void OnGet()
         {
-
         }
     }
 }

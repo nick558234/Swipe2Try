@@ -16,5 +16,4 @@ namespace Swipe2Try.Pages
         {
         }
     }
-
 }

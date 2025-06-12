@@ -1,0 +1,54 @@
+```mermaid
+erDiagram
+    User {
+        int Id PK
+        string FirstName
+        string LastName
+        string Email UK
+        string PasswordHash
+        DateTime CreatedAt
+        DateTime UpdatedAt
+        bool IsActive
+    }
+    
+    Role {
+        int Id PK
+        string Name UK
+        string Description
+        DateTime CreatedAt
+        DateTime UpdatedAt
+        bool IsActive
+    }
+    
+    UserRole {
+        int UserId PK,FK
+        int RoleId PK,FK
+        DateTime AssignedAt
+        int AssignedBy FK
+        bool IsActive
+    }
+    
+    Permission {
+        int Id PK
+        string Name UK
+        string Description
+        string Resource
+        string Action
+        DateTime CreatedAt
+        bool IsActive
+    }
+    
+    RolePermission {
+        int RoleId PK,FK
+        int PermissionId PK,FK
+        DateTime AssignedAt
+        int AssignedBy FK
+        bool IsActive
+    }
+    
+    User ||--o{ UserRole : "has roles"
+    Role ||--o{ UserRole : "assigned to users"
+    Role ||--o{ RolePermission : "has permissions"
+    Permission ||--o{ RolePermission : "granted to roles"
+    User ||--o{ UserRole : "assigned by"
+```

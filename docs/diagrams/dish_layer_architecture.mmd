@@ -1,0 +1,112 @@
+---
+title: "Dish CRUD Operations - Three-Layer Architecture (Create Flow)"
+---
+classDiagram
+    direction TB
+    
+    %% UI Layer - Presentation
+    class CreateModel {
+        -DishManager dishManager
+        +Dish Input
+        +List~string~ ValidationErrors
+        +OnGet() void
+        +OnPostAsync() IActionResult
+    }
+    
+    %% Core Layer - Business Logic
+    class DishManager {
+        -IDishRepository dishRepository
+        -IDishValidator dishValidator
+        +GetAllDishesAsync() List~Dish~
+        +GetDishesByUserIdAsync(userId) List~Dish~
+        +GetDishByIdAsync(id) Dish
+        +AddDishAsync(dish) (bool Success, List~string~ Errors)
+        +UpdateDishAsync(dish) (bool Success, List~string~ Errors)
+        +DeleteDishAsync(id) (bool Success, List~string~ Errors)
+        +AddDishWithMessageAsync(dish) (bool Success, string Message)
+        +UpdateDishWithMessageAsync(dish) (bool Success, string Message)
+        +DeleteDishWithMessageAsync(id) (bool Success, string Message)
+    }
+    
+    class IDishValidator {
+        <<interface>>
+        +ValidateForCreationAsync(dish) (bool IsValid, List~string~ Errors)
+        +ValidateForUpdateAsync(dish) (bool IsValid, List~string~ Errors)
+    }
+    
+    class DishValidator {
+        +ValidateForCreationAsync(dish) (bool IsValid, List~string~ Errors)
+        +ValidateForUpdateAsync(dish) (bool IsValid, List~string~ Errors)
+    }
+    
+    class IDishRepository {
+        <<interface>>
+        +GetAllDishesAsync() List~Dish~
+        +GetDishesByUserIdAsync(userId) List~Dish~
+        +GetDishByIdAsync(id) Dish
+        +AddDishAsync(dish) Task
+        +UpdateDishAsync(dish) Task
+        +DeleteDishAsync(id) Task
+    }
+    
+    class Dish {
+        +int Id
+        +string Name
+        +string Description
+        +string UserId
+        +int? HealthFactor
+        +string? Photo
+        +string? Restaurant
+        +Dish()
+        +Dish(name, description, userId, healthFactor, photo, restaurant)
+    }
+    
+    %% DAL Layer - Data Access
+    class DishRepository {
+        -string connectionString
+        +GetAllDishesAsync() List~Dish~
+        +GetDishesByUserIdAsync(userId) List~Dish~
+        +GetDishByIdAsync(id) Dish
+        +AddDishAsync(dish) Task
+        +UpdateDishAsync(dish) Task
+        +DeleteDishAsync(id) Task
+    }
+    
+    class SqlConnection {
+        <<external>>
+        +OpenAsync() Task
+        +ExecuteAsync() Task
+    }
+    
+    class SqlCommand {
+        <<external>>
+        +ExecuteReaderAsync() SqlDataReader
+        +ExecuteNonQueryAsync() int
+    }
+    
+    %% UI Layer Relationships with Cardinalities
+    CreateModel "1" --> "1" DishManager
+    CreateModel "1" --> "0..*" Dish
+    
+    %% Core Layer Relationships with Cardinalities
+    DishManager "1" --> "1" IDishRepository
+    DishManager "1" --> "1" IDishValidator
+    DishValidator "1" ..|> "1" IDishValidator
+    DishRepository "1" ..|> "1" IDishRepository
+    
+    DishManager "1" --> "0..*" Dish
+    DishValidator "1" --> "0..*" Dish
+    DishRepository "1" --> "0..*" Dish
+    
+    %% DAL Layer Relationships with Cardinalities
+    DishRepository "1" --> "0..*" SqlConnection
+    DishRepository "1" --> "0..*" SqlCommand
+    
+    %% Layer annotations
+    note for CreateModel "UI Layer - Razor Page Model"
+    note for DishManager "Core Layer - Business Logic"
+    note for DishValidator "Core Layer - Validation"
+    note for DishRepository "DAL Layer - Data Access"
+    
+    %% Create Flow Notes
+    note for CreateModel "Create Flow:\n1. User submits form\n2. Gets UserId from Claims\n3. Calls DishManager\n4. Handles validation errors\n5. Redirects or shows errors"

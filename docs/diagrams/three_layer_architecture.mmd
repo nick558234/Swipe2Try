@@ -1,0 +1,219 @@
+classDiagram
+direction TB
+
+%% ===============================================
+%% CORE LAYER - Business Logic & Services
+%% ===============================================
+
+namespace CoreLayer {
+    class DishManager {
+        <<Manager>>
+        -IDishRepository _dishRepository
+        -IDishValidator _dishValidator
+        +GetAllDishesAsync() Task~List~Dish~~
+        +GetDishesByUserIdAsync(string userId) Task~List~Dish~~
+        +GetDishByIdAsync(int id) Task~Dish?~
+        +AddDishAsync(Dish dish) Task~(bool Success, List~string~ Errors)~
+        +AddDishWithMessageAsync(Dish dish) Task~(bool Success, string Message)~
+        +UpdateDishAsync(Dish dish) Task~(bool Success, List~string~ Errors)~
+        +UpdateDishWithMessageAsync(Dish dish) Task~(bool Success, string Message)~
+        +DeleteDishAsync(int id) Task~(bool Success, List~string~ Errors)~
+        +DeleteDishWithMessageAsync(int id) Task~(bool Success, string Message)~
+    }
+
+    class RestaurantManager {
+        <<Manager>>
+        -IRestaurantRepository _restaurantRepository
+        -IRestaurantValidator _restaurantValidator
+        +GetAllRestaurantsAsync() Task~List~Restaurant~~
+        +GetRestaurantsByUserIdAsync(string userId) Task~List~Restaurant~~
+        +GetRestaurantByIdAsync(int id) Task~Restaurant?~
+        +AddRestaurantAsync(Restaurant restaurant) Task~(bool Success, List~string~ Errors)~
+        +AddRestaurantWithMessageAsync(Restaurant restaurant) Task~(bool Success, string Message)~
+        +UpdateRestaurantAsync(Restaurant restaurant) Task~(bool Success, List~string~ Errors)~
+        +UpdateRestaurantWithMessageAsync(Restaurant restaurant) Task~(bool Success, string Message)~
+        +DeleteRestaurantAsync(int id) Task~(bool Success, List~string~ Errors)~
+        +DeleteRestaurantWithMessageAsync(int id) Task~(bool Success, string Message)~
+    }
+
+    class CategoryManager {
+        <<Manager>>
+        -ICategoryRepository _categoryRepository
+        -ICategoryValidator _categoryValidator
+        +GetAllCategoriesAsync() Task~List~Category~~
+        +GetCategoryByIdAsync(int id) Task~Category?~
+        +AddCategoryAsync(Category category) Task~(bool Success, List~string~ Errors)~
+        +AddCategoryWithMessageAsync(Category category) Task~(bool Success, string Message)~
+        +UpdateCategoryAsync(Category category) Task~(bool Success, List~string~ Errors)~
+        +UpdateCategoryWithMessageAsync(Category category) Task~(bool Success, string Message)~
+        +DeleteCategoryAsync(int id) Task~(bool Success, List~string~ Errors)~
+        +DeleteCategoryWithMessageAsync(int id) Task~(bool Success, string Message)~
+    }
+
+    class Dish {
+        <<Entity>>
+        +int Id
+        +string Name
+        +string Description
+        +string UserId
+        +int? HealthFactor
+        +string? Photo
+        +string? Restaurant
+    }
+
+    class Restaurant {
+        <<Entity>>
+        +int Id
+        +string Name
+        +string Location
+        +string UserId
+    }
+
+    class Category {
+        <<Entity>>
+        +int Id
+        +string Name
+        +string? Photo
+    }
+
+    class IDishRepository {
+        <<Interface>>
+        +GetAllDishesAsync() Task~List~Dish~~
+        +GetDishesByUserIdAsync(string userId) Task~List~Dish~~
+        +GetDishByIdAsync(int id) Task~Dish?~
+        +AddDishAsync(Dish dish) Task
+        +UpdateDishAsync(Dish dish) Task
+        +DeleteDishAsync(int id) Task
+    }
+
+    class IRestaurantRepository {
+        <<Interface>>
+        +GetAllRestaurantsAsync() Task~List~Restaurant~~
+        +GetRestaurantsByUserIdAsync(string userId) Task~List~Restaurant~~
+        +GetRestaurantByIdAsync(int id) Task~Restaurant?~
+        +AddRestaurantAsync(Restaurant restaurant) Task
+        +UpdateRestaurantAsync(Restaurant restaurant) Task
+        +DeleteRestaurantAsync(int id) Task
+    }
+
+    class ICategoryRepository {
+        <<Interface>>
+        +GetAllCategoriesAsync() Task~List~Category~~
+        +GetCategoryByIdAsync(int id) Task~Category?~
+        +AddCategoryAsync(Category category) Task
+        +UpdateCategoryAsync(Category category) Task
+        +DeleteCategoryAsync(int id) Task
+    }
+
+    class IDishValidator {
+        <<Interface>>
+        +ValidateForCreationAsync(Dish dish) Task~(bool IsValid, List~string~ Errors)~
+        +ValidateForUpdateAsync(Dish dish) Task~(bool IsValid, List~string~ Errors)~
+    }
+
+    class IRestaurantValidator {
+        <<Interface>>
+        +ValidateForCreationAsync(Restaurant restaurant) Task~(bool IsValid, List~string~ Errors)~
+        +ValidateForUpdateAsync(Restaurant restaurant) Task~(bool IsValid, List~string~ Errors)~
+    }
+
+    class ICategoryValidator {
+        <<Interface>>
+        +ValidateForCreationAsync(Category category) Task~(bool IsValid, List~string~ Errors)~
+        +ValidateForUpdateAsync(Category category) Task~(bool IsValid, List~string~ Errors)~
+    }
+
+    class DishValidator {
+        <<Validator>>
+        +ValidateForCreationAsync(Dish dish) Task~(bool IsValid, List~string~ Errors)~
+        +ValidateForUpdateAsync(Dish dish) Task~(bool IsValid, List~string~ Errors)~
+    }
+
+    class RestaurantValidator {
+        <<Validator>>
+        +ValidateForCreationAsync(Restaurant restaurant) Task~(bool IsValid, List~string~ Errors)~
+        +ValidateForUpdateAsync(Restaurant restaurant) Task~(bool IsValid, List~string~ Errors)~
+    }
+
+    class CategoryValidator {
+        <<Validator>>
+        +ValidateForCreationAsync(Category category) Task~(bool IsValid, List~string~ Errors)~
+        +ValidateForUpdateAsync(Category category) Task~(bool IsValid, List~string~ Errors)~
+    }
+}
+
+%% ===============================================
+%% DATA ACCESS LAYER - Database Operations  
+%% ===============================================
+namespace DataAccessLayer {
+    class DishRepository {
+        <<Repository>>
+        -string _connectionString
+        +GetAllDishesAsync() Task~List~Dish~~
+        +GetDishesByUserIdAsync(string userId) Task~List~Dish~~
+        +GetDishByIdAsync(int id) Task~Dish?~
+        +AddDishAsync(Dish dish) Task
+        +UpdateDishAsync(Dish dish) Task
+        +DeleteDishAsync(int id) Task
+    }
+
+    class RestaurantRepository {
+        <<Repository>>
+        -string _connectionString
+        +GetAllRestaurantsAsync() Task~List~Restaurant~~
+        +GetRestaurantsByUserIdAsync(string userId) Task~List~Restaurant~~
+        +GetRestaurantByIdAsync(int id) Task~Restaurant?~
+        +AddRestaurantAsync(Restaurant restaurant) Task
+        +UpdateRestaurantAsync(Restaurant restaurant) Task
+        +DeleteRestaurantAsync(int id) Task
+    }
+
+    class CategoryRepository {
+        <<Repository>>
+        -string _connectionString
+        +GetAllCategoriesAsync() Task~List~Category~~
+        +GetCategoryByIdAsync(int id) Task~Category?~
+        +AddCategoryAsync(Category category) Task
+        +UpdateCategoryAsync(Category category) Task
+        +DeleteCategoryAsync(int id) Task
+    }
+
+    class SqlDatabase {
+        <<Database>>
+        +Tables: DISHES, Restaurants, Categories
+        +Tables: USERS, ROLES, LIKES_DISLIKES
+        +Tables: DISHRESTAURANT, DISH_CATEGORIES
+    }
+}
+
+%% CROSS-LAYER RELATIONSHIPS
+DishManager "1" --> "1" IDishRepository : uses
+DishManager "1" --> "1" IDishValidator : validates with
+RestaurantManager "1" --> "1" IRestaurantRepository : uses
+RestaurantManager "1" --> "1" IRestaurantValidator : validates with
+CategoryManager "1" --> "1" ICategoryRepository : uses
+CategoryManager "1" --> "1" ICategoryValidator : validates with
+
+DishManager "1" --> "*" Dish : manages
+RestaurantManager "1" --> "*" Restaurant : manages
+CategoryManager "1" --> "*" Category : manages
+
+DishValidator "1" ..|> "1" IDishValidator : implements
+RestaurantValidator "1" ..|> "1" IRestaurantValidator : implements
+CategoryValidator "1" ..|> "1" ICategoryValidator : implements
+
+DishRepository "1" ..|> "1" IDishRepository : implements
+RestaurantRepository "1" ..|> "1" IRestaurantRepository : implements
+CategoryRepository "1" ..|> "1" ICategoryRepository : implements
+
+DishRepository "1" --> "*" Dish : persists
+RestaurantRepository "1" --> "*" Restaurant : persists
+CategoryRepository "1" --> "*" Category : persists
+
+DishRepository "1" --> "1" SqlDatabase : connects to
+RestaurantRepository "1" --> "1" SqlDatabase : connects to
+CategoryRepository "1" --> "1" SqlDatabase : connects to
+
+Dish "*" --> "0..1" Restaurant : "belongs to"
+Dish "*" --> "0..1" Category : "has category"
+Restaurant "1" --o "*" Dish : "has dishes"

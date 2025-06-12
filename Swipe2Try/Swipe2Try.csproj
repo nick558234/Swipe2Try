@@ -6,4 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Swipe2Try.Core\Swipe2Try.Core.csproj" />
+    <ProjectReference Include="..\Swipe2Try.DAL\Swipe2Try.DAL.csproj" />
+  </ItemGroup>
+
 </Project>
