@@ -55,8 +55,7 @@ namespace Swipe2Try.Pages
             {
                 var authProperties = new AuthenticationProperties
                 {
-                    // Set cookie to expire after 30 minutes
-                    // Make cookie persistent across browser sessions
+
                 };
 
                 await HttpContext.SignInAsync(

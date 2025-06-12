@@ -21,6 +21,13 @@ namespace Swipe2Try.Core.Validation
         {
             var errors = new List<string>();
 
+            // Check if user is null
+            if (user == null)
+            {
+                errors.Add("User cannot be null");
+                return (false, errors);
+            }
+
             // Check required fields
             if (string.IsNullOrWhiteSpace(user.Name))
                 errors.Add("Name is required");

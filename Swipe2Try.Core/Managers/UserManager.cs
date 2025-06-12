@@ -174,7 +174,6 @@ namespace Swipe2Try.Core.Managers
         {
             return await _roleManager.GetAllRolesAsync();
         }
-
         public string GetRedirectPageForRole(string roleName)
         {
             return roleName switch
