@@ -1,0 +1,238 @@
+@startuml DishLayerArchitecture
+title <b>Dish CRUD Operations - Three-Layer Architecture</b>
+
+' ===== CLEAN UML STYLING =====
+skinparam {
+    backgroundColor white
+    handwritten false
+    shadowing false
+    roundcorner 5
+    linetype ortho
+    
+    class {
+        BackgroundColor<<UI>> #E3F2FD
+        BackgroundColor<<Core>> #E8F5E8
+        BackgroundColor<<DAL>> #FFF8E1
+        BackgroundColor<<Domain>> #FCE4EC
+        BackgroundColor<<Interface>> #F5F5F5
+        BackgroundColor<<external>> #FFEBEE
+        BorderColor #333333
+        BorderThickness 1
+        ArrowColor #333333
+        ArrowThickness 1
+        FontSize 11
+        AttributeFontSize 10
+    }
+    
+    package {
+        BackgroundColor #FAFAFA
+        BorderColor #666666
+        BorderThickness 2
+        FontStyle bold
+        FontSize 12
+    }
+    
+    note {
+        BackgroundColor #FFFDE7
+        BorderColor #FBC02D
+        FontSize 9
+    }
+}
+
+' ===== PACKAGES & LAYERS =====
+package "UI Layer - Presentation" as UI <<UI>> {
+    class CreateModel <<UI>> {
+        -dishManager : DishManager
+        +Input : Dish
+        +ValidationErrors : List<String>
+        --
+        +OnGet() : void
+        +OnPostAsync() : IActionResult
+    }
+}
+
+package "Core Layer - Business Logic" as CORE <<Core>> {
+    
+    interface IDishValidator <<Interface>> {
+        +ValidateForCreationAsync(dish : Dish) : Tuple<boolean, List<String>>
+        +ValidateForUpdateAsync(dish : Dish) : Tuple<boolean, List<String>>
+    }
+    
+    class DishValidator <<Core>> {
+        +ValidateForCreationAsync(dish : Dish) : Tuple<boolean, List<String>>
+        +ValidateForUpdateAsync(dish : Dish) : Tuple<boolean, List<String>>
+    }
+    
+    interface IDishRepository <<Interface>> {
+        +GetAllDishesAsync() : List<Dish>
+        +GetDishesByUserIdAsync(userId : String) : List<Dish>
+        +GetDishByIdAsync(id : int) : Dish
+        +AddDishAsync(dish : Dish) : Task
+        +UpdateDishAsync(dish : Dish) : Task
+        +DeleteDishAsync(id : int) : Task
+    }
+      class DishManager <<Core>> {
+        -dishRepository : IDishRepository
+        -dishValidator : IDishValidator
+        --
+        +GetAllDishesAsync() : List<Dish>
+        +GetDishesByUserIdAsync(userId : String) : List<Dish>
+        +GetDishByIdAsync(id : int) : Dish
+        +AddDishAsync(dish : Dish) : Tuple<boolean, List<String>>
+        +UpdateDishAsync(dish : Dish) : Tuple<boolean, List<String>>
+        +DeleteDishAsync(id : int) : Tuple<boolean, List<String>>
+        --
+        +AddDishWithMessageAsync(dish : Dish) : Tuple<boolean, String>
+        +UpdateDishWithMessageAsync(dish : Dish) : Tuple<boolean, String>
+        +DeleteDishWithMessageAsync(id : int) : Tuple<boolean, String>
+    }
+    
+    interface IUserRepository <<Interface>> {
+        +GetUserByIdAsync(userId : String) : User
+        +GetUsersByRoleAsync(roleId : String) : List<User>
+        +UpdateUserAsync(user : User) : Task
+    }
+    
+    interface IRoleRepository <<Interface>> {
+        +GetRoleByIdAsync(roleId : String) : Role
+        +GetAllRolesAsync() : List<Role>
+    }
+      class RoleManager <<Core>> {
+        -userRepository : IUserRepository
+        -roleRepository : IRoleRepository
+        --
+        +GetUsersByRoleAsync(roleId : String) : List<User>
+        +AssignRoleToUserAsync(userId : String, roleId : String) : boolean
+        +RemoveRoleFromUserAsync(userId : String) : boolean
+        +GetRoleByIdAsync(roleId : String) : Role
+        +GetAllRolesAsync() : List<Role>
+    }
+}
+
+package "Domain Models" as DOMAIN <<Domain>> {
+    class User <<Domain>> {
+        +UserID : String {get; set;}
+        +Name : String {get; set;}
+        +Email : String {get; set;}
+        +Password : String {get; set;}
+        +RoleID : String {get; set;}
+    }
+    
+    class Role <<Domain>> {
+        +RoleID : String {get; set;}
+        +RoleName : String {get; set;}
+        --
+        +Role()
+        +Role(roleID : String, roleName : String)
+    }
+    
+    class Dish <<Domain>> {
+        +Id : int {get; set;}
+        +Name : String {get; set;}
+        +Description : String {get; set;}
+        +UserId : String {get; set;}
+        +HealthFactor : int {get; set;}
+        +Photo : String {get; set;}
+        +Restaurant : String {get; set;}
+        --
+        +Dish()
+        +Dish(name : String, description : String, userId : String, healthFactor : int, photo : String, restaurant : String)
+    }
+}
+
+package "DAL Layer - Data Access" as DAL <<DAL>> {
+    class DishRepository <<DAL>> {
+        -connectionString : String
+        --
+        +GetAllDishesAsync() : List<Dish>
+        +GetDishesByUserIdAsync(userId : String) : List<Dish>
+        +GetDishByIdAsync(id : int) : Dish
+        +AddDishAsync(dish : Dish) : Task
+        +UpdateDishAsync(dish : Dish) : Task
+        +DeleteDishAsync(id : int) : Task
+    }
+    
+    class SqlConnection <<external>> {
+        +OpenAsync() : Task
+        +ExecuteAsync() : Task
+    }
+    
+    class SqlCommand <<external>> {
+        +ExecuteReaderAsync() : SqlDataReader
+        +ExecuteNonQueryAsync() : int
+    }
+}
+
+' ===== RELATIONSHIPS =====
+
+' Domain Relationships
+User ||--o{ Role : "1 : 1..*"
+RoleManager ||--o{ User : "1 : 0..*"
+User ||--o{ Dish : "1 : 0..*"
+
+' UI Layer Relationships
+CreateModel --> DishManager : "1 : 1"
+CreateModel --> Dish : "1 : 0..*"
+
+' Core Layer Dependencies
+DishManager ..> IDishRepository : "1 : 1"
+DishManager ..> IDishValidator : "1 : 1"
+RoleManager ..> IUserRepository : "1 : 1"
+RoleManager ..> IRoleRepository : "1 : 1"
+
+' Core Layer Implementations
+DishValidator ..|> IDishValidator
+DishRepository ..|> IDishRepository
+
+' Core Layer Associations
+DishManager --> Dish : "1 : 0..*"
+DishValidator --> Dish : "1 : 0..*"
+DishRepository --> Dish : "1 : 0..*"
+
+' DAL Layer Relationships
+DishRepository --> SqlConnection : "1 : 0..*"
+DishRepository --> SqlCommand : "1 : 0..*"
+
+' ===== NOTES =====
+note top of CreateModel : UI Layer - Razor Page Model
+note top of DishManager : Core Layer - Business Logic
+note top of DishValidator : Core Layer - Validation
+note top of DishRepository : DAL Layer - Data Access
+
+note right of CreateModel
+    **Create Flow:**
+    1. User submits form
+    2. Gets UserId from Claims
+    3. Calls DishManager
+    4. Handles validation errors
+    5. Redirects or shows errors
+end note
+
+' ===== SOLID PRINCIPLES NOTES =====
+note left of DishManager
+    **S** - Single Responsibility
+    Only handles dish business logic
+end note
+
+note right of IDishValidator
+    **I** - Interface Segregation
+    Focused validation contract
+end note
+
+note bottom of DishRepository
+    **D** - Dependency Inversion
+    Depends on IDishRepository abstraction
+end note
+
+note left of DishValidator
+    **O** - Open/Closed
+    Extensible validation rules
+end note
+
+note bottom of CORE
+    **L** - Liskov Substitution
+    All implementations are
+    interchangeable via interfaces
+end note
+
+@enduml

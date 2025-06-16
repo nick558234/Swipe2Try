@@ -3,104 +3,204 @@ title: "Dish CRUD Operations - Three-Layer Architecture (Create Flow)"
 ---
 classDiagram
     direction TB
-    
-    %% UI Layer - Presentation
+      %% UI Layer - Presentation
     class CreateModel {
-        -DishManager dishManager
-        +Dish Input
-        +List~string~ ValidationErrors
-        +OnGet() void
-        +OnPostAsync() IActionResult
+        -dishManager : DishManager
+        -input : Dish
+        -validationErrors : List~String~
+        +getInput() : Dish
+        +setInput(value : Dish) : void
+        +getValidationErrors() : List~String~
+        +setValidationErrors(errors : List~String~) : void
+        +OnGet() : void
+        +OnPostAsync() : IActionResult
     }
-    
-    %% Core Layer - Business Logic
+      %% Core Layer - Business Logic
     class DishManager {
-        -IDishRepository dishRepository
-        -IDishValidator dishValidator
-        +GetAllDishesAsync() List~Dish~
-        +GetDishesByUserIdAsync(userId) List~Dish~
-        +GetDishByIdAsync(id) Dish
-        +AddDishAsync(dish) (bool Success, List~string~ Errors)
-        +UpdateDishAsync(dish) (bool Success, List~string~ Errors)
-        +DeleteDishAsync(id) (bool Success, List~string~ Errors)
-        +AddDishWithMessageAsync(dish) (bool Success, string Message)
-        +UpdateDishWithMessageAsync(dish) (bool Success, string Message)
-        +DeleteDishWithMessageAsync(id) (bool Success, string Message)
+        -dishRepository : IDishRepository
+        -dishValidator : IDishValidator
+        +getDishRepository() : IDishRepository
+        +setDishRepository(repository : IDishRepository) : void
+        +getDishValidator() : IDishValidator
+        +setDishValidator(validator : IDishValidator) : void
+        +GetAllDishesAsync() : List~Dish~
+        +GetDishesByUserIdAsync(userId : String) : List~Dish~
+        +GetDishByIdAsync(id : int) : Dish
+        +AddDishAsync(dish : Dish) : Tuple~boolean, List~String~~
+        +UpdateDishAsync(dish : Dish) : Tuple~boolean, List~String~~
+        +DeleteDishAsync(id : int) : Tuple~boolean, List~String~~
+        +AddDishWithMessageAsync(dish : Dish) : Tuple~boolean, String~
+        +UpdateDishWithMessageAsync(dish : Dish) : Tuple~boolean, String~
+        +DeleteDishWithMessageAsync(id : int) : Tuple~boolean, String~
     }
-    
-    class IDishValidator {
+      class IDishValidator {
         <<interface>>
-        +ValidateForCreationAsync(dish) (bool IsValid, List~string~ Errors)
-        +ValidateForUpdateAsync(dish) (bool IsValid, List~string~ Errors)
+        +ValidateForCreationAsync(dish : Dish) : Tuple~boolean, List~String~~
+        +ValidateForUpdateAsync(dish : Dish) : Tuple~boolean, List~String~~
     }
     
     class DishValidator {
-        +ValidateForCreationAsync(dish) (bool IsValid, List~string~ Errors)
-        +ValidateForUpdateAsync(dish) (bool IsValid, List~string~ Errors)
+        +ValidateForCreationAsync(dish : Dish) : Tuple~boolean, List~String~~
+        +ValidateForUpdateAsync(dish : Dish) : Tuple~boolean, List~String~~
     }
     
     class IDishRepository {
         <<interface>>
-        +GetAllDishesAsync() List~Dish~
-        +GetDishesByUserIdAsync(userId) List~Dish~
-        +GetDishByIdAsync(id) Dish
-        +AddDishAsync(dish) Task
-        +UpdateDishAsync(dish) Task
-        +DeleteDishAsync(id) Task
+        +GetAllDishesAsync() : List~Dish~
+        +GetDishesByUserIdAsync(userId : String) : List~Dish~
+        +GetDishByIdAsync(id : int) : Dish
+        +AddDishAsync(dish : Dish) : Task
+        +UpdateDishAsync(dish : Dish) : Task
+        +DeleteDishAsync(id : int) : Task
     }
-    
-    class Dish {
-        +int Id
-        +string Name
-        +string Description
-        +string UserId
-        +int? HealthFactor
-        +string? Photo
-        +string? Restaurant
+      class Dish {
+        -id : int
+        -name : String
+        -description : String
+        -userId : String
+        -healthFactor : int
+        -photo : String
+        -restaurant : String
+        +getId() : int
+        +setId(id : int) : void
+        +getName() : String
+        +setName(name : String) : void
+        +getDescription() : String
+        +setDescription(description : String) : void
+        +getUserId() : String
+        +setUserId(userId : String) : void
+        +getHealthFactor() : int
+        +setHealthFactor(factor : int) : void
+        +getPhoto() : String
+        +setPhoto(photo : String) : void
+        +getRestaurant() : String
+        +setRestaurant(restaurant : String) : void
         +Dish()
-        +Dish(name, description, userId, healthFactor, photo, restaurant)
+        +Dish(name : String, description : String, userId : String, healthFactor : int, photo : String, restaurant : String)
     }
     
-    %% DAL Layer - Data Access
+    %% Domain Models
+    class User {
+        -userID : String
+        -name : String
+        -email : String
+        -password : String
+        -roleID : String
+        +getUserID() : String
+        +setUserID(id : String) : void
+        +getName() : String
+        +setName(name : String) : void
+        +getEmail() : String
+        +setEmail(email : String) : void
+        +getPassword() : String
+        +setPassword(password : String) : void
+        +getRoleID() : String
+        +setRoleID(roleID : String) : void
+    }
+    
+    class Role {
+        -roleID : String
+        -roleName : String
+        +getRoleID() : String
+        +setRoleID(id : String) : void
+        +getRoleName() : String
+        +setRoleName(name : String) : void
+    }
+    
+    class LikeDislike {
+        -id : int
+        -userId : String
+        -dishId : int
+        -isLike : boolean
+        -timestamp : DateTime
+        +getId() : int
+        +setId(id : int) : void
+        +getUserId() : String
+        +setUserId(userId : String) : void
+        +getDishId() : int
+        +setDishId(dishId : int) : void
+        +getIsLike() : boolean
+        +setIsLike(isLike : boolean) : void
+        +getTimestamp() : DateTime
+        +setTimestamp(timestamp : DateTime) : void
+    }
+    
+    class RoleManager {
+        -userRepository : IUserRepository
+        -roleRepository : IRoleRepository
+        +getUserRepository() : IUserRepository
+        +setUserRepository(repository : IUserRepository) : void
+        +getRoleRepository() : IRoleRepository
+        +setRoleRepository(repository : IRoleRepository) : void
+        +GetUsersByRoleAsync(roleId : String) : List~User~
+        +AssignRoleToUserAsync(userId : String, roleId : String) : boolean
+        +RemoveRoleFromUserAsync(userId : String) : boolean
+        +GetRoleByIdAsync(roleId : String) : Role
+    }
+    
+    class IUserRepository {
+        <<interface>>
+        +GetUserByIdAsync(userId : String) : User
+        +GetUsersByRoleAsync(roleId : String) : List~User~
+        +UpdateUserAsync(user : User) : Task
+    }
+    
+    class IRoleRepository {
+        <<interface>>
+        +GetRoleByIdAsync(roleId : String) : Role
+        +GetAllRolesAsync() : List~Role~
+    }
+      %% DAL Layer - Data Access
     class DishRepository {
-        -string connectionString
-        +GetAllDishesAsync() List~Dish~
-        +GetDishesByUserIdAsync(userId) List~Dish~
-        +GetDishByIdAsync(id) Dish
-        +AddDishAsync(dish) Task
-        +UpdateDishAsync(dish) Task
-        +DeleteDishAsync(id) Task
+        -connectionString : String
+        +getConnectionString() : String
+        +setConnectionString(connectionString : String) : void
+        +GetAllDishesAsync() : List~Dish~
+        +GetDishesByUserIdAsync(userId : String) : List~Dish~
+        +GetDishByIdAsync(id : int) : Dish
+        +AddDishAsync(dish : Dish) : Task
+        +UpdateDishAsync(dish : Dish) : Task
+        +DeleteDishAsync(id : int) : Task
     }
     
     class SqlConnection {
         <<external>>
-        +OpenAsync() Task
-        +ExecuteAsync() Task
+        +OpenAsync() : Task
+        +ExecuteAsync() : Task
     }
     
     class SqlCommand {
         <<external>>
-        +ExecuteReaderAsync() SqlDataReader
-        +ExecuteNonQueryAsync() int
+        +ExecuteReaderAsync() : SqlDataReader
+        +ExecuteNonQueryAsync() : int
     }
     
-    %% UI Layer Relationships with Cardinalities
-    CreateModel "1" --> "1" DishManager
-    CreateModel "1" --> "0..*" Dish
+    %% Domain Relationships with Multiplicities
+    User "1" --> "1..*" Role : has
+    RoleManager "1" --> "0..*" User : manages
+    LikeDislike "1" --> "1" User : belongs to
+    LikeDislike "1" --> "1" Dish : rates
+    User "1" --> "0..*" Dish : creates
     
-    %% Core Layer Relationships with Cardinalities
-    DishManager "1" --> "1" IDishRepository
-    DishManager "1" --> "1" IDishValidator
-    DishValidator "1" ..|> "1" IDishValidator
-    DishRepository "1" ..|> "1" IDishRepository
+    %% UI Layer Relationships
+    CreateModel "1" --> "1" DishManager : uses
+    CreateModel "1" --> "0..*" Dish : handles
     
-    DishManager "1" --> "0..*" Dish
-    DishValidator "1" --> "0..*" Dish
-    DishRepository "1" --> "0..*" Dish
+    %% Core Layer Relationships  
+    DishManager "1" --> "1" IDishRepository : depends on
+    DishManager "1" --> "1" IDishValidator : depends on
+    RoleManager "1" --> "1" IUserRepository : depends on
+    RoleManager "1" --> "1" IRoleRepository : depends on
+    DishValidator "1" ..|> "1" IDishValidator : implements
+    DishRepository "1" ..|> "1" IDishRepository : implements
     
-    %% DAL Layer Relationships with Cardinalities
-    DishRepository "1" --> "0..*" SqlConnection
-    DishRepository "1" --> "0..*" SqlCommand
+    DishManager "1" --> "0..*" Dish : manages
+    DishValidator "1" --> "0..*" Dish : validates
+    DishRepository "1" --> "0..*" Dish : persists
+    
+    %% DAL Layer Relationships
+    DishRepository "1" --> "0..*" SqlConnection : uses
+    DishRepository "1" --> "0..*" SqlCommand : executes
     
     %% Layer annotations
     note for CreateModel "UI Layer - Razor Page Model"
