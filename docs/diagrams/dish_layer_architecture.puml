@@ -57,8 +57,9 @@ package "Core Layer - Business Logic" as CORE <<Core>> {
         +ValidateForCreationAsync(dish : Dish) : Tuple<boolean, List<String>>
         +ValidateForUpdateAsync(dish : Dish) : Tuple<boolean, List<String>>
     }
-    
-    class DishValidator <<Core>> {
+      class DishValidator <<Core>> {
+        +DishValidator()
+        --
         +ValidateForCreationAsync(dish : Dish) : Tuple<boolean, List<String>>
         +ValidateForUpdateAsync(dish : Dish) : Tuple<boolean, List<String>>
     }
@@ -70,10 +71,12 @@ package "Core Layer - Business Logic" as CORE <<Core>> {
         +AddDishAsync(dish : Dish) : Task
         +UpdateDishAsync(dish : Dish) : Task
         +DeleteDishAsync(id : int) : Task
-    }
-      class DishManager <<Core>> {
+    }      
+    class DishManager <<Core>> {
         -dishRepository : IDishRepository
         -dishValidator : IDishValidator
+        --
+        +DishManager(dishRepository : IDishRepository, dishValidator : IDishValidator)
         --
         +GetAllDishesAsync() : List<Dish>
         +GetDishesByUserIdAsync(userId : String) : List<Dish>
@@ -96,10 +99,13 @@ package "Core Layer - Business Logic" as CORE <<Core>> {
     interface IRoleRepository <<Interface>> {
         +GetRoleByIdAsync(roleId : String) : Role
         +GetAllRolesAsync() : List<Role>
-    }
-      class RoleManager <<Core>> {
+    }      
+    
+    class RoleManager <<Core>> {
         -userRepository : IUserRepository
         -roleRepository : IRoleRepository
+        --
+        +RoleManager(userRepository : IUserRepository, roleRepository : IRoleRepository)
         --
         +GetUsersByRoleAsync(roleId : String) : List<User>
         +AssignRoleToUserAsync(userId : String, roleId : String) : boolean
@@ -109,13 +115,15 @@ package "Core Layer - Business Logic" as CORE <<Core>> {
     }
 }
 
-package "Domain Models" as DOMAIN <<Domain>> {
+package "Domain Models" as DOMAIN <<Domain>> {    
     class User <<Domain>> {
         +UserID : String {get; set;}
         +Name : String {get; set;}
         +Email : String {get; set;}
         +Password : String {get; set;}
         +RoleID : String {get; set;}
+        --
+        +User()
     }
     
     class Role <<Domain>> {
@@ -234,5 +242,19 @@ note bottom of CORE
     All implementations are
     interchangeable via interfaces
 end note
+
+' ===== LEGEND =====
+legend top left
+    **🔗 UML Visual Symbols**
+    ====
+    **Class & Interface Icons:**
+    **C** - Class (concrete implementation)
+    **I** - Interface (contract/abstraction)
+    ====
+    **Method & Field Icons:**
+    **●** - Public method/property (filled circle)
+    **○** - Private field/method (empty circle)
+    **■** - Instance/Object (red square)
+end legend
 
 @enduml
