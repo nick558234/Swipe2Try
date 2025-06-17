@@ -8,9 +8,21 @@
 	<header class="text-center mb-8">
 		<h1 class="text-4xl font-bold text-purple-600">Swipe 'n Try</h1>
 		<p class="text-xl text-gray-600 mt-2">Your next meal is just a swipe away.</p>
-	</header>
+	</header>	<div class="max-w-md mx-auto relative px-20 sm:px-0">
+		<!-- Left Dislike Button -->
+		<button id="left-dislike-btn" class="absolute left-[-20px] sm:left-[-80px] top-1/2 transform -translate-y-1/2 z-10 bg-red-500 hover:bg-red-600 text-white font-bold p-3 sm:p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-110">
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+			</svg>
+		</button>
 
-	<div class="max-w-md mx-auto">
+		<!-- Right Like Button -->
+		<button id="right-like-btn" class="absolute right-[-20px] sm:right-[-80px] top-1/2 transform -translate-y-1/2 z-10 bg-green-500 hover:bg-green-600 text-white font-bold p-3 sm:p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-110">
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+			</svg>
+		</button>
+
 		<div id="dish-container" class="relative h-96">
 			@if (Model.Dishes.Any())
 			{
@@ -114,10 +126,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 showNoMoreDishes();
             }
         }, 300);
-    }
-
-    function showNoMoreDishes() {
+    }    function showNoMoreDishes() {
         const container = document.getElementById('dish-container');
+        const leftBtn = document.getElementById('left-dislike-btn');
+        const rightBtn = document.getElementById('right-like-btn');
+        
+        // Hide side buttons
+        leftBtn.style.display = 'none';
+        rightBtn.style.display = 'none';
+        
         container.innerHTML = `
             <div class="text-center p-8 bg-white rounded-lg shadow-md">
                 <h2 class="text-2xl font-bold text-purple-600">All done!</h2>
@@ -127,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </button>
             </div>
         `;
-    }    function handleSwipe(card, direction) {
+    }function handleSwipe(card, direction) {
         const dishId = card.dataset.dishId;
         const isLike = direction === 'right';
         
@@ -211,9 +228,28 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation();
             if (dishes[currentDishIndex] === card) {
                 handleSwipe(card, 'left');
-            }
-        });
-    });    // Keyboard shortcuts
+            }        });
+    });
+
+    // Side button event handlers
+    const leftDislikeBtn = document.getElementById('left-dislike-btn');
+    const rightLikeBtn = document.getElementById('right-like-btn');
+    
+    leftDislikeBtn?.addEventListener('click', () => {
+        if (currentDishIndex < totalDishes) {
+            const currentCard = dishes[currentDishIndex];
+            handleSwipe(currentCard, 'left');
+        }
+    });
+    
+    rightLikeBtn?.addEventListener('click', () => {
+        if (currentDishIndex < totalDishes) {
+            const currentCard = dishes[currentDishIndex];
+            handleSwipe(currentCard, 'right');
+        }
+    });
+
+    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (currentDishIndex >= totalDishes) return;
         
