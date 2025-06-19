@@ -2,12 +2,14 @@
 title <b>Dish CRUD Operations - Three-Layer Architecture</b>
 
 ' ===== CLEAN UML STYLING =====
+!define SHOW_VISIBILITY_ICONS
 skinparam {
     backgroundColor white
     handwritten false
     shadowing false
     roundcorner 5
     linetype ortho
+    classAttributeIconSize 0
     
     class {
         BackgroundColor<<UI>> #E3F2FD
@@ -117,40 +119,43 @@ package "Core Layer - Business Logic" as CORE <<Core>> {
 
 package "Domain Models" as DOMAIN <<Domain>> {    
     class User <<Domain>> {
-        +UserID : String {get; set;}
-        +Name : String {get; set;}
-        +Email : String {get; set;}
-        +Password : String {get; set;}
-        +RoleID : String {get; set;}
+        {field} +UserID : String
+        {field} +Name : String
+        {field} +Email : String
+        {field} +Password : String
+        {field} +RoleID : String
         --
-        +User()
+        {method} +User()
     }
     
     class Role <<Domain>> {
-        +RoleID : String {get; set;}
-        +RoleName : String {get; set;}
+        {field} +RoleID : String
+        {field} +RoleName : String
         --
-        +Role()
-        +Role(roleID : String, roleName : String)
+        {method} +Role()
+        {method} +Role(roleID : String, roleName : String)
     }
     
     class Dish <<Domain>> {
-        +Id : int {get; set;}
-        +Name : String {get; set;}
-        +Description : String {get; set;}
-        +UserId : String {get; set;}
-        +HealthFactor : int {get; set;}
-        +Photo : String {get; set;}
-        +Restaurant : String {get; set;}
+        {field} +Id : int
+        {field} +Name : String
+        {field} +Description : String
+        {field} +UserId : String
+        {field} +HealthFactor : int
+        {field} +Photo : String
+        {field} +Restaurant : String
         --
-        +Dish()
-        +Dish(name : String, description : String, userId : String, healthFactor : int, photo : String, restaurant : String)
+        {method} +Dish()
+        {method} +Dish(name : String, description : String, userId : String, healthFactor : int, photo : String, restaurant : String)
     }
 }
 
-package "DAL Layer - Data Access" as DAL <<DAL>> {
+package "DAL Layer - Data Access" as DAL <<DAL>> 
+{    
     class DishRepository <<DAL>> {
         -connectionString : String
+        --
+        +DishRepository(connectionString : String)
         --
         +GetAllDishesAsync() : List<Dish>
         +GetDishesByUserIdAsync(userId : String) : List<Dish>
@@ -245,16 +250,22 @@ end note
 
 ' ===== LEGEND =====
 legend top left
-    **🔗 UML Visual Symbols**
+    **UML Visual Symbols**
     ====
     **Class & Interface Icons:**
     **C** - Class (concrete implementation)
     **I** - Interface (contract/abstraction)
     ====
-    **Method & Field Icons:**
-    **●** - Public method/property (filled circle)
-    **○** - Private field/method (empty circle)
-    **■** - Instance/Object (red square)
+    **Visibility Modifiers:**
+    **+** - Public member
+    **-** - Private member
+    **#** - Protected member
+    **~** - Package/Internal member
+    ====
+    **Layer Colors:**
+    **Blue** - UI Layer (User Interface)
+    **Green** - Core Layer (Business Logic)
+    **Yellow** - DAL Layer (Data Access)
 end legend
 
 @enduml
