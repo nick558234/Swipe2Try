@@ -17,8 +17,13 @@ public class Dish
     public string? Photo { get; set; }
 
     public string? Restaurant { get; set; }
-    public Dish() { }
-    public Dish(string name, string description, string userId = "", int? healthFactor = null, string? photo = null, string? restaurant = null)
+
+    public Dish()
+    {
+    }
+
+    public Dish(string name, string description, string userId = "", int? healthFactor = null, string? photo = null,
+        string? restaurant = null)
     {
         Name = name;
         Description = description;
@@ -26,6 +31,5 @@ public class Dish
         HealthFactor = healthFactor;
         Photo = photo;
         Restaurant = restaurant;
-    }	
-
+    }
 }

@@ -4,72 +4,71 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-namespace Swipe2Try.Core.Validation
+namespace Swipe2Try.Core.Validation;
+
+public class UserValidator : IUserValidator
 {
-    public class UserValidator : IUserValidator
+    private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
+
+    public UserValidator(IUserRepository userRepository, IRoleRepository roleRepository)
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
+        _userRepository = userRepository;
+        _roleRepository = roleRepository;
+    }
 
-        public UserValidator(IUserRepository userRepository, IRoleRepository roleRepository)
+    public async Task<(bool IsValid, List<string> Errors)> ValidateForRegistrationAsync(User user)
+    {
+        var errors = new List<string>();
+
+        // Check if user is null
+        if (user == null)
         {
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
+            errors.Add("User cannot be null");
+            return (false, errors);
         }
 
-        public async Task<(bool IsValid, List<string> Errors)> ValidateForRegistrationAsync(User user)
-        {
-            var errors = new List<string>();
+        // Check required fields
+        if (string.IsNullOrWhiteSpace(user.Name))
+            errors.Add("Name is required");
 
-            // Check if user is null
-            if (user == null)
-            {
-                errors.Add("User cannot be null");
-                return (false, errors);
-            }
+        if (string.IsNullOrWhiteSpace(user.Email))
+            errors.Add("Email is required");
+        else if (!IsValidEmail(user.Email))
+            errors.Add("Invalid email format");
+        else if (await _userRepository.EmailExistsAsync(user.Email))
+            errors.Add("Email is already registered");
 
-            // Check required fields
-            if (string.IsNullOrWhiteSpace(user.Name))
-                errors.Add("Name is required");
+        if (string.IsNullOrWhiteSpace(user.Password))
+            errors.Add("Password is required");
+        else if (user.Password.Length < 6)
+            errors.Add("Password must be at least 6 characters");
 
-            if (string.IsNullOrWhiteSpace(user.Email))
-                errors.Add("Email is required");
-            else if (!IsValidEmail(user.Email))
-                errors.Add("Invalid email format");
-            else if (await _userRepository.EmailExistsAsync(user.Email))
-                errors.Add("Email is already registered");
+        if (string.IsNullOrWhiteSpace(user.RoleID))
+            errors.Add("Role must be selected");
+        else if (!await _roleRepository.RoleExistsAsync(user.RoleID))
+            errors.Add("Selected role is not valid");
 
-            if (string.IsNullOrWhiteSpace(user.Password))
-                errors.Add("Password is required");
-            else if (user.Password.Length < 6)
-                errors.Add("Password must be at least 6 characters");
+        return (errors.Count == 0, errors);
+    }
 
-            if (string.IsNullOrWhiteSpace(user.RoleID))
-                errors.Add("Role must be selected");
-            else if (!await _roleRepository.RoleExistsAsync(user.RoleID))
-                errors.Add("Selected role is not valid");
+    public (bool IsValid, List<string> Errors) ValidateForLogin(string email, string password)
+    {
+        var errors = new List<string>();
 
-            return (errors.Count == 0, errors);
-        }
+        if (string.IsNullOrWhiteSpace(email))
+            errors.Add("Email is required");
+        else if (!IsValidEmail(email))
+            errors.Add("Invalid email format");
 
-        public (bool IsValid, List<string> Errors) ValidateForLogin(string email, string password)
-        {
-            var errors = new List<string>();
+        if (string.IsNullOrWhiteSpace(password))
+            errors.Add("Password is required");
 
-            if (string.IsNullOrWhiteSpace(email))
-                errors.Add("Email is required");
-            else if (!IsValidEmail(email))
-                errors.Add("Invalid email format");
+        return (errors.Count == 0, errors);
+    }
 
-            if (string.IsNullOrWhiteSpace(password))
-                errors.Add("Password is required");
-
-            return (errors.Count == 0, errors);
-        }
-
-        private bool IsValidEmail(string email)
-        {
-            return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
-        }
+    private bool IsValidEmail(string email)
+    {
+        return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
     }
 }

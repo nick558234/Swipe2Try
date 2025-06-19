@@ -1,9 +1,8 @@
-namespace Swipe2Try.Core.Models
+namespace Swipe2Try.Core.Models;
+
+public class Category
 {
-    public class Category
-    {
-        public int Id { get; set; }
-        public required string Name { get; set; }
-        public string? Photo { get; set; }
-    }
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public string? Photo { get; set; }
 }

@@ -7,181 +7,170 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Swipe2Try.Core.Managers
+namespace Swipe2Try.Core.Managers;
+
+public class UserManager
 {
-    public class UserManager
+    private readonly IUserRepository _userRepository;
+    private readonly IUserValidator _userValidator;
+    private readonly RoleManager _roleManager;
+
+    public UserManager(IUserRepository userRepository, IUserValidator userValidator, RoleManager roleManager)
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IUserValidator _userValidator;
-        private readonly RoleManager _roleManager;
+        _userRepository = userRepository;
+        _userValidator = userValidator;
+        _roleManager = roleManager;
+    }
 
-        public UserManager(IUserRepository userRepository, IUserValidator userValidator, RoleManager roleManager)
+    public async Task<(bool Success, List<string> Errors)> RegisterUserAsync(User user)
+    {
+        // Validate user input
+        var (isValid, errors) = await _userValidator.ValidateForRegistrationAsync(user);
+        if (!isValid)
+            return (false, errors);
+
+        // Generate a unique UserID using full GUID
+        user.UserID = GenerateUserID();
+
+        // Hash the password before storing
+        user.Password = HashPassword(user.Password);
+
+        // Create user in database
+        var success = await _userRepository.CreateUserAsync(user);
+        return (success, success ? new List<string>() : new List<string> { "Failed to create user" });
+    }
+
+    public async Task<(bool Success, User? User, List<string> Errors)> AuthenticateUserAsync(string email,
+        string password)
+    {
+        var errors = new List<string>();
+
+        // Validate login input
+        var (isValid, validationErrors) = _userValidator.ValidateForLogin(email, password);
+        if (!isValid)
+            return (false, null, validationErrors);
+
+        // Get user from database (case-insensitive email)
+        var user = await _userRepository.GetUserByEmailAsync(email);
+        if (user == null)
         {
-            _userRepository = userRepository;
-            _userValidator = userValidator;
-            _roleManager = roleManager;
+            errors.Add("Invalid email or password");
+            return (false, null, errors);
+        } // Compare emails case-insensitively and verify hashed password
+
+        if (!string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase) ||
+            !VerifyPassword(password, user.Password))
+        {
+            errors.Add("Invalid email or password");
+            return (false, null, errors);
         }
 
-        public async Task<(bool Success, List<string> Errors)> RegisterUserAsync(User user)
+        return (true, user, errors);
+    }
+
+    private string GenerateUserID()
+    {
+        // Generate full GUID for 40-character UserID column
+        return Guid.NewGuid().ToString();
+    }
+
+    private string HashPassword(string password)
+    {
+        using (var sha256 = SHA256.Create())
         {
-            // Validate user input
-            var (isValid, errors) = await _userValidator.ValidateForRegistrationAsync(user);
-            if (!isValid)
-                return (false, errors);
-
-            // Generate a unique UserID using full GUID
-            user.UserID = GenerateUserID();
-
-            // Hash the password before storing
-            user.Password = HashPassword(user.Password);
-
-            // Create user in database
-            var success = await _userRepository.CreateUserAsync(user);
-            return (success, success ? new List<string>() : new List<string> { "Failed to create user" });
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(hashedBytes);
         }
+    }
 
-        public async Task<(bool Success, User? User, List<string> Errors)> AuthenticateUserAsync(string email,
-            string password)
+    private bool VerifyPassword(string password, string hashedPassword)
+    {
+        var hashedInput = HashPassword(password);
+        return hashedInput == hashedPassword;
+    }
+
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return await _userRepository.GetAllUsersAsync();
+    }
+
+    public async Task<(bool Success, List<string> Errors, ClaimsPrincipal? Principal)> LoginUserAsync(string email,
+        string password)
+    {
+        // Validate inputs using the UserValidator
+        var validationResult = _userValidator.ValidateForLogin(email, password);
+        if (!validationResult.IsValid) return (false, validationResult.Errors, null);
+
+        // Authenticate user
+        var authResult = await AuthenticateUserAsync(email, password);
+        if (!authResult.Success || authResult.User == null)
+            return (false, authResult.Errors ?? new List<string> { "Invalid login attempt." }, null);
+
+        // Get role from database
+        var role = await _roleManager.GetRoleByIdAsync(authResult.User.RoleID);
+        var roleNameToStore = role?.RoleName ?? "Unknown"; // Create claims
+        var claims = new List<Claim>
         {
-            var errors = new List<string>();
+            new(ClaimTypes.NameIdentifier, authResult.User.UserID),
+            new(ClaimTypes.Name, authResult.User.Name),
+            new(ClaimTypes.Email, authResult.User.Email),
+            new(ClaimTypes.Role, roleNameToStore)
+        };
+        var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+        var principal = new ClaimsPrincipal(claimsIdentity);
 
-            // Validate login input
-            var (isValid, validationErrors) = _userValidator.ValidateForLogin(email, password);
-            if (!isValid)
-                return (false, null, validationErrors);
+        return (true, new List<string>(), principal);
+    }
 
-            // Get user from database (case-insensitive email)
-            var user = await _userRepository.GetUserByEmailAsync(email);
-            if (user == null)
-            {
-                errors.Add("Invalid email or password");
-                return (false, null, errors);
-            } // Compare emails case-insensitively and verify hashed password
-
-            if (!string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase) ||
-                !VerifyPassword(password, user.Password))
-            {
-                errors.Add("Invalid email or password");
-                return (false, null, errors);
-            }
-
-            return (true, user, errors);
-        }
-
-        private string GenerateUserID()
+    public async Task<(bool Success, List<string> Errors, ClaimsPrincipal? Principal)> RegisterAndLoginUserAsync(
+        string name, string email, string password, string roleId)
+    {
+        // Create user object and generate unique UserID
+        var user = new User
         {
-            // Generate full GUID for 40-character UserID column
-            return Guid.NewGuid().ToString();
-        }
+            UserID = GenerateUserID(),
+            Name = name,
+            Email = email,
+            Password = password,
+            RoleID = roleId
+        };
 
-        private string HashPassword(string password)
+        // Validate the user using the UserValidator
+        var validationResult = await _userValidator.ValidateForRegistrationAsync(user);
+        if (!validationResult.IsValid) return (false, validationResult.Errors, null);
+
+        // Register user
+        var registerResult = await RegisterUserAsync(user);
+        if (!registerResult.Success) return (false, registerResult.Errors, null);
+
+        // Get role name for claims
+        var role = await _roleManager.GetRoleByIdAsync(user.RoleID);
+        var roleName = role?.RoleName ?? "Unknown"; // Create claims for immediate login
+        var claims = new List<Claim>
         {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashedBytes);
-            }
-        }
+            new(ClaimTypes.NameIdentifier, user.UserID),
+            new(ClaimTypes.Name, user.Name),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, roleName)
+        };
+        var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+        var principal = new ClaimsPrincipal(claimsIdentity);
 
-        private bool VerifyPassword(string password, string hashedPassword)
+        return (true, new List<string>(), principal);
+    }
+
+    public async Task<List<Role>> GetAllRolesAsync()
+    {
+        return await _roleManager.GetAllRolesAsync();
+    }
+
+    public string GetRedirectPageForRole(string roleName)
+    {
+        return roleName switch
         {
-            var hashedInput = HashPassword(password);
-            return hashedInput == hashedPassword;
-        }
-
-        public async Task<List<User>> GetAllUsersAsync()
-        {
-            return await _userRepository.GetAllUsersAsync();
-        }
-
-        public async Task<(bool Success, List<string> Errors, ClaimsPrincipal? Principal)> LoginUserAsync(string email,
-            string password)
-        {
-            // Validate inputs using the UserValidator
-            var validationResult = _userValidator.ValidateForLogin(email, password);
-            if (!validationResult.IsValid)
-            {
-                return (false, validationResult.Errors, null);
-            }
-
-            // Authenticate user
-            var authResult = await AuthenticateUserAsync(email, password);
-            if (!authResult.Success || authResult.User == null)
-            {
-                return (false, authResult.Errors ?? new List<string> { "Invalid login attempt." }, null);
-            }
-
-            // Get role from database
-            var role = await _roleManager.GetRoleByIdAsync(authResult.User.RoleID);
-            var roleNameToStore = role?.RoleName ?? "Unknown"; // Create claims
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, authResult.User.UserID),
-                new Claim(ClaimTypes.Name, authResult.User.Name),
-                new Claim(ClaimTypes.Email, authResult.User.Email),
-                new Claim(ClaimTypes.Role, roleNameToStore)
-            };
-            var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
-            var principal = new ClaimsPrincipal(claimsIdentity);
-
-            return (true, new List<string>(), principal);
-        }
-
-        public async Task<(bool Success, List<string> Errors, ClaimsPrincipal? Principal)> RegisterAndLoginUserAsync(
-            string name, string email, string password, string roleId)
-        {
-            // Create user object and generate unique UserID
-            var user = new User
-            {
-                UserID = GenerateUserID(),
-                Name = name,
-                Email = email,
-                Password = password,
-                RoleID = roleId
-            };
-
-            // Validate the user using the UserValidator
-            var validationResult = await _userValidator.ValidateForRegistrationAsync(user);
-            if (!validationResult.IsValid)
-            {
-                return (false, validationResult.Errors, null);
-            }
-
-            // Register user
-            var registerResult = await RegisterUserAsync(user);
-            if (!registerResult.Success)
-            {
-                return (false, registerResult.Errors, null);
-            }
-
-            // Get role name for claims
-            var role = await _roleManager.GetRoleByIdAsync(user.RoleID);
-            var roleName = role?.RoleName ?? "Unknown"; // Create claims for immediate login
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.UserID),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, roleName)
-            };
-            var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
-            var principal = new ClaimsPrincipal(claimsIdentity);
-
-            return (true, new List<string>(), principal);
-        }
-
-        public async Task<List<Role>> GetAllRolesAsync()
-        {
-            return await _roleManager.GetAllRolesAsync();
-        }
-        public string GetRedirectPageForRole(string roleName)
-        {
-            return roleName switch
-            {
-                "Admin" => "/Admin/Index",
-                "Restaurant Owner" => "/RestaurantOwner/Index",
-                _ => "/swipe"
-            };
-        }
+            "Admin" => "/Admin/Index",
+            "Restaurant Owner" => "/RestaurantOwner/Index",
+            _ => "/swipe"
+        };
     }
 }
