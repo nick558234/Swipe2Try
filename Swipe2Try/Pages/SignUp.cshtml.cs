@@ -55,7 +55,6 @@ namespace Swipe2Try.Pages
             {
                 var authProperties = new AuthenticationProperties
                 {
-
                 };
 
                 await HttpContext.SignInAsync(
