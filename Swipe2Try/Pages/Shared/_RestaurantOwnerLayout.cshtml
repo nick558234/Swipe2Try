@@ -18,12 +18,9 @@
 			<!-- User Info Section -->
 			<div class="px-6 py-4 border-b border-orange-500">
 				<partial name="_UserInfoPartial"/>
-			</div>
-
-			<nav class="py-4">
-				<ul>
+			</div>				<ul>
 					<li class="px-6 py-3 @(ViewData["ActivePage"] as string == "Dashboard" ? "bg-orange-700" : "hover:bg-orange-500") text-white">
-						<a asp-area="" asp-page="/RestaurantOwner/Index" class="flex items-center">
+						<a asp-area="" asp-page="/RestaurantOwner/Dashboard" class="flex items-center">
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
 								<path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
 							</svg>
@@ -37,7 +34,7 @@
 							</svg>
 							My Dishes
 						</a>
-					</li>					<li class="px-6 py-3 @(ViewData["ActivePage"] as string == "Restaurants" ? "bg-orange-700" : "hover:bg-orange-500") text-white">
+					</li><li class="px-6 py-3 @(ViewData["ActivePage"] as string == "Restaurants" ? "bg-orange-700" : "hover:bg-orange-500") text-white">
 						<a asp-area="" asp-page="/RestaurantOwner/Restaurants" class="flex items-center">
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
 								<path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>

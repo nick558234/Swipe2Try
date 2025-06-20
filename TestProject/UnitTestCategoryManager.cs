@@ -1,4 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Swipe2Try.Core.Interfaces;
 using Swipe2Try.Core.Managers;

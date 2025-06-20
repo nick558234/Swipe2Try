@@ -117,15 +117,29 @@
 												@healthText
 											</span>
 										</div>
-									</div>
-								}
+									</div>								}
 								else
 								{
 									<div class="p-2 sm:p-3 bg-gray-50 rounded-lg text-center">
 										<span class="text-xs sm:text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
-											Health
-											rating not available
+											Health rating not available
 										</span>
+									</div>
+								}
+
+								@* Categories Section *@
+								@if (dish.Categories != null && dish.Categories.Any())
+								{
+									<div class="mt-3">
+										<span class="text-sm font-semibold text-gray-800 mb-2 block">Categories:</span>
+										<div class="flex flex-wrap gap-2">
+											@foreach (var category in dish.Categories)
+											{
+												<span class="text-xs sm:text-sm bg-orange-100 text-orange-800 px-2 py-1 rounded-full font-medium">
+													@category.Name
+												</span>
+											}
+										</div>
 									</div>
 								}
 							</div>

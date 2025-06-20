@@ -13,14 +13,16 @@ namespace Swipe2Try.Pages
     {
         private readonly ILogger<swipeModel> _logger;
         private readonly DishManager _dishManager;
+        private readonly CategoryManager _categoryManager;
         private readonly IUserPreferenceManager _preferenceManager;
 
         public List<Dish> Dishes { get; set; } = new List<Dish>();
 
-        public swipeModel(ILogger<swipeModel> logger, DishManager dishManager, IUserPreferenceManager preferenceManager)
+        public swipeModel(ILogger<swipeModel> logger, DishManager dishManager, CategoryManager categoryManager, IUserPreferenceManager preferenceManager)
         {
             _logger = logger;
             _dishManager = dishManager;
+            _categoryManager = categoryManager;
             _preferenceManager = preferenceManager;
         }
 
@@ -37,21 +39,24 @@ namespace Swipe2Try.Pages
                     _logger.LogInformation($"User ID: {userId}, User Name: {userName}");
                 }
 
-                Dishes = await _dishManager.GetAllDishesAsync();
-
-                // If no dishes from database, add some sample dishes for demonstration
+                // Get all dishes with their categories loaded
+                Dishes = await _dishManager.GetAllDishesWithCategoriesAsync();                // If no dishes from database, add some sample dishes for demonstration
                 if (!Dishes.Any())
                 {
-                    Dishes = GetSampleDishes();
+                    Dishes = await GetSampleDishesWithCategoriesAsync();
                     _logger.LogInformation("No dishes found in database, using sample data");
+                }
+                else
+                {
+                    _logger.LogInformation($"Loaded {Dishes.Count} dishes from database");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error loading dishes from database, using sample data");
-                Dishes = GetSampleDishes();
+                Dishes = await GetSampleDishesWithCategoriesAsync();
             }
-        }        public async Task<IActionResult> OnPostSavePreferenceAsync(int dishId, bool isLiked)
+        }public async Task<IActionResult> OnPostSavePreferenceAsync(int dishId, bool isLiked)
         {
             try
             {
@@ -76,11 +81,20 @@ namespace Swipe2Try.Pages
                 _logger.LogError(ex, $"Error saving preference for dish {dishId}");
                 return new JsonResult(new { success = false, message = "Error saving preference" });
             }
-        }
-
-        private List<Dish> GetSampleDishes()
+        }        private Task<List<Dish>> GetSampleDishesWithCategoriesAsync()
         {
-            return new List<Dish>
+            // Get sample categories to assign to dishes
+            var sampleCategories = new List<Category>
+            {
+                new Category { Id = 1, Name = "Healthy" },
+                new Category { Id = 2, Name = "Italian" },
+                new Category { Id = 3, Name = "Fast Food" },
+                new Category { Id = 4, Name = "Vegetarian" },
+                new Category { Id = 5, Name = "Dessert" },
+                new Category { Id = 6, Name = "Asian" }
+            };
+
+            var dishes = new List<Dish>
             {
                 new Dish
                 {
@@ -89,8 +103,9 @@ namespace Swipe2Try.Pages
                     Description = "Fresh Atlantic salmon with herbs and lemon",
                     UserId = "sample_user",
                     HealthFactor = 5,
-                    Photo = "/images/salmon.jpg",
-                    Restaurant = "Healthy Eats"
+                    Photo = "https://images.unsplash.com/photo-1485921325833-c519f76c4927?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+                    Restaurant = "Healthy Eats",
+                    Categories = new List<Category> { sampleCategories[0] } // Healthy
                 },
                 new Dish
                 {
@@ -99,8 +114,9 @@ namespace Swipe2Try.Pages
                     Description = "Crisp romaine lettuce with parmesan and croutons",
                     UserId = "sample_user",
                     HealthFactor = 3,
-                    Photo = "/images/caesar.jpg",
-                    Restaurant = "Green Garden"
+                    Photo = "https://images.unsplash.com/photo-1546793665-c74683f339c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+                    Restaurant = "Green Garden",
+                    Categories = new List<Category> { sampleCategories[0], sampleCategories[3] } // Healthy, Vegetarian
                 },
                 new Dish
                 {
@@ -109,8 +125,9 @@ namespace Swipe2Try.Pages
                     Description = "Juicy beef patty with cheese and fries",
                     UserId = "sample_user",
                     HealthFactor = 1,
-                    Photo = "/images/burger.jpg",
-                    Restaurant = "Burger Palace"
+                    Photo = "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+                    Restaurant = "Burger Palace",
+                    Categories = new List<Category> { sampleCategories[2] } // Fast Food
                 },
                 new Dish
                 {
@@ -119,8 +136,9 @@ namespace Swipe2Try.Pages
                     Description = "Nutritious quinoa with vegetables and avocado",
                     UserId = "sample_user",
                     HealthFactor = 5,
-                    Photo = "/images/quinoa.jpg",
-                    Restaurant = "Health Hub"
+                    Photo = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+                    Restaurant = "Health Hub",
+                    Categories = new List<Category> { sampleCategories[0], sampleCategories[3] } // Healthy, Vegetarian
                 },
                 new Dish
                 {
@@ -129,8 +147,9 @@ namespace Swipe2Try.Pages
                     Description = "Classic pizza with pepperoni and mozzarella",
                     UserId = "sample_user",
                     HealthFactor = 2,
-                    Photo = "/images/pizza.jpg",
-                    Restaurant = "Tony's Pizzeria"
+                    Photo = "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+                    Restaurant = "Tony's Pizzeria",
+                    Categories = new List<Category> { sampleCategories[1], sampleCategories[2] } // Italian, Fast Food
                 },
                 new Dish
                 {
@@ -139,19 +158,24 @@ namespace Swipe2Try.Pages
                     Description = "Tender chicken with mixed vegetables",
                     UserId = "sample_user",
                     HealthFactor = 4,
-                    Photo = "/images/stirfry.jpg",
-                    Restaurant = "Asian Kitchen"
+                    Photo = "https://images.unsplash.com/photo-1603133872878-684f208fb84b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+                    Restaurant = "Asian Kitchen",
+                    Categories = new List<Category> { sampleCategories[0], sampleCategories[5] } // Healthy, Asian
                 },
                 new Dish
                 {
                     Id = 7,
                     Name = "Chocolate Cake",
-                    Description = "Rich chocolate cake with vanilla frosting", UserId = "sample_user",
+                    Description = "Rich chocolate cake with vanilla frosting",
+                    UserId = "sample_user",
                     HealthFactor = 1,
-                    Photo = "/images/cake.jpg",
-                    Restaurant = "Sweet Treats"
+                    Photo = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+                    Restaurant = "Sweet Treats",
+                    Categories = new List<Category> { sampleCategories[4] } // Dessert
                 }
             };
+
+            return Task.FromResult(dishes);
         }
     }
 }
