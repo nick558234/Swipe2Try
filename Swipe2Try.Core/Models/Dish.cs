@@ -14,11 +14,13 @@ public class Dish
     public string UserId { get; set; } = string.Empty;
 
     public int? HealthFactor { get; set; }
-    public string? Photo { get; set; }    public string? Restaurant { get; set; }
-
-    // Navigation properties for many-to-many relationship
+    public string? Photo { get; set; }    public string? Restaurant { get; set; }    // Navigation properties for many-to-many relationship
     public ICollection<DishRestaurant> DishRestaurants { get; set; } = new List<DishRestaurant>();
     public ICollection<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
+    
+    // Navigation properties for categories
+    public ICollection<DishCategory> DishCategories { get; set; } = new List<DishCategory>();
+    public ICollection<Category> Categories { get; set; } = new List<Category>();
 
     public Dish()
     {

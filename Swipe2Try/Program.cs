@@ -29,6 +29,8 @@ builder.Services.AddScoped<IRestaurantRepository, RestaurantRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserDishPreferenceRepository, UserDishPreferenceRepository>();
 builder.Services.AddScoped<IDishRestaurantRepository, DishRestaurantRepository>();
+builder.Services.AddScoped<IDishCategoryRepository, DishCategoryRepository>();
+builder.Services.AddScoped<IRestaurantCategoryRepository, RestaurantCategoryRepository>();
 
 // Register validators
 builder.Services.AddScoped<IUserValidator, UserValidator>();

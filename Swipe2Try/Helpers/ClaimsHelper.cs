@@ -19,6 +19,11 @@ namespace Swipe2Try.Helpers
             return user.Identity?.Name;
         }
 
+        public static string? GetUserId(ClaimsPrincipal user)
+        {
+            return user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+
         public static bool IsAdmin(this ClaimsPrincipal user)
         {
             return user.IsInRole("Admin");

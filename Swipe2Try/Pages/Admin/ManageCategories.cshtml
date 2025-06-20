@@ -1,0 +1,252 @@
+@page
+@model Swipe2Try.Pages.Admin.ManageCategoriesModel
+@{
+    ViewData["Title"] = "Manage Categories";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2>Manage Categories</h2>
+            <p>Assign multiple categories to dishes and restaurants</p>
+
+            @if (!string.IsNullOrEmpty(Model.Message))
+            {
+                <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+                    @Model.Message
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Dish Categories Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Assign Categories to Dishes</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-page-handler="AssignDishCategories">
+                        <div class="mb-3">
+                            <label asp-for="SelectedDishId" class="form-label">Select Dish:</label>
+                            <select asp-for="SelectedDishId" class="form-select" id="dishSelect">
+                                <option value="">-- Select a Dish --</option>
+                                @foreach (var dish in Model.Dishes)
+                                {
+                                    <option value="@dish.Id">@dish.Name (@dish.Description)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Categories:</label>
+                            <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input dish-category-checkbox" 
+                                               type="checkbox" 
+                                               name="SelectedCategoryIds" 
+                                               value="@category.Id" 
+                                               id="dish-cat-@category.Id">
+                                        <label class="form-check-label" for="dish-cat-@category.Id">
+                                            @category.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Assign Categories to Dish</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Current Dish Categories Display -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Current Dish Categories</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.DishesWithCategories.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Dish</th>
+                                        <th>Categories</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var dish in Model.DishesWithCategories)
+                                    {
+                                        <tr>
+                                            <td>@dish.Name</td>
+                                            <td>
+                                                @if (dish.Categories.Any())
+                                                {
+                                                    @string.Join(", ", dish.Categories.Select(c => c.Name))
+                                                }
+                                                else
+                                                {
+                                                    <em>No categories assigned</em>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No dishes found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Restaurant Categories Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Assign Categories to Restaurants</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-page-handler="AssignRestaurantCategories">
+                        <div class="mb-3">
+                            <label asp-for="SelectedRestaurantId" class="form-label">Select Restaurant:</label>
+                            <select asp-for="SelectedRestaurantId" class="form-select" id="restaurantSelect">
+                                <option value="">-- Select a Restaurant --</option>
+                                @foreach (var restaurant in Model.Restaurants)
+                                {
+                                    <option value="@restaurant.Id">@restaurant.Name (@restaurant.Location)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Categories:</label>
+                            <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input restaurant-category-checkbox" 
+                                               type="checkbox" 
+                                               name="SelectedCategoryIds" 
+                                               value="@category.Id" 
+                                               id="rest-cat-@category.Id">
+                                        <label class="form-check-label" for="rest-cat-@category.Id">
+                                            @category.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Assign Categories to Restaurant</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Current Restaurant Categories Display -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Current Restaurant Categories</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RestaurantsWithCategories.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Restaurant</th>
+                                        <th>Categories</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var restaurant in Model.RestaurantsWithCategories)
+                                    {
+                                        <tr>
+                                            <td>@restaurant.Name</td>
+                                            <td>
+                                                @if (restaurant.Categories.Any())
+                                                {
+                                                    @string.Join(", ", restaurant.Categories.Select(c => c.Name))
+                                                }
+                                                else
+                                                {
+                                                    <em>No categories assigned</em>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No restaurants found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Load existing categories when dish is selected
+        document.getElementById('dishSelect').addEventListener('change', async function() {
+            const dishId = this.value;
+            const checkboxes = document.querySelectorAll('.dish-category-checkbox');
+            
+            // Clear all checkboxes
+            checkboxes.forEach(cb => cb.checked = false);
+            
+            if (dishId) {
+                try {
+                    const response = await fetch(`/Admin/ManageCategories?handler=DishCategories&dishId=${dishId}`);
+                    const categoryIds = await response.json();
+                    
+                    // Check the appropriate checkboxes
+                    categoryIds.forEach(id => {
+                        const checkbox = document.querySelector(`input[name="SelectedCategoryIds"][value="${id}"].dish-category-checkbox`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                } catch (error) {
+                    console.error('Error loading dish categories:', error);
+                }
+            }
+        });
+
+        // Load existing categories when restaurant is selected
+        document.getElementById('restaurantSelect').addEventListener('change', async function() {
+            const restaurantId = this.value;
+            const checkboxes = document.querySelectorAll('.restaurant-category-checkbox');
+            
+            // Clear all checkboxes
+            checkboxes.forEach(cb => cb.checked = false);
+            
+            if (restaurantId) {
+                try {
+                    const response = await fetch(`/Admin/ManageCategories?handler=RestaurantCategories&restaurantId=${restaurantId}`);
+                    const categoryIds = await response.json();
+                    
+                    // Check the appropriate checkboxes
+                    categoryIds.forEach(id => {
+                        const checkbox = document.querySelector(`input[name="SelectedCategoryIds"][value="${id}"].restaurant-category-checkbox`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                } catch (error) {
+                    console.error('Error loading restaurant categories:', error);
+                }
+            }
+        });
+    </script>
+}
