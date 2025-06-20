@@ -26,9 +26,13 @@ public class DishRepository : IDishRepository
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                await connection.OpenAsync();
-                var command = new SqlCommand(
-                    @"SELECT DishID, Name, Description, HealthFactor, Photo, UserId, 'Not Available' AS Restaurant FROM Dishes",
+                await connection.OpenAsync();                var command = new SqlCommand(@"
+                    SELECT d.DishID, d.Name, d.Description, d.HealthFactor, d.Photo, d.UserId,
+                           COALESCE(STRING_AGG(r.Name, ', '), 'Not Available') AS Restaurant
+                    FROM Dishes d
+                    LEFT JOIN DISHRESTAURANT dr ON d.DishID = dr.Dish_ID
+                    LEFT JOIN Restaurants r ON dr.Restaurant_ID = r.RestaurantID
+                    GROUP BY d.DishID, d.Name, d.Description, d.HealthFactor, d.Photo, d.UserId",
                     connection);
 
                 using (var reader = await command.ExecuteReaderAsync())
@@ -72,9 +76,14 @@ public class DishRepository : IDishRepository
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                await connection.OpenAsync();
-                var command = new SqlCommand(
-                    @"SELECT DishID, Name, Description, HealthFactor, Photo, UserId, 'Not Available' AS Restaurant FROM Dishes WHERE UserId = @UserId",
+                await connection.OpenAsync();                var command = new SqlCommand(@"
+                    SELECT d.DishID, d.Name, d.Description, d.HealthFactor, d.Photo, d.UserId,
+                           COALESCE(STRING_AGG(r.Name, ', '), 'Not Available') AS Restaurant
+                    FROM Dishes d
+                    LEFT JOIN DISHRESTAURANT dr ON d.DishID = dr.Dish_ID
+                    LEFT JOIN Restaurants r ON dr.Restaurant_ID = r.RestaurantID
+                    WHERE d.UserId = @UserId
+                    GROUP BY d.DishID, d.Name, d.Description, d.HealthFactor, d.Photo, d.UserId",
                     connection);
                 command.Parameters.AddWithValue("@UserId", userId);
 

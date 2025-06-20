@@ -28,6 +28,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRestaurantRepository, RestaurantRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserDishPreferenceRepository, UserDishPreferenceRepository>();
+builder.Services.AddScoped<IDishRestaurantRepository, DishRestaurantRepository>();
 
 // Register validators
 builder.Services.AddScoped<IUserValidator, UserValidator>();
@@ -43,6 +44,7 @@ builder.Services.AddScoped<DishManager>();
 builder.Services.AddScoped<RestaurantManager>();
 builder.Services.AddScoped<CategoryManager>();
 builder.Services.AddScoped<IUserPreferenceManager, UserPreferenceManager>();
+builder.Services.AddScoped<IDishRestaurantManager, DishRestaurantManager>();
 
 // Add built-in cookie authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

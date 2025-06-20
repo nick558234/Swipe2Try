@@ -1,0 +1,159 @@
+@page
+@model Swipe2Try.Pages.RestaurantOwner.ManageDishRestaurantsModel
+@{
+    Layout = "_RestaurantOwnerLayout";
+    ViewData["ActivePage"] = "ManageDishes";
+    ViewData["Title"] = "Manage Dish-Restaurant Links";
+}
+
+<div class="flex items-center justify-between mb-6">
+    <h3 class="text-gray-700 text-3xl font-medium">Manage Dish-Restaurant Links</h3>
+    <div class="flex space-x-4">
+        <button id="linkByOwnershipBtn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Link All Dishes by Ownership
+        </button>
+        <a asp-area="" asp-page="/RestaurantOwner/Index" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="mb-4 p-4 rounded-md @(Model.IsSuccess ? "bg-green-100 border-green-400 text-green-700" : "bg-red-100 border-red-400 text-red-700") border">
+        @Model.Message
+    </div>
+}
+
+<div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <h4 class="text-lg font-semibold text-gray-800">Your Dishes and Restaurant Links</h4>
+        <p class="text-sm text-gray-600 mt-1">Manage which restaurants your dishes are associated with</p>
+    </div>
+
+    @if (Model.Dishes.Any())
+    {
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dish</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Restaurants</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Available Restaurants</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @for (int i = 0; i < Model.Dishes.Count; i++)
+                    {
+                        var dish = Model.Dishes[i];
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    @if (!string.IsNullOrEmpty(dish.Photo))
+                                    {
+                                        <img class="h-10 w-10 rounded-full object-cover mr-4" src="@dish.Photo" alt="@dish.Name">
+                                    }
+                                    else
+                                    {
+                                        <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center mr-4">
+                                            <span class="text-gray-500 text-xs">No Image</span>
+                                        </div>
+                                    }
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">@dish.Name</div>
+                                        <div class="text-sm text-gray-500">@dish.Description</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">
+                                    @if (dish.Restaurants.Any())
+                                    {
+                                        @foreach (var restaurant in dish.Restaurants)
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-1 mb-1">
+                                                @restaurant.Name
+                                                <button type="button" class="ml-1 text-green-600 hover:text-green-800" 
+                                                        onclick="unlinkDishRestaurant(@dish.Id, @restaurant.Id)">×</button>
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-500 italic">No restaurants linked</span>
+                                    }
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <select id="restaurant-select-@dish.Id" class="text-sm border-gray-300 rounded-md">
+                                    <option value="">Select a restaurant...</option>
+                                    @foreach (var restaurant in Model.UserRestaurants)
+                                    {
+                                        <option value="@restaurant.Id">@restaurant.Name - @restaurant.Location</option>
+                                    }
+                                </select>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button type="button" class="text-blue-600 hover:text-blue-900" 
+                                        onclick="linkDishRestaurant(@dish.Id)">
+                                    Link Restaurant
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="px-6 py-12 text-center">
+            <div class="text-gray-500 text-lg">No dishes found</div>
+            <p class="text-gray-400 mt-2">Create some dishes first to manage restaurant links</p>
+            <a asp-area="" asp-page="/RestaurantOwner/Create" class="mt-4 inline-block bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                Create New Dish
+            </a>
+        </div>
+    }
+</div>
+
+<form method="post" id="linkForm" style="display: none;">
+    <input type="hidden" name="action" id="actionInput" />
+    <input type="hidden" name="dishId" id="dishIdInput" />
+    <input type="hidden" name="restaurantId" id="restaurantIdInput" />
+    @Html.AntiForgeryToken()
+</form>
+
+<script>
+function linkDishRestaurant(dishId) {
+    const select = document.getElementById(`restaurant-select-${dishId}`);
+    const restaurantId = select.value;
+    
+    if (!restaurantId) {
+        alert('Please select a restaurant to link');
+        return;
+    }
+    
+    document.getElementById('actionInput').value = 'link';
+    document.getElementById('dishIdInput').value = dishId;
+    document.getElementById('restaurantIdInput').value = restaurantId;
+    document.getElementById('linkForm').submit();
+}
+
+function unlinkDishRestaurant(dishId, restaurantId) {
+    if (confirm('Are you sure you want to unlink this dish from the restaurant?')) {
+        document.getElementById('actionInput').value = 'unlink';
+        document.getElementById('dishIdInput').value = dishId;
+        document.getElementById('restaurantIdInput').value = restaurantId;
+        document.getElementById('linkForm').submit();
+    }
+}
+
+document.getElementById('linkByOwnershipBtn').addEventListener('click', function() {
+    if (confirm('This will automatically link all your dishes to your restaurants. Continue?')) {
+        document.getElementById('actionInput').value = 'linkByOwnership';
+        document.getElementById('linkForm').submit();
+    }
+});
+</script>
