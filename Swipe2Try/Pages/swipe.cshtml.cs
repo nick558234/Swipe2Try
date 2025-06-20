@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Swipe2Try.Core.Managers;
 using Swipe2Try.Core.Models;
+using Swipe2Try.Core.Interfaces;
+using System.Security.Claims;
 
 namespace Swipe2Try.Pages
 {
@@ -11,19 +13,30 @@ namespace Swipe2Try.Pages
     {
         private readonly ILogger<swipeModel> _logger;
         private readonly DishManager _dishManager;
+        private readonly IUserDishPreferenceRepository _preferenceRepository;
 
         public List<Dish> Dishes { get; set; } = new List<Dish>();
 
-        public swipeModel(ILogger<swipeModel> logger, DishManager dishManager)
+        public swipeModel(ILogger<swipeModel> logger, DishManager dishManager, IUserDishPreferenceRepository preferenceRepository)
         {
             _logger = logger;
             _dishManager = dishManager;
+            _preferenceRepository = preferenceRepository;
         }
 
         public async Task OnGetAsync()
         {
             try
             {
+                // Debug: Check authentication
+                _logger.LogInformation($"User authenticated: {User.Identity?.IsAuthenticated}");
+                if (User.Identity?.IsAuthenticated == true)
+                {
+                    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+                    _logger.LogInformation($"User ID: {userId}, User Name: {userName}");
+                }
+
                 Dishes = await _dishManager.GetAllDishesAsync();
 
                 // If no dishes from database, add some sample dishes for demonstration
@@ -37,6 +50,53 @@ namespace Swipe2Try.Pages
             {
                 _logger.LogError(ex, "Error loading dishes from database, using sample data");
                 Dishes = GetSampleDishes();
+            }
+        }        public async Task<IActionResult> OnPostSavePreferenceAsync(int dishId, bool isLiked)
+        {
+            try
+            {
+                _logger.LogInformation($"SavePreference called with dishId: {dishId}, isLiked: {isLiked}");
+                
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("User not authenticated");
+                    return new JsonResult(new { success = false, message = "User not authenticated" });
+                }
+
+                _logger.LogInformation($"User ID: {userId}");
+
+                // Check if preference already exists
+                var existingPreference = await _preferenceRepository.GetUserDishPreferenceAsync(userId, dishId);
+                
+                if (existingPreference != null)
+                {
+                    // Update existing preference
+                    existingPreference.IsLiked = isLiked;
+                    existingPreference.UpdatedAt = DateTime.UtcNow;
+                    await _preferenceRepository.UpdateUserDishPreferenceAsync(existingPreference);
+                    _logger.LogInformation($"Updated preference for user {userId}, dish {dishId}, liked: {isLiked}");
+                }
+                else
+                {
+                    // Create new preference
+                    var newPreference = new UserDishPreference
+                    {
+                        UserId = userId,
+                        DishId = dishId,
+                        IsLiked = isLiked,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    await _preferenceRepository.AddUserDishPreferenceAsync(newPreference);
+                    _logger.LogInformation($"Created new preference for user {userId}, dish {dishId}, liked: {isLiked}");
+                }
+
+                return new JsonResult(new { success = true, message = "Preference saved successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error saving preference for dish {dishId}");
+                return new JsonResult(new { success = false, message = "Error saving preference" });
             }
         }
 

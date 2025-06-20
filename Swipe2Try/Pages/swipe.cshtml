@@ -4,6 +4,10 @@
 @{
 }
 
+<form method="post">
+	@Html.AntiForgeryToken()
+</form>
+
 <div class="container mx-auto px-4 py-8">
 	<header class="text-center mb-8">
 		<h1 class="text-4xl font-bold text-purple-600">Swipe 'n Try</h1>
@@ -222,15 +226,55 @@
             </div>
         `;
 		}
-
 		function handleSwipe(card, direction) {
 			const dishId = card.dataset.dishId;
 			const isLike = direction === 'right';
 
-			// Here you could send the preference to the server
+			// Save preference to database
+			savePreference(dishId, isLike);
+
+			// Log the action for debugging
 			console.log(`${isLike ? 'Liked' : 'Disliked'} dish ID: ${dishId}`);
 
 			animateCardOut(card, direction);
+		}		async function savePreference(dishId, isLiked) {
+			try {
+				const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+				if (!tokenElement) {
+					console.error('Anti-forgery token not found');
+					return;
+				}
+
+				console.log('Saving preference for dish:', dishId, 'liked:', isLiked);
+
+				const formData = new FormData();
+				formData.append('dishId', dishId);
+				formData.append('isLiked', isLiked);
+				formData.append('__RequestVerificationToken', tokenElement.value);
+
+				const response = await fetch('/swipe?handler=SavePreference', {
+					method: 'POST',
+					body: formData
+				});
+
+				console.log('Response status:', response.status, response.statusText);
+
+				if (response.ok) {
+					const result = await response.json();
+					console.log('Server response:', result);
+					if (!result.success) {
+						console.error('Failed to save preference:', result.message);
+					} else {
+						console.log('Preference saved successfully for dish', dishId);
+					}
+				} else {
+					console.error('HTTP error:', response.status, response.statusText);
+					const errorText = await response.text();
+					console.error('Error response body:', errorText);
+				}
+			} catch (error) {
+				console.error('Error saving preference:', error);
+			}
 		}
 
 		// Touch/mouse event handling for swipe gestures

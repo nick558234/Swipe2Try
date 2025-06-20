@@ -27,6 +27,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRestaurantRepository, RestaurantRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IUserDishPreferenceRepository, UserDishPreferenceRepository>();
 
 // Register validators
 builder.Services.AddScoped<IUserValidator, UserValidator>();
