@@ -42,6 +42,7 @@ builder.Services.AddScoped<IRoleManager, RoleManager>();
 builder.Services.AddScoped<DishManager>();
 builder.Services.AddScoped<RestaurantManager>();
 builder.Services.AddScoped<CategoryManager>();
+builder.Services.AddScoped<IUserPreferenceManager, UserPreferenceManager>();
 
 // Add built-in cookie authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

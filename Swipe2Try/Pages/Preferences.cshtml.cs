@@ -10,24 +10,20 @@ namespace Swipe2Try.Pages;
 [Authorize]
 public class PreferencesModel : PageModel
 {
-    private readonly IUserDishPreferenceRepository _userDishPreferenceRepository;
-    private readonly IDishRepository _dishRepository;
+    private readonly IUserPreferenceManager _preferenceManager;
     private readonly ILogger<PreferencesModel> _logger;
 
     public List<DishPreferenceViewModel> LikedDishes { get; set; } = new();
     public List<DishPreferenceViewModel> DislikedDishes { get; set; } = new();
+    public UserPreferenceStats Stats { get; set; } = new();
 
     public PreferencesModel(
-        IUserDishPreferenceRepository userDishPreferenceRepository,
-        IDishRepository dishRepository,
+        IUserPreferenceManager preferenceManager,
         ILogger<PreferencesModel> logger)
     {
-        _userDishPreferenceRepository = userDishPreferenceRepository;
-        _dishRepository = dishRepository;
+        _preferenceManager = preferenceManager;
         _logger = logger;
-    }
-
-    public async Task OnGetAsync()
+    }    public async Task OnGetAsync()
     {
         try
         {
@@ -40,42 +36,30 @@ public class PreferencesModel : PageModel
 
             _logger.LogInformation("Loading preferences for user: {UserId}", userId);
 
-            // Get all user preferences
-            var userPreferences = await _userDishPreferenceRepository.GetUserPreferencesAsync(userId);
-            _logger.LogInformation("Found {Count} preferences for user", userPreferences.Count);
+            // Get user preference statistics
+            Stats = await _preferenceManager.GetUserPreferenceStatsAsync(userId);
 
-            // Get all dish IDs to fetch dish details
-            var dishIds = userPreferences.Select(p => p.DishId).Distinct().ToList();
-            
-            // Create a dictionary to store dish details for quick lookup
-            var dishDetails = new Dictionary<int, Dish>();
-            
-            foreach (var dishId in dishIds)
-            {
-                var dish = await _dishRepository.GetDishByIdAsync(dishId);
-                if (dish != null)
-                {
-                    dishDetails[dishId] = dish;
-                }
-            }
+            // Get all preferences with dish details
+            var preferencesWithDishes = await _preferenceManager.GetAllPreferencesWithDishesAsync(userId);
+            _logger.LogInformation("Found {Count} preferences for user", preferencesWithDishes.Count);
 
             // Separate liked and disliked dishes
-            LikedDishes = userPreferences
-                .Where(p => p.IsLiked && dishDetails.ContainsKey(p.DishId))
+            LikedDishes = preferencesWithDishes
+                .Where(p => p.Preference.IsLiked)
                 .Select(p => new DishPreferenceViewModel
                 {
-                    Preference = p,
-                    Dish = dishDetails[p.DishId]
+                    Preference = p.Preference,
+                    Dish = p.Dish
                 })
                 .OrderByDescending(d => d.Preference.UpdatedAt ?? d.Preference.CreatedAt)
                 .ToList();
 
-            DislikedDishes = userPreferences
-                .Where(p => !p.IsLiked && dishDetails.ContainsKey(p.DishId))
+            DislikedDishes = preferencesWithDishes
+                .Where(p => !p.Preference.IsLiked)
                 .Select(p => new DishPreferenceViewModel
                 {
-                    Preference = p,
-                    Dish = dishDetails[p.DishId]
+                    Preference = p.Preference,
+                    Dish = p.Dish
                 })
                 .OrderByDescending(d => d.Preference.UpdatedAt ?? d.Preference.CreatedAt)
                 .ToList();
@@ -87,9 +71,7 @@ public class PreferencesModel : PageModel
         {
             _logger.LogError(ex, "Error loading user preferences");
         }
-    }
-
-    public async Task<IActionResult> OnPostRemovePreferenceAsync(int dishId)
+    }    public async Task<IActionResult> OnPostRemovePreferenceAsync(int dishId)
     {
         try
         {
@@ -99,10 +81,11 @@ public class PreferencesModel : PageModel
                 return new JsonResult(new { success = false, message = "User not authenticated" });
             }
 
-            await _userDishPreferenceRepository.DeleteUserDishPreferenceAsync(userId, dishId);
-            _logger.LogInformation("Removed preference for user {UserId} and dish {DishId}", userId, dishId);
+            var result = await _preferenceManager.RemovePreferenceAsync(userId, dishId);
+            _logger.LogInformation("Attempted to remove preference for user {UserId} and dish {DishId}: {Success}", 
+                userId, dishId, result.Success);
 
-            return new JsonResult(new { success = true, message = "Preference removed successfully" });
+            return new JsonResult(new { success = result.Success, message = result.Message });
         }
         catch (Exception ex)
         {

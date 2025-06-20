@@ -13,15 +13,15 @@ namespace Swipe2Try.Pages
     {
         private readonly ILogger<swipeModel> _logger;
         private readonly DishManager _dishManager;
-        private readonly IUserDishPreferenceRepository _preferenceRepository;
+        private readonly IUserPreferenceManager _preferenceManager;
 
         public List<Dish> Dishes { get; set; } = new List<Dish>();
 
-        public swipeModel(ILogger<swipeModel> logger, DishManager dishManager, IUserDishPreferenceRepository preferenceRepository)
+        public swipeModel(ILogger<swipeModel> logger, DishManager dishManager, IUserPreferenceManager preferenceManager)
         {
             _logger = logger;
             _dishManager = dishManager;
-            _preferenceRepository = preferenceRepository;
+            _preferenceManager = preferenceManager;
         }
 
         public async Task OnGetAsync()
@@ -66,32 +66,10 @@ namespace Swipe2Try.Pages
 
                 _logger.LogInformation($"User ID: {userId}");
 
-                // Check if preference already exists
-                var existingPreference = await _preferenceRepository.GetUserDishPreferenceAsync(userId, dishId);
+                // Use the preference manager to save the preference
+                var result = await _preferenceManager.SavePreferenceAsync(userId, dishId, isLiked);
                 
-                if (existingPreference != null)
-                {
-                    // Update existing preference
-                    existingPreference.IsLiked = isLiked;
-                    existingPreference.UpdatedAt = DateTime.UtcNow;
-                    await _preferenceRepository.UpdateUserDishPreferenceAsync(existingPreference);
-                    _logger.LogInformation($"Updated preference for user {userId}, dish {dishId}, liked: {isLiked}");
-                }
-                else
-                {
-                    // Create new preference
-                    var newPreference = new UserDishPreference
-                    {
-                        UserId = userId,
-                        DishId = dishId,
-                        IsLiked = isLiked,
-                        CreatedAt = DateTime.UtcNow
-                    };
-                    await _preferenceRepository.AddUserDishPreferenceAsync(newPreference);
-                    _logger.LogInformation($"Created new preference for user {userId}, dish {dishId}, liked: {isLiked}");
-                }
-
-                return new JsonResult(new { success = true, message = "Preference saved successfully" });
+                return new JsonResult(new { success = result.Success, message = result.Message });
             }
             catch (Exception ex)
             {
