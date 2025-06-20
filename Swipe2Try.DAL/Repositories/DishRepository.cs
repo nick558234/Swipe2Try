@@ -114,19 +114,22 @@ public class DishRepository : IDishRepository
         }
 
         return dishes;
-    }
-
-    public async Task<Dish?> GetDishByIdAsync(int id)
+    }    public async Task<Dish?> GetDishByIdAsync(int id)
     {
         try
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                var command =
-                    new SqlCommand(
-                        "SELECT DishID, Name, Description, HealthFactor, Photo, UserId, 'Not Available' AS Restaurant FROM Dishes WHERE DishID = @DishID",
-                        connection);
+                var command = new SqlCommand(@"
+                    SELECT d.DishID, d.Name, d.Description, d.HealthFactor, d.Photo, d.UserId,
+                           COALESCE(STRING_AGG(r.Name, ', '), 'Not Available') AS Restaurant
+                    FROM Dishes d
+                    LEFT JOIN DISHRESTAURANT dr ON d.DishID = dr.Dish_ID
+                    LEFT JOIN Restaurants r ON dr.Restaurant_ID = r.RestaurantID
+                    WHERE d.DishID = @DishID
+                    GROUP BY d.DishID, d.Name, d.Description, d.HealthFactor, d.Photo, d.UserId",
+                    connection);
                 command.Parameters.AddWithValue("@DishID", id);
 
                 using (var reader = await command.ExecuteReaderAsync())
