@@ -11,14 +11,18 @@ namespace TestProject;
 public class UnitTestCategory
 {
     private readonly Mock<ICategoryRepository> _mockRepo;
+    private readonly Mock<IDishCategoryRepository> _mockDishCategoryRepo;
+    private readonly Mock<IRestaurantCategoryRepository> _mockRestaurantCategoryRepo;
     private readonly ICategoryValidator _categoryValidator;
     private readonly CategoryManager _categoryManager;
 
     public UnitTestCategory()
     {
         _mockRepo = new Mock<ICategoryRepository>();
+        _mockDishCategoryRepo = new Mock<IDishCategoryRepository>();
+        _mockRestaurantCategoryRepo = new Mock<IRestaurantCategoryRepository>();
         _categoryValidator = new CategoryValidator();
-        _categoryManager = new CategoryManager(_mockRepo.Object, _categoryValidator);
+        _categoryManager = new CategoryManager(_mockRepo.Object, _mockDishCategoryRepo.Object, _mockRestaurantCategoryRepo.Object, _categoryValidator);
     }
 
     #region GetAllCategoriesAsync Tests

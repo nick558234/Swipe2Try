@@ -11,14 +11,16 @@ namespace TestProject;
 public class UnitTestDish
 {
     private readonly Mock<IDishRepository> _mockRepo;
+    private readonly Mock<IDishCategoryRepository> _mockDishCategoryRepo;
     private readonly IDishValidator _dishValidator;
     private readonly DishManager _dishManager;
 
     public UnitTestDish()
     {
         _mockRepo = new Mock<IDishRepository>();
+        _mockDishCategoryRepo = new Mock<IDishCategoryRepository>();
         _dishValidator = new DishValidator();
-        _dishManager = new DishManager(_mockRepo.Object, _dishValidator);
+        _dishManager = new DishManager(_mockRepo.Object, _mockDishCategoryRepo.Object, _dishValidator);
     }
 
     #region GetAllDishesAsync Tests

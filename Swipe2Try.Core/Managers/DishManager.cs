@@ -10,11 +10,13 @@ namespace Swipe2Try.Core.Managers;
 public class DishManager
 {
     private readonly IDishRepository _dishRepository;
+    private readonly IDishCategoryRepository _dishCategoryRepository;
     private readonly IDishValidator _dishValidator;
 
-    public DishManager(IDishRepository dishRepository, IDishValidator dishValidator)
+    public DishManager(IDishRepository dishRepository, IDishCategoryRepository dishCategoryRepository, IDishValidator dishValidator)
     {
         _dishRepository = dishRepository ?? throw new ArgumentNullException(nameof(dishRepository));
+        _dishCategoryRepository = dishCategoryRepository ?? throw new ArgumentNullException(nameof(dishCategoryRepository));
         _dishValidator = dishValidator ?? throw new ArgumentNullException(nameof(dishValidator));
     }
 
@@ -118,5 +120,53 @@ public class DishManager
             return (true, "Dish deleted successfully!");
         else
             return (false, string.Join(", ", result.Errors));
+    }
+
+    /// <summary>
+    /// Get a dish with its categories included
+    /// </summary>
+    public async Task<Dish?> GetDishWithCategoriesAsync(int id)
+    {
+        if (id <= 0)
+            throw new ArgumentException("Dish ID must be a positive integer", nameof(id));
+
+        return await _dishCategoryRepository.GetDishWithCategoriesAsync(id);
+    }
+
+    /// <summary>
+    /// Get dishes by user ID with categories included
+    /// </summary>
+    public async Task<List<Dish>> GetDishesByUserIdWithCategoriesAsync(string userId)
+    {
+        if (string.IsNullOrEmpty(userId))
+            throw new ArgumentException("User ID cannot be null or empty", nameof(userId));
+
+        var dishes = await _dishRepository.GetDishesByUserIdAsync(userId);
+        
+        // Load categories for each dish
+        foreach (var dish in dishes)
+        {
+            var categories = await _dishCategoryRepository.GetCategoriesByDishIdAsync(dish.Id);
+            dish.Categories = categories?.ToList() ?? new List<Category>();
+        }
+
+        return dishes;
+    }
+
+    /// <summary>
+    /// Get all dishes with categories included
+    /// </summary>
+    public async Task<List<Dish>> GetAllDishesWithCategoriesAsync()
+    {
+        var dishes = await _dishRepository.GetAllDishesAsync();
+        
+        // Load categories for each dish
+        foreach (var dish in dishes)
+        {
+            var categories = await _dishCategoryRepository.GetCategoriesByDishIdAsync(dish.Id);
+            dish.Categories = categories?.ToList() ?? new List<Category>();
+        }
+
+        return dishes;
     }
 }

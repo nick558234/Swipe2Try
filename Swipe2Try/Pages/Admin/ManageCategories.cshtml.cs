@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Swipe2Try.Core.Interfaces;
+using Swipe2Try.Core.Managers;
 using Swipe2Try.Core.Models;
 using Swipe2Try.Helpers;
 
@@ -8,24 +8,18 @@ namespace Swipe2Try.Pages.Admin;
 
 public class ManageCategoriesModel : PageModel
 {
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IDishCategoryRepository _dishCategoryRepository;
-    private readonly IRestaurantCategoryRepository _restaurantCategoryRepository;
-    private readonly IDishRepository _dishRepository;
-    private readonly IRestaurantRepository _restaurantRepository;
+    private readonly CategoryManager _categoryManager;
+    private readonly DishManager _dishManager;
+    private readonly RestaurantManager _restaurantManager;
 
     public ManageCategoriesModel(
-        ICategoryRepository categoryRepository,
-        IDishCategoryRepository dishCategoryRepository,
-        IRestaurantCategoryRepository restaurantCategoryRepository,
-        IDishRepository dishRepository,
-        IRestaurantRepository restaurantRepository)
+        CategoryManager categoryManager,
+        DishManager dishManager,
+        RestaurantManager restaurantManager)
     {
-        _categoryRepository = categoryRepository;
-        _dishCategoryRepository = dishCategoryRepository;
-        _restaurantCategoryRepository = restaurantCategoryRepository;
-        _dishRepository = dishRepository;
-        _restaurantRepository = restaurantRepository;
+        _categoryManager = categoryManager;
+        _dishManager = dishManager;
+        _restaurantManager = restaurantManager;
     }
 
     public List<Category> Categories { get; set; } = new();
@@ -62,17 +56,9 @@ public class ManageCategoriesModel : PageModel
             }
             else
             {
-                var success = await _dishCategoryRepository.UpdateDishCategoriesAsync(SelectedDishId, SelectedCategoryIds);
-                if (success)
-                {
-                    Message = $"Successfully updated categories for dish.";
-                    IsSuccess = true;
-                }
-                else
-                {
-                    Message = "Failed to update dish categories.";
-                    IsSuccess = false;
-                }
+                var result = await _categoryManager.AssignCategoriesToDishAsync(SelectedDishId, SelectedCategoryIds);
+                Message = result.Message;
+                IsSuccess = result.Success;
             }
         }
         catch (Exception ex)
@@ -96,17 +82,9 @@ public class ManageCategoriesModel : PageModel
             }
             else
             {
-                var success = await _restaurantCategoryRepository.UpdateRestaurantCategoriesAsync(SelectedRestaurantId, SelectedCategoryIds);
-                if (success)
-                {
-                    Message = $"Successfully updated categories for restaurant.";
-                    IsSuccess = true;
-                }
-                else
-                {
-                    Message = "Failed to update restaurant categories.";
-                    IsSuccess = false;
-                }
+                var result = await _categoryManager.AssignCategoriesToRestaurantAsync(SelectedRestaurantId, SelectedCategoryIds);
+                Message = result.Message;
+                IsSuccess = result.Success;
             }
         }
         catch (Exception ex)
@@ -123,7 +101,7 @@ public class ManageCategoriesModel : PageModel
     {
         try
         {
-            var categories = await _dishCategoryRepository.GetCategoriesByDishIdAsync(dishId);
+            var categories = await _categoryManager.GetCategoriesForDishAsync(dishId);
             return new JsonResult(categories.Select(c => c.Id));
         }
         catch (Exception)
@@ -136,7 +114,7 @@ public class ManageCategoriesModel : PageModel
     {
         try
         {
-            var categories = await _restaurantCategoryRepository.GetCategoriesByRestaurantIdAsync(restaurantId);
+            var categories = await _categoryManager.GetCategoriesForRestaurantAsync(restaurantId);
             return new JsonResult(categories.Select(c => c.Id));
         }
         catch (Exception)
@@ -149,30 +127,19 @@ public class ManageCategoriesModel : PageModel
     {
         try
         {
-            Categories = await _categoryRepository.GetAllCategoriesAsync();
-            Dishes = await _dishRepository.GetAllDishesAsync();
-            Restaurants = await _restaurantRepository.GetAllRestaurantsAsync();
+            Categories = await _categoryManager.GetAllCategoriesAsync();
+            
+            // Load all dishes and restaurants with categories
+            var allDishes = await _dishManager.GetAllDishesWithCategoriesAsync();
+            var allRestaurants = await _restaurantManager.GetAllRestaurantsWithCategoriesAsync();
 
-            // Load dishes and restaurants with their categories for display
-            DishesWithCategories = new List<Dish>();
-            foreach (var dish in Dishes.Take(10)) // Limit for display
-            {
-                var dishWithCategories = await _dishCategoryRepository.GetDishWithCategoriesAsync(dish.Id);
-                if (dishWithCategories != null)
-                {
-                    DishesWithCategories.Add(dishWithCategories);
-                }
-            }
+            // Take a limited number for display
+            DishesWithCategories = allDishes.Take(10).ToList();
+            RestaurantsWithCategories = allRestaurants.Take(10).ToList();
 
-            RestaurantsWithCategories = new List<Restaurant>();
-            foreach (var restaurant in Restaurants.Take(10)) // Limit for display
-            {
-                var restaurantWithCategories = await _restaurantCategoryRepository.GetRestaurantWithCategoriesAsync(restaurant.Id);
-                if (restaurantWithCategories != null)
-                {
-                    RestaurantsWithCategories.Add(restaurantWithCategories);
-                }
-            }
+            // Also keep the full lists for dropdowns
+            Dishes = allDishes;
+            Restaurants = allRestaurants;
         }
         catch (Exception ex)
         {

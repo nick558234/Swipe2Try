@@ -10,11 +10,19 @@ namespace Swipe2Try.Core.Managers;
 public class CategoryManager
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IDishCategoryRepository _dishCategoryRepository;
+    private readonly IRestaurantCategoryRepository _restaurantCategoryRepository;
     private readonly ICategoryValidator _categoryValidator;
 
-    public CategoryManager(ICategoryRepository categoryRepository, ICategoryValidator categoryValidator)
+    public CategoryManager(
+        ICategoryRepository categoryRepository, 
+        IDishCategoryRepository dishCategoryRepository,
+        IRestaurantCategoryRepository restaurantCategoryRepository,
+        ICategoryValidator categoryValidator)
     {
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+        _dishCategoryRepository = dishCategoryRepository ?? throw new ArgumentNullException(nameof(dishCategoryRepository));
+        _restaurantCategoryRepository = restaurantCategoryRepository ?? throw new ArgumentNullException(nameof(restaurantCategoryRepository));
         _categoryValidator = categoryValidator ?? throw new ArgumentNullException(nameof(categoryValidator));
     }
 
@@ -111,5 +119,117 @@ public class CategoryManager
             return (true, "Category deleted successfully!");
         else
             return (false, string.Join(", ", result.Errors));
+    }
+
+    // Dish-Category relationship methods
+    public async Task<List<Category>> GetCategoriesForDishAsync(int dishId)
+    {
+        if (dishId <= 0)
+            throw new ArgumentException("Dish ID must be a positive integer", nameof(dishId));
+
+        var dishCategories = await _dishCategoryRepository.GetCategoriesByDishIdAsync(dishId);
+        return dishCategories?.ToList() ?? new List<Category>();
+    }
+
+    public async Task<List<Dish>> GetDishesByCategoryAsync(int categoryId)
+    {
+        if (categoryId <= 0)
+            throw new ArgumentException("Category ID must be a positive integer", nameof(categoryId));
+
+        var dishes = await _dishCategoryRepository.GetDishesByCategoryIdAsync(categoryId);
+        return dishes?.ToList() ?? new List<Dish>();
+    }    public async Task<(bool Success, string Message)> AssignCategoriesToDishAsync(int dishId, List<int> categoryIds)
+    {
+        try
+        {
+            if (dishId <= 0)
+                return (false, "Invalid dish ID");
+
+            if (categoryIds == null || categoryIds.Count == 0)
+                return (false, "No categories selected");
+
+            // Use the existing UpdateDishCategoriesAsync method
+            var success = await _dishCategoryRepository.UpdateDishCategoriesAsync(dishId, categoryIds);
+            
+            return success 
+                ? (true, "Categories assigned successfully!") 
+                : (false, "Failed to assign categories");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Failed to assign categories: {ex.Message}");
+        }
+    }    public async Task<(bool Success, string Message)> RemoveCategoryFromDishAsync(int dishId, int categoryId)
+    {
+        try
+        {
+            if (dishId <= 0 || categoryId <= 0)
+                return (false, "Invalid dish or category ID");
+
+            var success = await _dishCategoryRepository.UnlinkDishFromCategoryAsync(dishId, categoryId);
+            return success 
+                ? (true, "Category removed successfully!") 
+                : (false, "Failed to remove category");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Failed to remove category: {ex.Message}");
+        }
+    }
+
+    // Restaurant-Category relationship methods
+    public async Task<List<Category>> GetCategoriesForRestaurantAsync(int restaurantId)
+    {
+        if (restaurantId <= 0)
+            throw new ArgumentException("Restaurant ID must be a positive integer", nameof(restaurantId));
+
+        var restaurantCategories = await _restaurantCategoryRepository.GetCategoriesByRestaurantIdAsync(restaurantId);
+        return restaurantCategories?.ToList() ?? new List<Category>();
+    }
+
+    public async Task<List<Restaurant>> GetRestaurantsByCategoryAsync(int categoryId)
+    {
+        if (categoryId <= 0)
+            throw new ArgumentException("Category ID must be a positive integer", nameof(categoryId));
+
+        var restaurants = await _restaurantCategoryRepository.GetRestaurantsByCategoryIdAsync(categoryId);
+        return restaurants?.ToList() ?? new List<Restaurant>();
+    }    public async Task<(bool Success, string Message)> AssignCategoriesToRestaurantAsync(int restaurantId, List<int> categoryIds)
+    {
+        try
+        {
+            if (restaurantId <= 0)
+                return (false, "Invalid restaurant ID");
+
+            if (categoryIds == null || categoryIds.Count == 0)
+                return (false, "No categories selected");
+
+            // Use the existing UpdateRestaurantCategoriesAsync method
+            var success = await _restaurantCategoryRepository.UpdateRestaurantCategoriesAsync(restaurantId, categoryIds);
+            
+            return success 
+                ? (true, "Categories assigned successfully!") 
+                : (false, "Failed to assign categories");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Failed to assign categories: {ex.Message}");
+        }
+    }    public async Task<(bool Success, string Message)> RemoveCategoryFromRestaurantAsync(int restaurantId, int categoryId)
+    {
+        try
+        {
+            if (restaurantId <= 0 || categoryId <= 0)
+                return (false, "Invalid restaurant or category ID");
+
+            var success = await _restaurantCategoryRepository.UnlinkRestaurantFromCategoryAsync(restaurantId, categoryId);
+            return success 
+                ? (true, "Category removed successfully!") 
+                : (false, "Failed to remove category");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Failed to remove category: {ex.Message}");
+        }
     }
 }

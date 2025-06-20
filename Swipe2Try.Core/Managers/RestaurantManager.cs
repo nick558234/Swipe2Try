@@ -10,12 +10,16 @@ namespace Swipe2Try.Core.Managers;
 public class RestaurantManager
 {
     private readonly IRestaurantRepository _restaurantRepository;
+    private readonly IRestaurantCategoryRepository _restaurantCategoryRepository;
     private readonly IRestaurantValidator _restaurantValidator;
 
-    public RestaurantManager(IRestaurantRepository restaurantRepository, IRestaurantValidator restaurantValidator)
+    public RestaurantManager(
+        IRestaurantRepository restaurantRepository, 
+        IRestaurantCategoryRepository restaurantCategoryRepository,
+        IRestaurantValidator restaurantValidator)
     {
-        _restaurantRepository =
-            restaurantRepository ?? throw new ArgumentNullException(nameof(restaurantRepository));
+        _restaurantRepository = restaurantRepository ?? throw new ArgumentNullException(nameof(restaurantRepository));
+        _restaurantCategoryRepository = restaurantCategoryRepository ?? throw new ArgumentNullException(nameof(restaurantCategoryRepository));
         _restaurantValidator = restaurantValidator ?? throw new ArgumentNullException(nameof(restaurantValidator));
     }
 
@@ -118,5 +122,53 @@ public class RestaurantManager
             return (true, "Restaurant deleted successfully!");
         else
             return (false, string.Join(", ", result.Errors));
+    }
+
+    /// <summary>
+    /// Get a restaurant with its categories included
+    /// </summary>
+    public async Task<Restaurant?> GetRestaurantWithCategoriesAsync(int id)
+    {
+        if (id <= 0)
+            throw new ArgumentException("Restaurant ID must be a positive integer", nameof(id));
+
+        return await _restaurantCategoryRepository.GetRestaurantWithCategoriesAsync(id);
+    }
+
+    /// <summary>
+    /// Get restaurants by user ID with categories included
+    /// </summary>
+    public async Task<List<Restaurant>> GetRestaurantsByUserIdWithCategoriesAsync(string userId)
+    {
+        if (string.IsNullOrEmpty(userId))
+            throw new ArgumentException("User ID cannot be null or empty", nameof(userId));
+
+        var restaurants = await _restaurantRepository.GetRestaurantsByUserIdAsync(userId);
+        
+        // Load categories for each restaurant
+        foreach (var restaurant in restaurants)
+        {
+            var categories = await _restaurantCategoryRepository.GetCategoriesByRestaurantIdAsync(restaurant.Id);
+            restaurant.Categories = categories?.ToList() ?? new List<Category>();
+        }
+
+        return restaurants;
+    }
+
+    /// <summary>
+    /// Get all restaurants with categories included
+    /// </summary>
+    public async Task<List<Restaurant>> GetAllRestaurantsWithCategoriesAsync()
+    {
+        var restaurants = await _restaurantRepository.GetAllRestaurantsAsync();
+        
+        // Load categories for each restaurant
+        foreach (var restaurant in restaurants)
+        {
+            var categories = await _restaurantCategoryRepository.GetCategoriesByRestaurantIdAsync(restaurant.Id);
+            restaurant.Categories = categories?.ToList() ?? new List<Category>();
+        }
+
+        return restaurants;
     }
 }

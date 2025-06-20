@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Swipe2Try.Core.Interfaces;
+using Swipe2Try.Core.Managers;
 using Swipe2Try.Core.Models;
 using Swipe2Try.Helpers;
 
@@ -8,21 +8,20 @@ namespace Swipe2Try.Pages.RestaurantOwner;
 
 public class ManageDishCategoriesModel : PageModel
 {
-    private readonly IDishRepository _dishRepository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IDishCategoryRepository _dishCategoryRepository;
+    private readonly DishManager _dishManager;
+    private readonly CategoryManager _categoryManager;
 
-    public ManageDishCategoriesModel(
-        IDishRepository dishRepository,
-        ICategoryRepository categoryRepository,
-        IDishCategoryRepository dishCategoryRepository)
+    public ManageDishCategoriesModel(DishManager dishManager, CategoryManager categoryManager)
     {
-        _dishRepository = dishRepository;
-        _categoryRepository = categoryRepository;
-        _dishCategoryRepository = dishCategoryRepository;
-    }    public List<Dish> UserDishes { get; set; } = new();
+        _dishManager = dishManager;
+        _categoryManager = categoryManager;
+    }
+
+    public List<Dish> UserDishes { get; set; } = new();
     public List<Category> Categories { get; set; } = new();
-    public List<Dish> DishesWithCategories { get; set; } = new();    // Properties for the Razor page compatibility
+    public List<Dish> DishesWithCategories { get; set; } = new();
+
+    // Properties for the Razor page compatibility
     public List<Dish> Dishes => DishesWithCategories.Any() ? DishesWithCategories : UserDishes;
     public List<Category> AllCategories => Categories;
     public string? Message { get; set; }
@@ -51,17 +50,9 @@ public class ManageDishCategoriesModel : PageModel
             }
             else
             {
-                var success = await _dishCategoryRepository.UpdateDishCategoriesAsync(SelectedDishId, SelectedCategoryIds);
-                if (success)
-                {
-                    Message = $"Successfully updated categories for dish.";
-                    IsSuccess = true;
-                }
-                else
-                {
-                    Message = "Failed to update dish categories.";
-                    IsSuccess = false;
-                }
+                var result = await _categoryManager.AssignCategoriesToDishAsync(SelectedDishId, SelectedCategoryIds);
+                Message = result.Message;
+                IsSuccess = result.Success;
             }
         }
         catch (Exception ex)
@@ -78,7 +69,7 @@ public class ManageDishCategoriesModel : PageModel
     {
         try
         {
-            var categories = await _dishCategoryRepository.GetCategoriesByDishIdAsync(dishId);
+            var categories = await _categoryManager.GetCategoriesForDishAsync(dishId);
             return new JsonResult(categories.Select(c => c.Id));
         }
         catch (Exception)
@@ -95,25 +86,10 @@ public class ManageDishCategoriesModel : PageModel
             if (string.IsNullOrEmpty(userId))
             {
                 return;
-            }            Categories = await _categoryRepository.GetAllCategoriesAsync();
-            UserDishes = await _dishRepository.GetDishesByUserIdAsync(userId);
-
-            // Load dishes with their categories for display
-            DishesWithCategories = new List<Dish>();
-            foreach (var dish in UserDishes) // Load categories for all dishes
-            {
-                var dishWithCategories = await _dishCategoryRepository.GetDishWithCategoriesAsync(dish.Id);
-                if (dishWithCategories != null)
-                {
-                    DishesWithCategories.Add(dishWithCategories);
-                }
-                else
-                {
-                    // If no categories found, add the dish anyway but with empty categories
-                    dish.Categories = new List<Category>();
-                    DishesWithCategories.Add(dish);
-                }
             }
+
+            Categories = await _categoryManager.GetAllCategoriesAsync();
+            DishesWithCategories = await _dishManager.GetDishesByUserIdWithCategoriesAsync(userId);
         }
         catch (Exception ex)
         {
